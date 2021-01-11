@@ -1,0 +1,8 @@
+/.idea/
+/common/.mvn/wrapper/
+/common/.gitignore
+/common/mvnw
+/common/mvnw.cmd
+/application/application.iml
+/code-diff-parent.iml
+/common/common.iml
