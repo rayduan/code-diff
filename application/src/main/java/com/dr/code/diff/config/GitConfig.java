@@ -34,9 +34,9 @@ import java.util.stream.Collectors;
 /**
  * @author rui.duan
  * @version 1.0
- * @className ShiroConfig
+ * @className GitConfig
  * @description git配置类
- * @date 2019/11/19 2:30 下午
+ * @date 2021/01/11 2:30 下午
  */
 @Configuration
 @Slf4j
@@ -97,7 +97,7 @@ public class GitConfig {
     }
 
     /**
-     * 判断工作目录是否存在
+     * 判断工作目录是否存在，本来可以每次拉去代码时删除再拉取，但是这样代码多的化IO比较大，所以就代码可以复用
      *
      * @param codePath
      * @return
@@ -153,7 +153,7 @@ public class GitConfig {
                 return null;
             }
             /**
-             * 获取原类的方法
+             * 多线程获取旧代码和新代码的差异类及差异方法
              */
             List<CompletableFuture<ClassInfoResult>> priceFuture = validDiffList.stream().map(item -> getClassMethods(getClassFile(baseGit, item.getNewPath()), getClassFile(nowGit, item.getNewPath()), item)).collect(Collectors.toList());
             return priceFuture.stream().map(CompletableFuture::join).filter(Objects::nonNull).collect(Collectors.toList());
@@ -185,7 +185,7 @@ public class GitConfig {
      * @return
      */
     private CompletableFuture<ClassInfoResult> getClassMethods(String oldClassFile, String mewClassFile, DiffEntry diffEntry) {
-        //多线程获取差异方法
+        //多线程获取差异方法，此处只要考虑增量代码太多的情况下，每个类都需要遍历所有方法，采用多线程方式加快速度
         return CompletableFuture.supplyAsync(() -> {
             //新增类直接标记，不用计算方法
             if (DiffEntry.ChangeType.ADD.equals(diffEntry.getChangeType())) {
