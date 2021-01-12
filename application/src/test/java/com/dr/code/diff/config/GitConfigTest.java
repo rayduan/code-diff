@@ -29,10 +29,15 @@ class GitConfigTest extends CodeDiffApplicationTest {
 
     @Test
     void diffMethods() {
+//        DiffMethodParams diff = DiffMethodParams.builder()
+//                .baseVersion("dac68b2f3976509b4204a66df8f5e71dffe023b7")
+//                .nowVersion("74c026849763f1f9f0dfc967949d0b581959c2ea")
+//                .gitUrl("https://github.com/rayduan/devops-data.git")
+//                .build();
         DiffMethodParams diff = DiffMethodParams.builder()
-                .baseVersion("dac68b2f3976509b4204a66df8f5e71dffe023b7")
-                .nowVersion("74c026849763f1f9f0dfc967949d0b581959c2ea")
-                .gitUrl("https://github.com/rayduan/devops-data.git")
+                .baseVersion("db84201eea9be107073fa07c24e30262ac91d384")
+                .nowVersion("dca3a374ba9100c64b970081fad5db7335e99ff6")
+                .gitUrl("https://github.com/rayduan/base-service.git")
                 .build();
         gitConfig.diffMethods(diff);
     }

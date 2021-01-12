@@ -187,10 +187,11 @@ public class GitConfig {
     private CompletableFuture<ClassInfoResult> getClassMethods(String oldClassFile, String mewClassFile, DiffEntry diffEntry) {
         //多线程获取差异方法，此处只要考虑增量代码太多的情况下，每个类都需要遍历所有方法，采用多线程方式加快速度
         return CompletableFuture.supplyAsync(() -> {
+            String className = diffEntry.getNewPath().split("\\.")[0].split("src/main/java/")[1];
             //新增类直接标记，不用计算方法
             if (DiffEntry.ChangeType.ADD.equals(diffEntry.getChangeType())) {
                 return ClassInfoResult.builder()
-                        .classFile(diffEntry.getNewPath())
+                        .classFile(className)
                         .type(DiffEntry.ChangeType.ADD.name())
                         .build();
             }
@@ -215,7 +216,7 @@ public class GitConfig {
                 return null;
             }
             ClassInfoResult result = ClassInfoResult.builder()
-                    .classFile(diffEntry.getNewPath())
+                    .classFile(className)
                     .methodInfos(diffMethods)
                     .type(DiffEntry.ChangeType.MODIFY.name())
                     .build();
