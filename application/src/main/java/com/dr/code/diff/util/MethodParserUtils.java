@@ -37,7 +37,7 @@ public class MethodParserUtils {
             List<MethodInfoResult> list = new ArrayList<>();
             FileInputStream in = new FileInputStream(classFile);
             CompilationUnit cu = StaticJavaParser.parse(in);
-            //由于jacoco不会统计结构覆盖率，没比较计算接口的方法，此处排除接口类
+            //由于jacoco不会统计接口覆盖率，没比较计算接口的方法，此处排除接口类
             final List<?> types = cu.getTypes();
             boolean isInterface = types.stream().filter(t -> t instanceof ClassOrInterfaceDeclaration).anyMatch(t -> ((ClassOrInterfaceDeclaration) t).isInterface());
             if (isInterface) {
@@ -52,14 +52,14 @@ public class MethodParserUtils {
     }
 
     /**
-     * javaparser工具类核心方法，主要通过这个类便利class文件的方法，此方法主要是获取出代码的所有方法，然后再去对比方法是否存在差异
+     * javaparser工具类核心方法，主要通过这个类遍历class文件的方法，此方法主要是获取出代码的所有方法，然后再去对比方法是否存在差异
      */
     private static class MethodVisitor extends VoidVisitorAdapter<List<MethodInfoResult>> {
         @Override
         public void visit(MethodDeclaration n, List<MethodInfoResult> list) {
             //删除注释
             n.removeComment();
-            //计算方法体的hash值，疑问，空格，特殊转义字符会影响结果，导致相同匹配为差异
+            //计算方法体的hash值，疑问，空格，特殊转义字符会影响结果，导致相同匹配为差异？建议提交代码时统一工具格式化
             String md5 = Md5Util.encode(n.toString());
             MethodInfoResult result = MethodInfoResult.builder()
                     .md5(md5)
