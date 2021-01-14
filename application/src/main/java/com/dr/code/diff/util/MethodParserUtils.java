@@ -4,9 +4,12 @@ import com.dr.code.diff.dto.MethodInfoResult;
 import com.dr.common.utils.security.Md5Util;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import org.springframework.util.CollectionUtils;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -61,10 +64,21 @@ public class MethodParserUtils {
             n.removeComment();
             //计算方法体的hash值，疑问，空格，特殊转义字符会影响结果，导致相同匹配为差异？建议提交代码时统一工具格式化
             String md5 = Md5Util.encode(n.toString());
+            //参数处理
+            StringBuilder params = new StringBuilder();
+            NodeList<Parameter> parameters = n.getParameters();
+            if(!CollectionUtils.isEmpty(parameters)){
+                for (int i = 0; i < parameters.size(); i++) {
+                    params.append(parameters.get(i));
+                    if(i != parameters.size() -1){
+                        params.append(",");
+                    }
+                }
+            }
             MethodInfoResult result = MethodInfoResult.builder()
                     .md5(md5)
                     .methodName(n.getNameAsString())
-                    .parameters(n.getParameters().toString())
+                    .parameters(params.toString())
                     .build();
             list.add(result);
             super.visit(n, list);
