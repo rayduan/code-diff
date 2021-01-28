@@ -133,6 +133,14 @@
                 <artifactId>org.eclipse.jgit</artifactId>
                 <version>5.10.0.202012080955-r</version>
             </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.tmatesoft.svnkit/svnkit -->
+            <dependency>
+                <groupId>org.tmatesoft.svnkit</groupId>
+                <artifactId>svnkit</artifactId>
+                <version>1.10.1</version>
+            </dependency>
+
         </dependencies>
 
 

@@ -6,3 +6,5 @@
 /application/application.iml
 /code-diff-parent.iml
 /common/common.iml
+/common/target/classes/com/dr/common/
+/application/target/
