@@ -27,8 +27,12 @@ public class CodeDiffServiceImpl implements CodeDiffService {
     @Autowired
     private GitConfig gitConfig;
 
+    /**
+    * 添加注释
+    */
     @Override
     public List<ClassInfoResult> getDiffCode(DiffMethodParams diffMethodParams) {
+         System.out.println("111");
         return gitConfig.diffMethods(diffMethodParams);
     }
 }
