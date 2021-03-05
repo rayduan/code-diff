@@ -13,7 +13,7 @@ public class BaseStringUtil {
 
     public static String escapeChar(String before){
         if(!ObjectUtils.isEmpty(before)){
-//            before = before.replaceAll("/", "//") ;
+            before = before.replaceAll("/", "//") ;
             before = before.replaceAll("_", "/_") ;
             before = before.replaceAll("%", "/%") ;
         }

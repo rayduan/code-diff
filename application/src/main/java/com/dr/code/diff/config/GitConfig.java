@@ -6,6 +6,7 @@ import com.dr.code.diff.dto.MethodInfoResult;
 import com.dr.code.diff.util.MethodParserUtils;
 import com.dr.common.log.LoggerUtil;
 import com.dr.common.utils.file.FileUtil;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -199,6 +200,7 @@ public class GitConfig {
             if (DiffEntry.ChangeType.ADD.equals(diffEntry.getChangeType())) {
                 return ClassInfoResult.builder()
                         .classFile(className)
+                        .methodInfos(Lists.newArrayList())
                         .type(DiffEntry.ChangeType.ADD.name())
                         .build();
             }

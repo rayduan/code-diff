@@ -15,11 +15,11 @@ import lombok.Data;
 public class MethodInfoResultVO {
 
 
-    /**
-     * 方法的md5
-     */
-    @ApiModelProperty(name = "md5", value = "方法的md5", dataType = "string", example = "13E2BFB69F7D987A6DB4272400C94E9B")
-    public String md5;
+//    /**
+//     * 方法的md5
+//     */
+//    @ApiModelProperty(name = "md5", value = "方法的md5", dataType = "string", example = "13E2BFB69F7D987A6DB4272400C94E9B")
+//    public String md5;
     /**
      * 方法名
      */
