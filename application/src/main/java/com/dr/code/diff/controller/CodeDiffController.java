@@ -1,11 +1,14 @@
 package com.dr.code.diff.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.dr.code.diff.dto.ClassInfoResult;
 import com.dr.code.diff.dto.DiffMethodParams;
 import com.dr.code.diff.service.CodeDiffService;
 import com.dr.code.diff.vo.result.CodeDiffResultVO;
 import com.dr.common.response.ApiResponse;
+import com.dr.common.response.UniqueApoResponse;
 import com.dr.common.utils.mapper.OrikaMapperUtils;
+import com.dr.common.utils.string.BaseStringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -34,7 +37,7 @@ public class CodeDiffController {
 
     @ApiOperation("获取差异代码")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public ApiResponse<List<CodeDiffResultVO>> getList(
+    public UniqueApoResponse<List<CodeDiffResultVO>> getList(
             @ApiParam(required = true, name = "gitUrl", value = "git远程仓库地址")
             @RequestParam(value = "gitUrl") String gitUrl,
             @ApiParam(required = true, name = "baseVersion", value = "git原始分支或tag")
@@ -48,7 +51,7 @@ public class CodeDiffController {
                 .build();
         List<ClassInfoResult> diffCodeList = codeDiffService.getDiffCode(diffMethodParams);
         List<CodeDiffResultVO> codeDiffResultVOS = OrikaMapperUtils.mapList(diffCodeList, ClassInfoResult.class, CodeDiffResultVO.class);
-        return new ApiResponse<List<CodeDiffResultVO>>().success(codeDiffResultVOS);
+        return new UniqueApoResponse<List<CodeDiffResultVO>>().success(codeDiffResultVOS, BaseStringUtil.escapeChar(JSONArray.toJSON(codeDiffResultVOS).toString()));
     }
 
 
