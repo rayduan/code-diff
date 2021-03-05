@@ -50,7 +50,7 @@ public class CodeDiffController {
                 .build();
         List<ClassInfoResult> diffCodeList = codeDiffService.getDiffCode(diffMethodParams);
         List<CodeDiffResultVO> codeDiffResultVOS = OrikaMapperUtils.mapList(diffCodeList, ClassInfoResult.class, CodeDiffResultVO.class);
-        return new UniqueApoResponse<List<CodeDiffResultVO>>().success(codeDiffResultVOS, BaseStringUtil.escapeChar(JSONArray.toJSON(codeDiffResultVOS).toString()));
+        return new UniqueApoResponse<List<CodeDiffResultVO>>().success(codeDiffResultVOS, JSONArray.toJSON(codeDiffResultVOS).toString());
     }
 
 
