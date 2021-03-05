@@ -90,7 +90,7 @@ public class GitConfig {
                 LoggerUtil.info(log, "本地代码存在,直接使用", gitUrl, codePath);
                 git = Git.open(new File(codePath));
                 //更新代码
-                git.pull().call();
+                git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitUserName, gitPassWord)).call();
             }
 
         } catch (IOException | GitAPIException e) {
