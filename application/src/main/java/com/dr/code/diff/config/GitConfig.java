@@ -84,12 +84,15 @@ public class GitConfig {
                         .setDirectory(new File(codePath))
                         .setBranch(commitId)
                         .call();
+                // 下载指定commitId/branch
+                git.checkout().setName(commitId).call();
             } else {
                 LoggerUtil.info(log, "本地代码存在,直接使用", gitUrl, codePath);
                 git = Git.open(new File(codePath));
+                //更新代码
+                git.pull().call();
             }
-            // 切换到指定commitId
-            git.checkout().setName(commitId).call();
+
         } catch (IOException | GitAPIException e) {
             e.printStackTrace();
         }
