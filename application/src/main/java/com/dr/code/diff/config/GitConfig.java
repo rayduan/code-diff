@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevTree;
@@ -89,8 +90,12 @@ public class GitConfig {
             } else {
                 LoggerUtil.info(log, "本地代码存在,直接使用", gitUrl, codePath);
                 git = Git.open(new File(codePath));
-                //更新代码
-                git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitUserName, gitPassWord)).call();
+                git.getRepository().getFullBranch();
+                //判断是分支还是commitId，分支做更新，commitId无法改变用原有的
+                if(git.getRepository().exactRef(Constants.HEAD).isSymbolic()){
+                    //更新代码
+                    git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitUserName, gitPassWord)).call();
+                }
             }
 
         } catch (IOException | GitAPIException e) {
