@@ -97,7 +97,6 @@ public class GitConfig {
                     git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitUserName, gitPassWord)).call();
                 }
             }
-
         } catch (IOException | GitAPIException e) {
             e.printStackTrace();
         }
