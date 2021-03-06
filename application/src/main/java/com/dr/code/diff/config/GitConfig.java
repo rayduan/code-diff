@@ -6,6 +6,8 @@ import com.dr.code.diff.dto.MethodInfoResult;
 import com.dr.code.diff.util.MethodParserUtils;
 import com.dr.common.log.LoggerUtil;
 import com.dr.common.utils.file.FileUtil;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
@@ -93,7 +95,7 @@ public class GitConfig {
                 git = Git.open(new File(codePath));
                 git.getRepository().getFullBranch();
                 //判断是分支还是commitId，分支做更新，commitId无法改变用原有的
-                if(git.getRepository().exactRef(Constants.HEAD).isSymbolic()){
+                if (git.getRepository().exactRef(Constants.HEAD).isSymbolic()) {
                     //更新代码
                     git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitUserName, gitPassWord)).call();
                 }
@@ -141,9 +143,9 @@ public class GitConfig {
     public List<ClassInfoResult> diffMethods(DiffMethodParams diffMethodParams) {
         try {
             //原有代码git对象
-            Git baseGit = cloneRepository(diffMethodParams.getGitUrl(), localBaseRepoDir + diffMethodParams.getBaseVersion(), diffMethodParams.getBaseVersion());
+            Git baseGit = cloneRepository(diffMethodParams.getGitUrl(), getLocalDir(diffMethodParams.getGitUrl(), localBaseRepoDir, diffMethodParams.getBaseVersion()), diffMethodParams.getBaseVersion());
             //现有代码git对象
-            Git nowGit = cloneRepository(diffMethodParams.getGitUrl(), localBaseRepoDir + diffMethodParams.getNowVersion(), diffMethodParams.getNowVersion());
+            Git nowGit = cloneRepository(diffMethodParams.getGitUrl(), getLocalDir(diffMethodParams.getGitUrl(), localBaseRepoDir, diffMethodParams.getNowVersion()), diffMethodParams.getNowVersion());
             AbstractTreeIterator baseTree = prepareTreeParser(baseGit.getRepository(), diffMethodParams.getBaseVersion());
             AbstractTreeIterator nowTree = prepareTreeParser(nowGit.getRepository(), diffMethodParams.getNowVersion());
             //获取两个版本之间的差异代码
@@ -257,4 +259,30 @@ public class GitConfig {
         }
         return null;
     }
+
+    /**
+     * 取远程代码本地存储路径
+     *
+     * @param gitUrl
+     * @param localBaseRepoDir
+     * @param version
+     * @return
+     */
+    public static String getLocalDir(String gitUrl, String localBaseRepoDir, String version) {
+        StringBuilder localDir = new StringBuilder(localBaseRepoDir);
+        if (Strings.isNullOrEmpty(gitUrl)) {
+            return "";
+        }
+        String repoName = Splitter.on("/")
+                .splitToStream(gitUrl).reduce((first, second) -> second)
+                .map(e -> Splitter.on(".").splitToStream(e).findFirst().get()).get();
+        localDir.append(repoName);
+        localDir.append("\\");
+        localDir.append(version);
+        return localDir.toString();
+
+
+    }
 }
+
+
