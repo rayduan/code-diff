@@ -18,140 +18,48 @@
            "msg": "业务处理成功",
            "data": [
              {
-               "classFile": "collector/src/main/java/com/geely/collector/CollectorApplication.java",
+               "classFile": "com/dr/code/diff/config/GitConfig",
                "methodInfos": [
                  {
-                   "md5": "13E2BFB69F7D987A6DB4272400C94E9B",
-                   "methodName": "main",
-                   "parameters": "[String[] args]"
+                   "methodName": "cloneRepository",
+                   "parameters": "String gitUrl,String codePath,String commitId"
+                 },
+                 {
+                   "methodName": "diffMethods",
+                   "parameters": "DiffMethodParams diffMethodParams"
+                 },
+                 {
+                   "methodName": "getClassMethods",
+                   "parameters": "String oldClassFile,String mewClassFile,DiffEntry diffEntry"
                  }
                ],
                "type": "MODIFY"
              },
              {
-               "classFile": "collector/src/main/java/com/geely/collector/bean/CodeQuality.java",
-               "methodInfos": null,
-               "type": "ADD"
+               "classFile": "com/dr/code/diff/controller/CodeDiffController",
+               "methodInfos": [
+                 {
+                   "methodName": "getList",
+                   "parameters": "@ApiParam(required = true, name = \"gitUrl\", value = \"git远程仓库地址\") @RequestParam(value = \"gitUrl\") String gitUrl,@ApiParam(required = true, name = \"baseVersion\", value = \"git原始分支或tag\") @RequestParam(value = \"baseVersion\") String baseVersion,@ApiParam(required = true, name = \"nowVersion\", value = \"git现分支或tag\") @RequestParam(value = \"nowVersion\") String nowVersion"
+                 }
+               ],
+               "type": "MODIFY"
              },
              {
-               "classFile": "collector/src/main/java/com/geely/collector/dao/basic/CodeQualityMapper.java",
-               "methodInfos": null,
-               "type": "ADD"
+               "classFile": "com/dr/code/diff/service/impl/CodeDiffServiceImpl",
+               "methodInfos": [
+                 {
+                   "methodName": "getDiffCode",
+                   "parameters": "DiffMethodParams diffMethodParams"
+                 }
+               ],
+               "type": "MODIFY"
              },
              {
-               "classFile": "collector/src/main/java/com/geely/collector/dao/extension/CodeQualityExtensionMapper.java",
-               "methodInfos": null,
-               "type": "ADD"
-             },
-             {
-               "classFile": "collector/src/main/java/com/geely/collector/mvc/APIResponse.java",
-               "methodInfos": null,
-               "type": "ADD"
-             },
-             {
-               "classFile": "collector/src/main/java/com/geely/collector/mvc/BusinessException.java",
-               "methodInfos": null,
-               "type": "ADD"
-             },
-             {
-               "classFile": "collector/src/main/java/com/geely/collector/task/TestTask.java",
-               "methodInfos": null,
-               "type": "ADD"
-             },
-             {
-               "classFile": "third-sdk/src/main/java/com/geely/gitlab/config/GitlabAPIConfig.java",
-               "methodInfos": null,
-               "type": "ADD"
-             },
-             {
-               "classFile": "third-sdk/src/main/java/com/geely/gitlab/dto/CommitDetail.java",
-               "methodInfos": null,
-               "type": "ADD"
-             },
-             {
-               "classFile": "third-sdk/src/main/java/com/geely/gitlab/dto/GitLabStats.java",
-               "methodInfos": null,
-               "type": "ADD"
-             },
-             {
-               "classFile": "third-sdk/src/main/java/com/geely/gitlab/service/GitlabService.java",
-               "methodInfos": null,
-               "type": "ADD"
-             },
-             {
-               "classFile": "third-sdk/src/main/java/com/geely/gitlab/service/impl/GitlabServiceImpl.java",
-               "methodInfos": null,
-               "type": "ADD"
-             },
-             {
-               "classFile": "third-sdk/src/main/java/com/geely/sonar/Test.java",
-               "methodInfos": null,
-               "type": "ADD"
-             },
-             {
-               "classFile": "third-sdk/src/main/java/com/geely/sonar/client/BaseHttpClient.java",
-               "methodInfos": null,
-               "type": "ADD"
-             },
-             {
-               "classFile": "third-sdk/src/main/java/com/geely/sonar/client/MeasureClient.java",
-               "methodInfos": null,
-               "type": "ADD"
-             },
-             {
-               "classFile": "third-sdk/src/main/java/com/geely/sonar/client/ProjectClient.java",
-               "methodInfos": null,
-               "type": "ADD"
-             },
-             {
-               "classFile": "third-sdk/src/main/java/com/geely/sonar/client/authentication/PreemptiveAuth.java",
-               "methodInfos": null,
-               "type": "ADD"
-             },
-             {
-               "classFile": "third-sdk/src/main/java/com/geely/sonar/config/SonarConnectionConf.java",
-               "methodInfos": null,
-               "type": "ADD"
-             },
-             {
-               "classFile": "third-sdk/src/main/java/com/geely/sonar/dto/BaseModel.java",
-               "methodInfos": null,
-               "type": "ADD"
-             },
-             {
-               "classFile": "third-sdk/src/main/java/com/geely/sonar/dto/MeasuresBean.java",
-               "methodInfos": null,
-               "type": "ADD"
-             },
-             {
-               "classFile": "third-sdk/src/main/java/com/geely/sonar/dto/MeasuresResultDto.java",
-               "methodInfos": null,
-               "type": "ADD"
-             },
-             {
-               "classFile": "third-sdk/src/main/java/com/geely/sonar/service/MeasureService.java",
-               "methodInfos": null,
-               "type": "ADD"
-             },
-             {
-               "classFile": "third-sdk/src/main/java/com/geely/sonar/service/impl/MeasureServiceImpl.java",
-               "methodInfos": null,
-               "type": "ADD"
-             },
-             {
-               "classFile": "third-sdk/src/main/java/com/geely/sonar/util/HttpResponseValidator.java",
-               "methodInfos": null,
-               "type": "ADD"
-             },
-             {
-               "classFile": "third-sdk/src/main/java/com/geely/sonar/util/HttpResponseWrapper.java",
-               "methodInfos": null,
-               "type": "ADD"
-             },
-             {
-               "classFile": "third-sdk/src/main/java/com/geely/sonar/util/SonarContant.java",
-               "methodInfos": null,
+               "classFile": "com/dr/common/utils/string/ScmStringUtil",
+               "methodInfos": [],
                "type": "ADD"
              }
-           ]
+           ],
+           "uniqueData": "[{\"classFile\":\"com/dr/code/diff/config/GitConfig\",\"methodInfos\":[{\"methodName\":\"cloneRepository\",\"parameters\":\"String gitUrl,String codePath,String commitId\"},{\"methodName\":\"diffMethods\",\"parameters\":\"DiffMethodParams diffMethodParams\"},{\"methodName\":\"getClassMethods\",\"parameters\":\"String oldClassFile,String mewClassFile,DiffEntry diffEntry\"}],\"type\":\"MODIFY\"},{\"classFile\":\"com/dr/code/diff/controller/CodeDiffController\",\"methodInfos\":[{\"methodName\":\"getList\",\"parameters\":\"@ApiParam(required = true, name = \\\"gitUrl\\\", value = \\\"git远程仓库地址\\\") @RequestParam(value = \\\"gitUrl\\\") String gitUrl,@ApiParam(required = true, name = \\\"baseVersion\\\", value = \\\"git原始分支或tag\\\") @RequestParam(value = \\\"baseVersion\\\") String baseVersion,@ApiParam(required = true, name = \\\"nowVersion\\\", value = \\\"git现分支或tag\\\") @RequestParam(value = \\\"nowVersion\\\") String nowVersion\"}],\"type\":\"MODIFY\"},{\"classFile\":\"com/dr/code/diff/service/impl/CodeDiffServiceImpl\",\"methodInfos\":[{\"methodName\":\"getDiffCode\",\"parameters\":\"DiffMethodParams diffMethodParams\"}],\"type\":\"MODIFY\"},{\"classFile\":\"com/dr/common/utils/string/ScmStringUtil\",\"methodInfos\":[],\"type\":\"ADD\"}]"
          }
