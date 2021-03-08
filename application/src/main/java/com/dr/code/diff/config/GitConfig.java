@@ -202,7 +202,6 @@ public class GitConfig {
             if (DiffEntry.ChangeType.ADD.equals(diffEntry.getChangeType())) {
                 return ClassInfoResult.builder()
                         .classFile(className)
-                        .methodInfos(Lists.newArrayList())
                         .type(DiffEntry.ChangeType.ADD.name())
                         .build();
             }
