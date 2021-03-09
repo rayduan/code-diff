@@ -1,7 +1,6 @@
 package com.dr.code.diff.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.dr.code.diff.dto.ClassInfoResult;
 import com.dr.code.diff.dto.DiffMethodParams;
@@ -9,9 +8,7 @@ import com.dr.code.diff.service.CodeDiffService;
 import com.dr.code.diff.vo.result.CodeDiffResultVO;
 import com.dr.common.response.UniqueApoResponse;
 import com.dr.common.utils.mapper.OrikaMapperUtils;
-import com.dr.common.utils.string.BaseStringUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -46,7 +43,7 @@ public class CodeDiffController {
             @ApiParam(required = true, name = "baseVersion", value = "git原始分支或tag")
             @RequestParam(value = "baseVersion") String baseVersion,
             @ApiParam(required = true, name = "nowVersion", value = "git现分支或tag")
-            @RequestParam(value = "nowVersion") String nowVersion) throws JsonProcessingException {
+            @RequestParam(value = "nowVersion") String nowVersion) {
         DiffMethodParams diffMethodParams = DiffMethodParams.builder()
                 .gitUrl(gitUrl)
                 .baseVersion(baseVersion)
