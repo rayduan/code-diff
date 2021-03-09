@@ -10,6 +10,8 @@ import com.dr.code.diff.vo.result.CodeDiffResultVO;
 import com.dr.common.response.UniqueApoResponse;
 import com.dr.common.utils.mapper.OrikaMapperUtils;
 import com.dr.common.utils.string.BaseStringUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -44,7 +46,7 @@ public class CodeDiffController {
             @ApiParam(required = true, name = "baseVersion", value = "git原始分支或tag")
             @RequestParam(value = "baseVersion") String baseVersion,
             @ApiParam(required = true, name = "nowVersion", value = "git现分支或tag")
-            @RequestParam(value = "nowVersion") String nowVersion) {
+            @RequestParam(value = "nowVersion") String nowVersion) throws JsonProcessingException {
         DiffMethodParams diffMethodParams = DiffMethodParams.builder()
                 .gitUrl(gitUrl)
                 .baseVersion(baseVersion)
@@ -52,7 +54,7 @@ public class CodeDiffController {
                 .build();
         List<ClassInfoResult> diffCodeList = codeDiffService.getDiffCode(diffMethodParams);
         List<CodeDiffResultVO> codeDiffResultVOS = OrikaMapperUtils.mapList(diffCodeList, ClassInfoResult.class, CodeDiffResultVO.class);
-        return new UniqueApoResponse<List<CodeDiffResultVO>>().success(codeDiffResultVOS, JSON.toJSONString(codeDiffResultVOS,SerializerFeature.WriteMapNullValue));
+        return new UniqueApoResponse<List<CodeDiffResultVO>>().success(codeDiffResultVOS, JSON.toJSONString(codeDiffResultVOS,SerializerFeature.WriteNullListAsEmpty));
     }
 
 

@@ -4,11 +4,12 @@ import com.dr.code.diff.dto.ClassInfoResult;
 import com.dr.code.diff.dto.DiffMethodParams;
 import com.dr.code.diff.dto.MethodInfoResult;
 import com.dr.code.diff.util.MethodParserUtils;
+import com.dr.common.errorcode.BizCode;
+import com.dr.common.exception.BizException;
 import com.dr.common.log.LoggerUtil;
 import com.dr.common.utils.file.FileUtil;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -102,6 +103,7 @@ public class GitConfig {
             }
         } catch (IOException | GitAPIException e) {
             e.printStackTrace();
+            throw new BizException(BizCode.GIT_OPERATED_FAIlED);
         }
         return git;
     }

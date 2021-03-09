@@ -6,7 +6,7 @@ package com.dr.common.errorcode;
 public enum BizCode implements Code {
 
     /**************************计费模块错误码******************************/
-    CHARGE_PKG_INVALID(20000, "包裹信息不存在", "请检查包裹号是否合法"),
+    GIT_OPERATED_FAIlED(20000, "git拉取代码失败", "请检查git参数配置"),
     CHARGE_PKG_SKU_INVALID(20001, "包裹商品数据不存在", "请检查包裹商品信息是否存在"),
     CREATE_JOB_FAIL(20002, "创建job失败", "请联系管理员"),
 
