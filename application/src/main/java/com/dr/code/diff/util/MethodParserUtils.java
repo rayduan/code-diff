@@ -9,6 +9,7 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.google.common.base.Splitter;
 import org.springframework.util.CollectionUtils;
 
 import java.io.FileInputStream;
@@ -69,7 +70,7 @@ public class MethodParserUtils {
             NodeList<Parameter> parameters = n.getParameters();
             if(!CollectionUtils.isEmpty(parameters)){
                 for (int i = 0; i < parameters.size(); i++) {
-                    params.append(parameters.get(i));
+                    params.append(parameters.get(i).getType());
                     if(i != parameters.size() -1){
                         params.append(",");
                     }
