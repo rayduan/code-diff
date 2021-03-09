@@ -70,9 +70,10 @@ public class MethodParserUtils {
             NodeList<Parameter> parameters = n.getParameters();
             if(!CollectionUtils.isEmpty(parameters)){
                 for (int i = 0; i < parameters.size(); i++) {
-                    params.append(parameters.get(i).getType());
+                    String param = parameters.get(i).getType().toString();
+                    params.append(param.replaceAll(" ", ""));
                     if(i != parameters.size() -1){
-                        params.append(",");
+                        params.append("&");
                     }
                 }
             }
