@@ -278,7 +278,7 @@ public class GitConfig {
                 .splitToStream(gitUrl).reduce((first, second) -> second)
                 .map(e -> Splitter.on(".").splitToStream(e).findFirst().get()).get();
         localDir.append(repoName);
-        localDir.append("\\");
+        localDir.append("/");
         localDir.append(version);
         return localDir.toString();
 
