@@ -63,3 +63,9 @@
            ],
            "uniqueData": "[{\"classFile\":\"com/dr/code/diff/config/GitConfig\",\"methodInfos\":[{\"methodName\":\"cloneRepository\",\"parameters\":\"String gitUrl,String codePath,String commitId\"},{\"methodName\":\"diffMethods\",\"parameters\":\"DiffMethodParams diffMethodParams\"},{\"methodName\":\"getClassMethods\",\"parameters\":\"String oldClassFile,String mewClassFile,DiffEntry diffEntry\"}],\"type\":\"MODIFY\"},{\"classFile\":\"com/dr/code/diff/controller/CodeDiffController\",\"methodInfos\":[{\"methodName\":\"getList\",\"parameters\":\"@ApiParam(required = true, name = \\\"gitUrl\\\", value = \\\"git远程仓库地址\\\") @RequestParam(value = \\\"gitUrl\\\") String gitUrl,@ApiParam(required = true, name = \\\"baseVersion\\\", value = \\\"git原始分支或tag\\\") @RequestParam(value = \\\"baseVersion\\\") String baseVersion,@ApiParam(required = true, name = \\\"nowVersion\\\", value = \\\"git现分支或tag\\\") @RequestParam(value = \\\"nowVersion\\\") String nowVersion\"}],\"type\":\"MODIFY\"},{\"classFile\":\"com/dr/code/diff/service/impl/CodeDiffServiceImpl\",\"methodInfos\":[{\"methodName\":\"getDiffCode\",\"parameters\":\"DiffMethodParams diffMethodParams\"}],\"type\":\"MODIFY\"},{\"classFile\":\"com/dr/common/utils/string/ScmStringUtil\",\"methodInfos\":[],\"type\":\"ADD\"}]"
          }
+
+
+在linux系统部署时请注意修改代码的基础路径和日志路径，如：
+```angular2html
+java -jar  -Dlog.path=/app/data2/devops/code-diff/logs  -Dgit.local.base.dir=/app/data2/devops/code-diff/   application-1.0.0-SNAPSHOT.jar
+```
