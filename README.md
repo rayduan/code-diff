@@ -69,3 +69,5 @@
 ```angular2html
 java -jar  -Dlog.path=/app/data2/devops/code-diff/logs  -Dgit.local.base.dir=/app/data2/devops/code-diff/   application-1.0.0-SNAPSHOT.jar
 ```
+
+#近期github不稳定，请访问https://gitee.com/Dray/code-diff.git
