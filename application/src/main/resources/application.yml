@@ -30,13 +30,13 @@ git:
   password: duanrui1991
   local:
     base:
-      dir: D:\git-test\git
+      dir: D:\git-test
 svn:
-  userName: rayduan
-  password: duanrui1991
+  userName: admin
+  password: 123456
   local:
     base:
-      dir: D:\git-test\svn
+      dir: D:\svn-test
 server:
   port: 8085
   servlet:

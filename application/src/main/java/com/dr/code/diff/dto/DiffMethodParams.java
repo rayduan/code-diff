@@ -1,5 +1,6 @@
 package com.dr.code.diff.dto;
 
+import com.dr.code.diff.enums.CodeManageTypeEnum;
 import lombok.Builder;
 import lombok.Data;
 
@@ -21,7 +22,7 @@ public class DiffMethodParams {
     /**
      * git 远程仓库地址
      */
-    private String gitUrl;
+    private String repoUrl;
 
     /**
      * git原始分支或tag
@@ -32,6 +33,12 @@ public class DiffMethodParams {
      * git现分支或tag
      */
     private String nowVersion;
+
+
+    /**
+     * 版本控制类型
+     */
+    private CodeManageTypeEnum codeManageTypeEnum;
 
 
 }
