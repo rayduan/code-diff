@@ -1,19 +1,19 @@
-package com.dr.code.diff.vercontrol;
+package com.dr.code.diff.vercontrol.git;
 
 import com.dr.code.diff.config.CustomizeConfig;
-import com.dr.code.diff.dto.VersionControlDto;
+import com.dr.code.diff.dto.DiffEntryDto;
+import com.dr.code.diff.enums.CodeManageTypeEnum;
 import com.dr.code.diff.util.GitRepoUtil;
-import com.google.common.collect.Lists;
+import com.dr.code.diff.vercontrol.VersionControl;
+import com.dr.common.utils.mapper.OrikaMapperUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,6 +34,14 @@ public class GitVersionControl extends VersionControl {
     @Autowired
     private CustomizeConfig customizeConfig;
 
+
+    /**
+     * 获取操作类型
+     */
+    @Override
+    public CodeManageTypeEnum getType() {
+        return CodeManageTypeEnum.GIT;
+    }
 
     @Override
     public void getDiffCodeClasses() {
@@ -59,10 +67,16 @@ public class GitVersionControl extends VersionControl {
                     .filter(e -> DiffEntry.ChangeType.ADD.equals(e.getChangeType()) || DiffEntry.ChangeType.MODIFY.equals(e.getChangeType()))
                     .collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(validDiffList)) {
-                super.versionControlDto.setDiffClasses(Lists.newArrayList(validDiffList));
+                List<DiffEntryDto> diffEntrys = OrikaMapperUtils.mapList(validDiffList, DiffEntry.class, DiffEntryDto.class);
+                super.versionControlDto.setDiffClasses(diffEntrys);
             }
         } catch (GitAPIException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public String getBaseDir() {
+        return GitRepoUtil.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getGitLocalBaseRepoDir(),"");
     }
 }

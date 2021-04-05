@@ -54,7 +54,7 @@ public class GitRepoUtil {
                         .setURI(gitUrl)
                         .setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitUserName, gitPassWord))
                         .setDirectory(new File(codePath))
-//                        .setBranch(commitId)
+                        .setBranch(commitId)
                         .call();
                 // 下载指定commitId/branch
                 git.checkout().setName(commitId).call();
@@ -113,6 +113,7 @@ public class GitRepoUtil {
         if (Strings.isNullOrEmpty(gitUrl)) {
             return "";
         }
+        localDir.append("/");
         String repoName = Splitter.on("/")
                 .splitToStream(gitUrl).reduce((first, second) -> second)
                 .map(e -> Splitter.on(".").splitToStream(e).findFirst().get()).get();

@@ -1,8 +1,9 @@
 package com.dr.code.diff.dto;
 
+import com.dr.code.diff.enums.CodeManageTypeEnum;
 import lombok.Builder;
 import lombok.Data;
-import org.apache.poi.ss.formula.functions.T;
+import org.eclipse.jgit.diff.DiffEntry;
 
 import java.util.List;
 
@@ -17,7 +18,6 @@ import java.util.List;
  * Copyright: Copyright (c) 2021
  */
 @Data
-@Builder
 public class VersionControlDto {
 
     /**
@@ -36,9 +36,12 @@ public class VersionControlDto {
     private String nowVersion;
 
 
-    private Object baseRepo;
+    /**
+     * 版本控制类型
+     */
+    private CodeManageTypeEnum codeManageTypeEnum;
 
-    private Object nowRepo;
 
-    private List<Object> diffClasses;
+
+    private List<DiffEntryDto> diffClasses;
 }
