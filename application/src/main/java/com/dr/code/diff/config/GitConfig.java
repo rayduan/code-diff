@@ -87,7 +87,7 @@ public class GitConfig {
                         .setURI(gitUrl)
                         .setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitUserName, gitPassWord))
                         .setDirectory(new File(codePath))
-                        .setBranch(commitId)
+//                        .setBranch(commitId)
                         .call();
                 // 下载指定commitId/branch
                 git.checkout().setName(commitId).call();
@@ -281,8 +281,6 @@ public class GitConfig {
         localDir.append("/");
         localDir.append(version);
         return localDir.toString();
-
-
     }
 }
 

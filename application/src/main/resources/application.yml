@@ -27,10 +27,16 @@ swagger:
 #    sessionIdUrlRewritingEnabled: false
 git:
   userName: rayduan
-  password: FDsfret334
+  password: duanrui1991
   local:
     base:
-      dir: D:\git-test\
+      dir: D:\git-test\git
+svn:
+  userName: rayduan
+  password: duanrui1991
+  local:
+    base:
+      dir: D:\git-test\svn
 server:
   port: 8085
   servlet:
