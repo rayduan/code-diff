@@ -60,11 +60,11 @@ public class CodeDiffController {
     @ApiOperation("svn获取差异代码")
     @RequestMapping(value = "svn/list", method = RequestMethod.GET)
     public UniqueApoResponse<List<CodeDiffResultVO>> getSvnList(
-            @ApiParam(required = true, name = "svnUrl", value = "svn远程仓库地址")
+            @ApiParam(required = true, name = "svnUrl", value = "svn远程仓库地址,如svn:192.168.0.1:3690/svn")
             @RequestParam(value = "svnUrl") String svnUrl,
-            @ApiParam(required = true, name = "baseVersion", value = "svn原始分支或tag")
+            @ApiParam(required = true, name = "baseVersion", value = "svn原始分支,如：1")
             @RequestParam(value = "baseVersion") String baseVersion,
-            @ApiParam(required = true, name = "nowVersion", value = "svn现分支或tag")
+            @ApiParam(required = true, name = "nowVersion", value = "svn现分支，如：2")
             @RequestParam(value = "nowVersion") String nowVersion) {
         DiffMethodParams diffMethodParams = DiffMethodParams.builder()
                 .repoUrl(svnUrl)
