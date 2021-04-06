@@ -17,19 +17,19 @@ public class CodeDiffParamVO {
     /**
      * git 远程仓库地址
      */
-    @ApiModelProperty(name = "name", value = "git远程仓库地址", dataType = "String", example = "https://github.com/rayduan/code-diff.git")
-    private String gitUrl;
+    @ApiModelProperty(name = "name", value = "远程仓库地址", dataType = "String", example = "https://github.com/rayduan/code-diff.git")
+    private String repoUrl;
 
     /**
      * git原始分支或tag
      */
-    @ApiModelProperty(name = "name", value = " git原始分支或tag", dataType = "String", example = "master")
+    @ApiModelProperty(name = "name", value = "原始分支或tag", dataType = "String", example = "master")
     private String baseVersion;
 
     /**
      * git现分支或tag
      */
-    @ApiModelProperty(name = "name", value = " git现分支或tag", dataType = "String", example = "develop")
+    @ApiModelProperty(name = "name", value = "现分支或tag", dataType = "String", example = "develop")
     private String nowVersion;
 
 
