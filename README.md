@@ -297,3 +297,7 @@ java -jar  -Dlog.path=/app/data2/devops/code-diff/logs  -Dgit.local.base.dir=/ap
 ```
 
 #近期github不稳定，请访问https://gitee.com/Dray/code-diff.git
+
+更多疑问加微信群讨论
+
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0407/200527_9e1bc850_1007820.png "屏幕截图.png")
