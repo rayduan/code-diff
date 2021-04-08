@@ -16,7 +16,7 @@
       local:
         base:
           dir: D:\git-test
-     ##基于svn
+    ##基于svn
     svn:
       userName: admin
       password: 123456
@@ -25,7 +25,8 @@
           dir: D:\svn-test
 #### 2、运行项目，访问http://127.0.0.1:8085/doc.html
 	 2.1 输入git地址，填写差异分支的旧版本，新版本，执行，就可以获取差异信息
-	 
+	 ![git差异代码获取](https://images.gitee.com/uploads/images/2021/0408/122939_6cf6505d_1007820.png "屏幕截图.png")
+         ![svn差异代码获取](https://images.gitee.com/uploads/images/2021/0408/123039_5cb136f9_1007820.png "屏幕截图.png")
 	 2.2 {
 	  "code": 10000,
 	  "msg": "业务处理成功",
@@ -313,4 +314,4 @@ java -jar  -Dlog.path=/app/data2/devops/code-diff/logs  -Dgit.local.base.dir=/ap
 
 更多疑问加微信群讨论
 
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0407/200527_9e1bc850_1007820.png "屏幕截图.png")
+![讨论群](https://images.gitee.com/uploads/images/2021/0407/200527_9e1bc850_1007820.png "屏幕截图.png")
