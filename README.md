@@ -3,16 +3,29 @@
 
 
 ### 简介
-+ 本项目主要是用于基于jacoco的增量代码统计，增量代码的统计核心问题是如何获得增量代码，网络上关于增量代码的获取相关资料比较少，而且代码注释也没有，阅读起来相对困难，我这边参考了几个项目后根据实际需求，进行了整理，整个项目工程，只有application的部分代码为核心代码，其他都是辅助
++ 本项目主要是用于基于jacoco的增量代码统计，增量代码的统计核心问题是如何获得增量代码，网络上关于增量代码的获取相关资料比较少，而且代码注释也没有，阅读起来相对困难，我这边参考了几个项目后根据实际需求，进行了整理，整个项目工程，只有application模块为核心代码，其他都是辅助
+
 
 
 ### 使用方法
 #### 1、修改application.yml
+    ##基于git
 	git:
-      userName: rayduan      #git账号
-      password: FDsfret334   #git密码
+      userName: admin
+      password: 123456
+      local:
+        base:
+          dir: D:\git-test
+     ##基于svn
+    svn:
+      userName: admin
+      password: 123456
+      local:
+        base:
+          dir: D:\svn-test
 #### 2、运行项目，访问http://127.0.0.1:8085/doc.html
 	 2.1 输入git地址，填写差异分支的旧版本，新版本，执行，就可以获取差异信息
+	 
 	 2.2 {
 	  "code": 10000,
 	  "msg": "业务处理成功",
