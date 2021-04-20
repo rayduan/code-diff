@@ -37,6 +37,10 @@ public class VersionControlDto {
 
 
     /**
+     * 专用于svn新分支
+     */
+    private String svnRepoUrl;
+    /**
      * 版本控制类型
      */
     private CodeManageTypeEnum codeManageTypeEnum;
