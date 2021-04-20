@@ -42,16 +42,16 @@ public class SvnVersionControl extends VersionControl {
     public void getDiffCodeClasses() {
         try {
             MySVNDiffStatusHandler.list.clear();
-            String localBaseRepoDir = SvnRepoUtil.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getSvnLocalBaseRepoDir(), super.versionControlDto.getBaseVersion());
-            String localNowRepoDir = SvnRepoUtil.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getSvnLocalBaseRepoDir(), super.versionControlDto.getNowVersion());
-            SvnRepoUtil.cloneRepository(super.versionControlDto.getRepoUrl(), localBaseRepoDir, super.versionControlDto.getBaseVersion(), customizeConfig.getSvnUserName(), customizeConfig.getSvnPassWord());
-            SvnRepoUtil.cloneRepository(super.versionControlDto.getRepoUrl(), localNowRepoDir, super.versionControlDto.getNowVersion(), customizeConfig.getSvnUserName(), customizeConfig.getSvnPassWord());
-            SVNDiffClient svnDiffClient = SvnRepoUtil.getSVNDiffClient(customizeConfig.getSvnUserName(), customizeConfig.getSvnPassWord());
             String nowSvnUrl = super.versionControlDto.getRepoUrl();
             //如果值不为空说明是不同分支比较
             if(StringUtils.isNotBlank(super.versionControlDto.getSvnRepoUrl())){
                 nowSvnUrl = super.versionControlDto.getSvnRepoUrl();
             }
+            String localBaseRepoDir = SvnRepoUtil.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getSvnLocalBaseRepoDir(), super.versionControlDto.getBaseVersion());
+            String localNowRepoDir = SvnRepoUtil.getLocalDir(nowSvnUrl, customizeConfig.getSvnLocalBaseRepoDir(), super.versionControlDto.getNowVersion());
+            SvnRepoUtil.cloneRepository(super.versionControlDto.getRepoUrl(), localBaseRepoDir, super.versionControlDto.getBaseVersion(), customizeConfig.getSvnUserName(), customizeConfig.getSvnPassWord());
+            SvnRepoUtil.cloneRepository(nowSvnUrl, localNowRepoDir, super.versionControlDto.getNowVersion(), customizeConfig.getSvnUserName(), customizeConfig.getSvnPassWord());
+            SVNDiffClient svnDiffClient = SvnRepoUtil.getSVNDiffClient(customizeConfig.getSvnUserName(), customizeConfig.getSvnPassWord());
             svnDiffClient.doDiffStatus(SVNURL.parseURIEncoded(super.versionControlDto.getRepoUrl()), SVNRevision.create(Long.parseLong(super.versionControlDto.getBaseVersion())), SVNURL.parseURIEncoded(nowSvnUrl), SVNRevision.create(Long.parseLong(super.versionControlDto.getNowVersion())), SVNDepth.INFINITY, true, new MySVNDiffStatusHandler());
             //将差异代码设置进集合
             super.versionControlDto.setDiffClasses(MySVNDiffStatusHandler.list);
