@@ -57,7 +57,7 @@ public class CodeDiffController {
     }
 
 
-    @ApiOperation("svn获取差异代码")
+    @ApiOperation("svn同分支获取差异代码")
     @RequestMapping(value = "svn/list", method = RequestMethod.GET)
     public UniqueApoResponse<List<CodeDiffResultVO>> getSvnList(
             @ApiParam(required = true, name = "svnUrl", value = "svn远程仓库地址,如svn:192.168.0.1:3690/svn")
@@ -77,5 +77,27 @@ public class CodeDiffController {
         return new UniqueApoResponse<List<CodeDiffResultVO>>().success(codeDiffResultVOS, JSON.toJSONString(codeDiffResultVOS,SerializerFeature.WriteNullListAsEmpty));
     }
 
+    @ApiOperation("svn不同分支获取差异代码")
+    @RequestMapping(value = "svn/list", method = RequestMethod.GET)
+    public UniqueApoResponse<List<CodeDiffResultVO>> getSvnBranchList(
+            @ApiParam(required = true, name = "baseSvnUrl", value = "svn原始分支远程仓库地址,如svn:192.168.0.1:3690/svn/truck")
+            @RequestParam(value = "baseSvnUrl") String baseSvnUrl,
+            @ApiParam(required = true, name = "baseRevisionNum", value = "svn原始分支,如：1")
+            @RequestParam(value = "baseRevisionNum") String baseRevisionNum,
+            @ApiParam(required = true, name = "nowSvnUrl", value = "svn现分支远程仓库地址,如svn:192.168.0.1:3690/svn/feature")
+            @RequestParam(value = "nowSvnUrl") String nowSvnUrl,
+            @ApiParam(required = true, name = "nowVersion", value = "svn现分支，如：2")
+            @RequestParam(value = "nowRevisionNum") String nowRevisionNum) {
+        DiffMethodParams diffMethodParams = DiffMethodParams.builder()
+                .repoUrl(baseSvnUrl)
+                .baseVersion(baseRevisionNum)
+                .nowVersion(nowRevisionNum)
+                .svnRepoUrl(nowSvnUrl)
+                .codeManageTypeEnum(CodeManageTypeEnum.SVN)
+                .build();
+        List<ClassInfoResult> diffCodeList = codeDiffService.getDiffCode(diffMethodParams);
+        List<CodeDiffResultVO> codeDiffResultVOS = OrikaMapperUtils.mapList(diffCodeList, ClassInfoResult.class, CodeDiffResultVO.class);
+        return new UniqueApoResponse<List<CodeDiffResultVO>>().success(codeDiffResultVOS, JSON.toJSONString(codeDiffResultVOS,SerializerFeature.WriteNullListAsEmpty));
+    }
 
 }

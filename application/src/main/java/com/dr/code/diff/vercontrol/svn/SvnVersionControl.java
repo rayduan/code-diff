@@ -4,6 +4,7 @@ import com.dr.code.diff.config.CustomizeConfig;
 import com.dr.code.diff.enums.CodeManageTypeEnum;
 import com.dr.code.diff.util.SvnRepoUtil;
 import com.dr.code.diff.vercontrol.VersionControl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tmatesoft.svn.core.SVNDepth;
@@ -46,7 +47,12 @@ public class SvnVersionControl extends VersionControl {
             SvnRepoUtil.cloneRepository(super.versionControlDto.getRepoUrl(), localBaseRepoDir, super.versionControlDto.getBaseVersion(), customizeConfig.getSvnUserName(), customizeConfig.getSvnPassWord());
             SvnRepoUtil.cloneRepository(super.versionControlDto.getRepoUrl(), localNowRepoDir, super.versionControlDto.getNowVersion(), customizeConfig.getSvnUserName(), customizeConfig.getSvnPassWord());
             SVNDiffClient svnDiffClient = SvnRepoUtil.getSVNDiffClient(customizeConfig.getSvnUserName(), customizeConfig.getSvnPassWord());
-            svnDiffClient.doDiffStatus(SVNURL.parseURIEncoded(super.versionControlDto.getRepoUrl()), SVNRevision.create(Long.parseLong(super.versionControlDto.getBaseVersion())), SVNURL.parseURIEncoded(super.versionControlDto.getRepoUrl()), SVNRevision.create(Long.parseLong(super.versionControlDto.getNowVersion())), SVNDepth.INFINITY, true, new MySVNDiffStatusHandler());
+            String nowSvnUrl = super.versionControlDto.getRepoUrl();
+            //如果值不为空说明是不同分支比较
+            if(StringUtils.isNotBlank(super.versionControlDto.getSvnRepoUrl())){
+                nowSvnUrl = super.versionControlDto.getSvnRepoUrl();
+            }
+            svnDiffClient.doDiffStatus(SVNURL.parseURIEncoded(super.versionControlDto.getRepoUrl()), SVNRevision.create(Long.parseLong(super.versionControlDto.getBaseVersion())), SVNURL.parseURIEncoded(nowSvnUrl), SVNRevision.create(Long.parseLong(super.versionControlDto.getNowVersion())), SVNDepth.INFINITY, true, new MySVNDiffStatusHandler());
             //将差异代码设置进集合
             super.versionControlDto.setDiffClasses(MySVNDiffStatusHandler.list);
         } catch (SVNException e) {
