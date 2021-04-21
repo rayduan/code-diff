@@ -69,6 +69,9 @@ public abstract class VersionControl {
      * @description: 获取差异方法
      */
     public List<ClassInfoResult> getDiffCodeMethods() {
+        if(CollectionUtils.isEmpty(versionControlDto.getDiffClasses())){
+            return null;
+        }
         List<CompletableFuture<ClassInfoResult>> priceFuture = versionControlDto.getDiffClasses().stream()
                 .map(item -> getClassMethods(getClassFilePath(getBaseDir(), versionControlDto.getBaseVersion(), item.getNewPath()), getClassFilePath(getBaseDir(), versionControlDto.getNowVersion(), item.getNewPath()), item))
                 .collect(Collectors.toList());
