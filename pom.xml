@@ -19,8 +19,9 @@
     </modules>
     <properties>
         <java.version>1.8</java.version>
-        <swagger.version>1.9.0.RELEASE</swagger.version>
+        <swagger.version>1.9.1.RELEASE</swagger.version>
         <swagger.ui.version>1.9.6</swagger.ui.version>
+        <knife4j.ui.version>2.0.8</knife4j.ui.version>
         <fastjson.version>1.2.62</fastjson.version>
         <orika-core.version>1.5.4</orika-core.version>
         <druid.version>1.1.20</druid.version>
@@ -30,6 +31,7 @@
         <shiro.version>1.4.2</shiro.version>
         <captcha.version>1.6.2</captcha.version>
         <jenkins.api.version>0.3.8</jenkins.api.version>
+        <knife4j.version>2.0.8</knife4j.version>
         <!--        <jclouds.version>2.2.0</jclouds.version>-->
     </properties>
     <dependencyManagement>
@@ -82,11 +84,21 @@
                 <artifactId>swagger-spring-boot-starter</artifactId>
                 <version>${swagger.version}</version>
             </dependency>
+<!--            <dependency>-->
+<!--                <groupId>com.github.xiaoymin</groupId>-->
+<!--                <artifactId>swagger-bootstrap-ui</artifactId>-->
+<!--                <version>${knife4j.ui.version}</version>-->
+<!--            </dependency>-->
             <dependency>
                 <groupId>com.github.xiaoymin</groupId>
-                <artifactId>swagger-bootstrap-ui</artifactId>
-                <version>${swagger.ui.version}</version>
+                <artifactId>knife4j-spring-ui</artifactId>
+                <version>${knife4j.ui.version}</version>
             </dependency>
+<!--            <dependency>-->
+<!--                <groupId>com.github.xiaoymin</groupId>-->
+<!--                <artifactId>knife4j-spring-boot-starter</artifactId>-->
+<!--                <version>${knife4j.version}</version>-->
+<!--            </dependency>-->
             <!-- https://mvnrepository.com/artifact/org.apache.shiro/shiro-spring-boot-starter -->
             <dependency>
                 <groupId>org.apache.shiro</groupId>
