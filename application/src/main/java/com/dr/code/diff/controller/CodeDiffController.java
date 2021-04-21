@@ -9,7 +9,6 @@ import com.dr.code.diff.service.CodeDiffService;
 import com.dr.code.diff.vo.result.CodeDiffResultVO;
 import com.dr.common.response.UniqueApoResponse;
 import com.dr.common.utils.mapper.OrikaMapperUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -78,7 +77,7 @@ public class CodeDiffController {
     }
 
     @ApiOperation("svn不同分支获取差异代码")
-    @RequestMapping(value = "svn/list", method = RequestMethod.GET)
+    @RequestMapping(value = "svn/branch/list", method = RequestMethod.GET)
     public UniqueApoResponse<List<CodeDiffResultVO>> getSvnBranchList(
             @ApiParam(required = true, name = "baseSvnUrl", value = "svn原始分支远程仓库地址,如svn:192.168.0.1:3690/svn/truck")
             @RequestParam(value = "baseSvnUrl") String baseSvnUrl,
