@@ -4,6 +4,7 @@ import com.dr.code.diff.config.CustomizeConfig;
 import com.dr.code.diff.dto.DiffEntryDto;
 import com.dr.code.diff.enums.CodeManageTypeEnum;
 import com.dr.code.diff.util.GitRepoUtil;
+import com.dr.code.diff.util.PathUtils;
 import com.dr.code.diff.vercontrol.VersionControl;
 import com.dr.common.utils.mapper.OrikaMapperUtils;
 import org.eclipse.jgit.api.Git;
@@ -46,8 +47,8 @@ public class GitVersionControl extends VersionControl {
     @Override
     public void getDiffCodeClasses() {
         try {
-            String localBaseRepoDir = GitRepoUtil.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getGitLocalBaseRepoDir(), super.versionControlDto.getBaseVersion());
-            String localNowRepoDir = GitRepoUtil.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getGitLocalBaseRepoDir(), super.versionControlDto.getNowVersion());
+            String localBaseRepoDir = PathUtils.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getGitLocalBaseRepoDir(), super.versionControlDto.getBaseVersion());
+            String localNowRepoDir = PathUtils.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getGitLocalBaseRepoDir(), super.versionControlDto.getNowVersion());
             //原有代码git对象
             Git baseGit = GitRepoUtil.cloneRepository(super.versionControlDto.getRepoUrl(), localBaseRepoDir, super.versionControlDto.getBaseVersion(), customizeConfig.getGitUserName(), customizeConfig.getGitPassWord());
             //现有代码git对象
@@ -75,8 +76,30 @@ public class GitVersionControl extends VersionControl {
         }
     }
 
+
+    /**
+     * @param filePackage
+     * @date:2021/4/24
+     * @className:VersionControl
+     * @author:Administrator
+     * @description: 获取旧版本文件本地路径
+     */
     @Override
-    public String getBaseDir() {
-        return GitRepoUtil.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getGitLocalBaseRepoDir(),"");
+    public String getLocalNewPath(String filePackage) {
+        String localDir = PathUtils.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getGitLocalBaseRepoDir(), "");
+        return PathUtils.getClassFilePath(localDir,versionControlDto.getBaseVersion(),filePackage);
+    }
+
+    /**
+     * @param filePackage
+     * @date:2021/4/24
+     * @className:VersionControl
+     * @author:Administrator
+     * @description: 获取新版本文件本地路径
+     */
+    @Override
+    public String getLocalOldPath(String filePackage) {
+        String localDir = PathUtils.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getGitLocalBaseRepoDir(), "");
+        return PathUtils.getClassFilePath(localDir,versionControlDto.getBaseVersion(),filePackage);
     }
 }

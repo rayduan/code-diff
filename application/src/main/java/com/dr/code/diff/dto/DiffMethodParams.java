@@ -27,12 +27,12 @@ public class DiffMethodParams {
     /**
      * git原始分支或tag
      */
-    private String baseVersion;
+    private String baseVersion = "";
 
     /**
      * git现分支或tag
      */
-    private String nowVersion;
+    private String nowVersion = "";
 
 
     /**

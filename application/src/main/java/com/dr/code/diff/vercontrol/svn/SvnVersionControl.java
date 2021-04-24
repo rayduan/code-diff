@@ -2,6 +2,7 @@ package com.dr.code.diff.vercontrol.svn;
 
 import com.dr.code.diff.config.CustomizeConfig;
 import com.dr.code.diff.enums.CodeManageTypeEnum;
+import com.dr.code.diff.util.PathUtils;
 import com.dr.code.diff.util.SvnRepoUtil;
 import com.dr.code.diff.vercontrol.VersionControl;
 import org.apache.commons.lang3.StringUtils;
@@ -43,16 +44,23 @@ public class SvnVersionControl extends VersionControl {
         try {
             MySVNDiffStatusHandler.list.clear();
             String nowSvnUrl = super.versionControlDto.getRepoUrl();
-            //如果值不为空说明是不同分支比较
-            if(StringUtils.isNotBlank(super.versionControlDto.getSvnRepoUrl())){
+            SVNRevision oldVersion = null;
+            SVNRevision newVersion = null;
+            //如果值不为空说明是不同分支比较,否则是同分支不同revision的比较
+            if (StringUtils.isNotBlank(super.versionControlDto.getSvnRepoUrl())) {
                 nowSvnUrl = super.versionControlDto.getSvnRepoUrl();
+                oldVersion = SVNRevision.HEAD;
+                newVersion = SVNRevision.HEAD;
+            } else {
+                oldVersion = SVNRevision.create(Long.parseLong(super.versionControlDto.getBaseVersion()));
+                newVersion = SVNRevision.create(Long.parseLong(super.versionControlDto.getNowVersion()));
             }
-            String localBaseRepoDir = SvnRepoUtil.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getSvnLocalBaseRepoDir(), super.versionControlDto.getBaseVersion());
-            String localNowRepoDir = SvnRepoUtil.getLocalDir(nowSvnUrl, customizeConfig.getSvnLocalBaseRepoDir(), super.versionControlDto.getNowVersion());
-            SvnRepoUtil.cloneRepository(super.versionControlDto.getRepoUrl(), localBaseRepoDir, super.versionControlDto.getBaseVersion(), customizeConfig.getSvnUserName(), customizeConfig.getSvnPassWord());
-            SvnRepoUtil.cloneRepository(nowSvnUrl, localNowRepoDir, super.versionControlDto.getNowVersion(), customizeConfig.getSvnUserName(), customizeConfig.getSvnPassWord());
+            String localBaseRepoDir = PathUtils.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getSvnLocalBaseRepoDir(), super.versionControlDto.getBaseVersion());
+            String localNowRepoDir = PathUtils.getLocalDir(nowSvnUrl, customizeConfig.getSvnLocalBaseRepoDir(), super.versionControlDto.getNowVersion());
+            SvnRepoUtil.cloneRepository(super.versionControlDto.getRepoUrl(), localBaseRepoDir, oldVersion, customizeConfig.getSvnUserName(), customizeConfig.getSvnPassWord());
+            SvnRepoUtil.cloneRepository(nowSvnUrl, localNowRepoDir, newVersion, customizeConfig.getSvnUserName(), customizeConfig.getSvnPassWord());
             SVNDiffClient svnDiffClient = SvnRepoUtil.getSVNDiffClient(customizeConfig.getSvnUserName(), customizeConfig.getSvnPassWord());
-            svnDiffClient.doDiffStatus(SVNURL.parseURIEncoded(super.versionControlDto.getRepoUrl()), SVNRevision.create(Long.parseLong(super.versionControlDto.getBaseVersion())), SVNURL.parseURIEncoded(nowSvnUrl), SVNRevision.create(Long.parseLong(super.versionControlDto.getNowVersion())), SVNDepth.INFINITY, true, new MySVNDiffStatusHandler());
+            svnDiffClient.doDiffStatus(SVNURL.parseURIEncoded(super.versionControlDto.getRepoUrl()), oldVersion, SVNURL.parseURIEncoded(nowSvnUrl), newVersion, SVNDepth.INFINITY, true, new MySVNDiffStatusHandler());
             //将差异代码设置进集合
             super.versionControlDto.setDiffClasses(MySVNDiffStatusHandler.list);
         } catch (SVNException e) {
@@ -60,8 +68,31 @@ public class SvnVersionControl extends VersionControl {
         }
     }
 
+
+    /**
+     * @param filePackage
+     * @date:2021/4/24
+     * @className:VersionControl
+     * @author:Administrator
+     * @description: 获取旧版本文件本地路径
+     */
     @Override
-    public String getBaseDir() {
-        return SvnRepoUtil.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getSvnLocalBaseRepoDir(),"");
+    public String getLocalNewPath(String filePackage) {
+        String localDir = PathUtils.getLocalDir(super.versionControlDto.getSvnRepoUrl(), customizeConfig.getSvnLocalBaseRepoDir(), "");
+        return PathUtils.getClassFilePath(localDir, versionControlDto.getBaseVersion(), filePackage);
     }
+
+    /**
+     * @param filePackage
+     * @date:2021/4/24
+     * @className:VersionControl
+     * @author:Administrator
+     * @description: 获取新版本文件本地路径
+     */
+    @Override
+    public String getLocalOldPath(String filePackage) {
+        String localDir = PathUtils.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getSvnLocalBaseRepoDir(), "");
+        return PathUtils.getClassFilePath(localDir, versionControlDto.getBaseVersion(), filePackage);
+    }
+
 }

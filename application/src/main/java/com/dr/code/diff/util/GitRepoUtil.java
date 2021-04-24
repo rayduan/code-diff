@@ -100,28 +100,6 @@ public class GitRepoUtil {
         return null;
     }
 
-    /**
-     * 取远程代码本地存储路径
-     *
-     * @param gitUrl
-     * @param localBaseRepoDir
-     * @param version
-     * @return
-     */
-    public static String getLocalDir(String gitUrl, String localBaseRepoDir, String version) {
-        StringBuilder localDir = new StringBuilder(localBaseRepoDir);
-        if (Strings.isNullOrEmpty(gitUrl)) {
-            return "";
-        }
-        localDir.append("/");
-        String repoName = Splitter.on("/")
-                .splitToStream(gitUrl).reduce((first, second) -> second)
-                .map(e -> Splitter.on(".").splitToStream(e).findFirst().get()).get();
-        localDir.append(repoName);
-        localDir.append("/");
-        localDir.append(version);
-        return localDir.toString();
-    }
 
 
 

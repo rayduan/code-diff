@@ -9,6 +9,7 @@ import com.dr.code.diff.util.MethodParserUtils;
 import lombok.Data;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -47,7 +48,6 @@ public abstract class VersionControl {
         return getDiffCodeMethods();
     }
 
-    public abstract String getBaseDir();
 
     /**
      * @date:2021/4/5
@@ -62,6 +62,26 @@ public abstract class VersionControl {
      */
     public abstract CodeManageTypeEnum getType();
 
+
+    /**
+    * @date:2021/4/24
+    * @className:VersionControl
+    * @author:Administrator
+    * @description: 获取旧版本文件本地路径
+    *
+    */
+    public abstract String getLocalNewPath(String filePackage);
+
+
+    /**
+     * @date:2021/4/24
+     * @className:VersionControl
+     * @author:Administrator
+     * @description: 获取新版本文件本地路径
+     *
+     */
+    public abstract String getLocalOldPath(String filePackage);
+
     /**
      * @date:2021/4/5
      * @className:VersionControl
@@ -73,26 +93,12 @@ public abstract class VersionControl {
             return null;
         }
         List<CompletableFuture<ClassInfoResult>> priceFuture = versionControlDto.getDiffClasses().stream()
-                .map(item -> getClassMethods(getClassFilePath(getBaseDir(), versionControlDto.getBaseVersion(), item.getNewPath()), getClassFilePath(getBaseDir(), versionControlDto.getNowVersion(), item.getNewPath()), item))
+                .map(item -> getClassMethods(getLocalOldPath(item.getNewPath()), getLocalNewPath(item.getNewPath()), item))
                 .collect(Collectors.toList());
         return priceFuture.stream().map(CompletableFuture::join).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
-    /**
-    * @date:2021/4/5
-    * @className:VersionControl
-    * @author:Administrator
-    * @description:  获取类本地地址
-    *
-    */
-    private String getClassFilePath(String baseDir, String version, String classPath) {
-        StringBuilder builder = new StringBuilder(baseDir);
-        builder.append(version);
-        builder.append("/");
-        builder.append(classPath);
-        return builder.toString();
 
-    }
 
     /**
      * 获取类的增量方法
