@@ -17,6 +17,13 @@ import java.util.List;
 public class CodeDiffResultVO {
 
 
+
+    /**
+     * 模块名称
+     */
+    @ApiModelProperty(name = "moduleName", value = "模块名,请把模块名和目录保持一致", dataType = "String", example = "common")
+    private String moduleName;
+
     /**
      * java文件
      */
