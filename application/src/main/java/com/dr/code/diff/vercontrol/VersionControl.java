@@ -139,10 +139,12 @@ public abstract class VersionControl {
             if (CollectionUtils.isEmpty(diffMethods)) {
                 return null;
             }
+            String moduleName = diffEntry.getNewPath().split("/")[0];
             return ClassInfoResult.builder()
                     .classFile(className)
                     .methodInfos(diffMethods)
                     .type(DiffEntry.ChangeType.MODIFY.name())
+                    .moduleName(moduleName)
                     .build();
         }, executor);
     }

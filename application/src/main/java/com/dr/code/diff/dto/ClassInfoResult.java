@@ -35,6 +35,12 @@ public class ClassInfoResult {
      */
     private String packages;
 
+
+    /**
+     * 模块名称
+     */
+    private String moduleName;
+
     /**
      * 类中的方法
      */
