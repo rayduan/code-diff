@@ -87,6 +87,9 @@ public class GitRepoUtil {
         try {
             RevWalk walk = new RevWalk(repository);
             RevTree tree;
+            if(null == repository.resolve(branchName)){
+                throw new BizException(BizCode.PARSE_BRANCH_ERROR);
+            }
             tree = walk.parseTree(repository.resolve(branchName));
             CanonicalTreeParser TreeParser = new CanonicalTreeParser();
             try (ObjectReader reader = repository.newObjectReader()) {

@@ -27,7 +27,7 @@ swagger:
 #    sessionIdUrlRewritingEnabled: false
 git:
   userName: rayduan
-  password: 123456
+  password: Duanrui1991
   local:
     base:
       dir: D:\git-test
