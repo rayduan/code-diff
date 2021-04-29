@@ -12,6 +12,7 @@ import com.dr.common.utils.mapper.OrikaMapperUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -45,9 +46,9 @@ public class CodeDiffController {
             @ApiParam(required = true, name = "nowVersion", value = "git现分支或tag")
             @RequestParam(value = "nowVersion") String nowVersion) {
         DiffMethodParams diffMethodParams = DiffMethodParams.builder()
-                .repoUrl(gitUrl)
-                .baseVersion(baseVersion)
-                .nowVersion(nowVersion)
+                .repoUrl(StringUtils.trim(gitUrl))
+                .baseVersion(StringUtils.trim(baseVersion))
+                .nowVersion(StringUtils.trim(nowVersion))
                 .codeManageTypeEnum(CodeManageTypeEnum.GIT)
                 .build();
         List<ClassInfoResult> diffCodeList = codeDiffService.getDiffCode(diffMethodParams);
@@ -66,9 +67,9 @@ public class CodeDiffController {
             @ApiParam(required = true, name = "nowVersion", value = "svn现分支，如：2")
             @RequestParam(value = "nowVersion") String nowVersion) {
         DiffMethodParams diffMethodParams = DiffMethodParams.builder()
-                .repoUrl(svnUrl)
-                .baseVersion(baseVersion)
-                .nowVersion(nowVersion)
+                .repoUrl(StringUtils.trim(svnUrl))
+                .baseVersion(StringUtils.trim(baseVersion))
+                .nowVersion(StringUtils.trim(nowVersion))
                 .codeManageTypeEnum(CodeManageTypeEnum.SVN)
                 .build();
         List<ClassInfoResult> diffCodeList = codeDiffService.getDiffCode(diffMethodParams);
