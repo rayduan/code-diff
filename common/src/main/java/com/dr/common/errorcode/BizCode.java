@@ -9,6 +9,7 @@ public enum BizCode implements Code {
     GIT_OPERATED_FAIlED(20000, "git拉取代码失败", "请检查git参数配置"),
     CHARGE_PKG_SKU_INVALID(20001, "包裹商品数据不存在", "请检查包裹商品信息是否存在"),
     CREATE_JOB_FAIL(20002, "创建job失败", "请联系管理员"),
+    PARSE_BRANCH_ERROR(20003, "解析分支失败", "请确认分支正常"),
 
 
 
