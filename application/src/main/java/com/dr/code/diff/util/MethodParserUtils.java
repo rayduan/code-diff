@@ -6,7 +6,6 @@ import com.dr.common.errorcode.BizCode;
 import com.dr.common.exception.BizException;
 import com.dr.common.log.LoggerUtil;
 import com.github.javaparser.JavaParser;
-import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -17,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +41,6 @@ public class MethodParserUtils {
      * @return
      */
     public static List<MethodInfoResult> parseMethods(String classFile) {
-
         List<MethodInfoResult> list = new ArrayList<>();
         try (FileInputStream in = new FileInputStream(classFile)) {
             JavaParser javaParser = new JavaParser();
