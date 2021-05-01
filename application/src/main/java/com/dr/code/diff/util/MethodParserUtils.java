@@ -6,7 +6,6 @@ import com.dr.common.errorcode.BizCode;
 import com.dr.common.exception.BizException;
 import com.dr.common.log.LoggerUtil;
 import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseResult;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
@@ -18,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,10 +43,11 @@ public class MethodParserUtils {
      * @return
      */
     public static List<MethodInfoResult> parseMethods(String classFile) {
-        try {
-            List<MethodInfoResult> list = new ArrayList<>();
-            FileInputStream in = new FileInputStream(classFile);
-            CompilationUnit cu = StaticJavaParser.parse(in);
+
+        List<MethodInfoResult> list = new ArrayList<>();
+        try (FileInputStream in = new FileInputStream(classFile)) {
+            JavaParser javaParser = new JavaParser();
+            CompilationUnit cu = javaParser.parse(in).getResult().orElseThrow(() -> new BizException(BizCode.PARSE_JAVA_FILE));
             //由于jacoco不会统计接口覆盖率，没比较计算接口的方法，此处排除接口类
             final List<?> types = cu.getTypes();
             boolean isInterface = types.stream().filter(t -> t instanceof ClassOrInterfaceDeclaration).anyMatch(t -> ((ClassOrInterfaceDeclaration) t).isInterface());
@@ -54,10 +56,11 @@ public class MethodParserUtils {
             }
             cu.accept(new MethodVisitor(), list);
             return list;
-        } catch (Exception e) {
-            LoggerUtil.error(log,BizCode.PARSE_JAVA_FILE.getFixTips(),classFile,e.getStackTrace());
+        } catch (IOException e) {
+            LoggerUtil.error(log, "读取class类失败", e);
             throw new BizException(BizCode.PARSE_JAVA_FILE);
         }
+
     }
 
     /**
@@ -73,11 +76,11 @@ public class MethodParserUtils {
             //参数处理
             StringBuilder params = new StringBuilder();
             NodeList<Parameter> parameters = n.getParameters();
-            if(!CollectionUtils.isEmpty(parameters)){
+            if (!CollectionUtils.isEmpty(parameters)) {
                 for (int i = 0; i < parameters.size(); i++) {
                     String param = parameters.get(i).getType().toString();
                     params.append(param.replaceAll(" ", ""));
-                    if(i != parameters.size() -1){
+                    if (i != parameters.size() - 1) {
                         params.append("&");
                     }
                 }

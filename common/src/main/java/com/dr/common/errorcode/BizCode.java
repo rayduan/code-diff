@@ -15,7 +15,8 @@ public enum BizCode implements Code {
     CREATE_JOB_FAIL(20002, "创建job失败", "请联系管理员"),
     PARSE_BRANCH_ERROR(20003, "解析分支失败", "请确认分支正常"),
     PARSE_JAVA_FILE(20004, "解析java类失败", "请确认类是否有语法错误"),
-    GIT_AUTH_FAILED(20005, "git认证失败", "git认证失败");
+    GIT_AUTH_FAILED(20005, "git认证失败", "git认证失败"),
+    LOAD_CLASS_FAIL(20006, "读取java类失败", "读取java类失败，请稍后再试");
 
     private final int code;
     private final String info;
