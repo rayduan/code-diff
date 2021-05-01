@@ -142,7 +142,6 @@ public abstract class VersionControl {
                 diffMethods = newMethodInfoResults;
             } else {   //否则，计算增量方法
                 List<String> md5s = oldMethodInfoResults.stream().map(MethodInfoResult::getMd5).collect(Collectors.toList());
-                LoggerUtil.info(log, "jiu方法",JSON.toJSONString(md5s));
                 diffMethods = newMethodInfoResults.stream().filter(m -> !md5s.contains(m.getMd5())).collect(Collectors.toList());
             }
             LoggerUtil.info(log, "差异方法",JSON.toJSONString(diffMethods));
