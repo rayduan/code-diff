@@ -82,17 +82,11 @@ public class CodeDiffController {
     public UniqueApoResponse<List<CodeDiffResultVO>> getSvnBranchList(
             @ApiParam(required = true, name = "baseSvnUrl", value = "svn原始分支远程仓库地址,如svn:192.168.0.1:3690/svn/truck")
             @RequestParam(value = "baseSvnUrl") String baseSvnUrl,
-//            @ApiParam(required = true, name = "baseRevisionNum", value = "svn原始分支,如：1")
-//            @RequestParam(value = "baseRevisionNum") String baseRevisionNum,
             @ApiParam(required = true, name = "nowSvnUrl", value = "svn现分支远程仓库地址,如svn:192.168.0.1:3690/svn/feature")
             @RequestParam(value = "nowSvnUrl") String nowSvnUrl
-//            @ApiParam(required = true, name = "nowVersion", value = "svn现分支，如：2")
-//            @RequestParam(value = "nowRevisionNum") String nowRevisionNum
     ) {
         DiffMethodParams diffMethodParams = DiffMethodParams.builder()
                 .repoUrl(baseSvnUrl)
-//                .baseVersion(baseRevisionNum)
-//                .nowVersion(nowRevisionNum)
                 .svnRepoUrl(nowSvnUrl)
                 .codeManageTypeEnum(CodeManageTypeEnum.SVN)
                 .build();

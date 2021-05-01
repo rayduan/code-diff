@@ -2,7 +2,6 @@ package com.dr.code.diff.vercontrol;
 
 import com.dr.code.diff.dto.ClassInfoResult;
 import com.dr.code.diff.dto.VersionControlDto;
-import com.dr.code.diff.enums.CodeManageTypeEnum;
 import com.google.common.collect.Lists;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.CommandLineRunner;
@@ -28,7 +27,7 @@ public class VersionControlHandlerFactory implements CommandLineRunner, Applicat
     private volatile ApplicationContext applicationContext;
 
 
-    private static List<VersionControl> handlers;
+    private static List<AbstractVersionControl> handlers;
 
 
     /**
@@ -37,7 +36,7 @@ public class VersionControlHandlerFactory implements CommandLineRunner, Applicat
      */
     @Override
     public void run(String... args) {
-        Collection<VersionControl> checkHandlers = this.applicationContext.getBeansOfType(VersionControl.class).values();
+        Collection<AbstractVersionControl> checkHandlers = this.applicationContext.getBeansOfType(AbstractVersionControl.class).values();
         handlers = Lists.newArrayList(checkHandlers);
     }
 

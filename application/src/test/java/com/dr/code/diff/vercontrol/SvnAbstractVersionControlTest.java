@@ -1,8 +1,7 @@
 package com.dr.code.diff.vercontrol;
 
 import com.dr.code.diff.CodeDiffApplicationTest;
-import com.dr.code.diff.dto.VersionControlDto;
-import com.dr.code.diff.vercontrol.svn.SvnVersionControl;
+import com.dr.code.diff.vercontrol.svn.SvnAbstractVersionControl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,10 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  * <p>
  * Copyright: Copyright (c) 2021
  */
-class SvnVersionControlTest extends CodeDiffApplicationTest {
+class SvnAbstractVersionControlTest extends CodeDiffApplicationTest {
 
     @Autowired
-    private SvnVersionControl svnVersionControl;
+    private SvnAbstractVersionControl svnVersionControl;
 
     @Test
     void getDiffCodeClasses() {

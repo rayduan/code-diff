@@ -5,7 +5,7 @@ import com.dr.code.diff.dto.DiffEntryDto;
 import com.dr.code.diff.enums.CodeManageTypeEnum;
 import com.dr.code.diff.util.GitRepoUtil;
 import com.dr.code.diff.util.PathUtils;
-import com.dr.code.diff.vercontrol.VersionControl;
+import com.dr.code.diff.vercontrol.AbstractVersionControl;
 import com.dr.common.utils.mapper.OrikaMapperUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  * Copyright: Copyright (c) 2021
  */
 @Component
-public class GitVersionControl extends VersionControl {
+public class GitAbstractVersionControl extends AbstractVersionControl {
 
     @Autowired
     private CustomizeConfig customizeConfig;

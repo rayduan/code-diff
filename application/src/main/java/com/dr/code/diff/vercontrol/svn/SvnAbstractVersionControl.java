@@ -4,7 +4,7 @@ import com.dr.code.diff.config.CustomizeConfig;
 import com.dr.code.diff.enums.CodeManageTypeEnum;
 import com.dr.code.diff.util.PathUtils;
 import com.dr.code.diff.util.SvnRepoUtil;
-import com.dr.code.diff.vercontrol.VersionControl;
+import com.dr.code.diff.vercontrol.AbstractVersionControl;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,7 +25,7 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
  * Copyright: Copyright (c) 2021
  */
 @Component
-public class SvnVersionControl extends VersionControl {
+public class SvnAbstractVersionControl extends AbstractVersionControl {
 
     @Autowired
     private CustomizeConfig customizeConfig;
