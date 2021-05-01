@@ -144,9 +144,6 @@ public abstract class VersionControl {
                 List<String> md5s = oldMethodInfoResults.stream().map(MethodInfoResult::getMd5).collect(Collectors.toList());
                 diffMethods = newMethodInfoResults.stream().filter(m -> !md5s.contains(m.getMd5())).collect(Collectors.toList());
             }
-            LoggerUtil.info(log, "差异方法",JSON.toJSONString(diffMethods));
-
-
             //没有增量方法，过滤掉
             if (CollectionUtils.isEmpty(diffMethods)) {
                 return null;
