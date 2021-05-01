@@ -70,6 +70,9 @@ public class GitRepoUtil {
                 }
             }
         } catch (IOException | GitAPIException e) {
+            if(e instanceof GitAPIException){
+                throw new BizException(BizCode.GIT_AUTH_FAILED.getCode(), e.getMessage());
+            }
             e.printStackTrace();
             throw new BizException(BizCode.GIT_OPERATED_FAIlED);
         }
@@ -115,8 +118,8 @@ public class GitRepoUtil {
      */
     public static Boolean checkGitWorkSpace(String gitUrl, String codePath) throws IOException {
         Boolean isExist = Boolean.FALSE;
-        File RepoGitDir = new File(codePath + "/.git");
-        if (!RepoGitDir.exists()) {
+        File repoGitDir = new File(codePath + "/.git");
+        if (!repoGitDir.exists()) {
             return false;
         }
         Git git = Git.open(new File(codePath));

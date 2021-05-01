@@ -5,11 +5,8 @@ import com.dr.code.diff.dto.DiffMethodParams;
 import com.dr.code.diff.dto.VersionControlDto;
 import com.dr.code.diff.service.CodeDiffService;
 import com.dr.code.diff.vercontrol.VersionControlHandlerFactory;
-import com.dr.code.diff.vercontrol.git.GitVersionControl;
-import com.dr.code.diff.vercontrol.svn.SvnVersionControl;
 import com.dr.common.utils.mapper.OrikaMapperUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
