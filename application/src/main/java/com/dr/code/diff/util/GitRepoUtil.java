@@ -7,6 +7,7 @@ import com.dr.common.utils.file.FileUtil;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
+import org.antlr.runtime.tree.TreeParser;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Constants;
@@ -91,12 +92,12 @@ public class GitRepoUtil {
                 throw new BizException(BizCode.PARSE_BRANCH_ERROR);
             }
             tree = walk.parseTree(repository.resolve(branchName));
-            CanonicalTreeParser TreeParser = new CanonicalTreeParser();
+            CanonicalTreeParser treeParser = new CanonicalTreeParser();
             try (ObjectReader reader = repository.newObjectReader()) {
-                TreeParser.reset(reader, tree.getId());
+                treeParser.reset(reader, tree.getId());
             }
             walk.dispose();
-            return TreeParser;
+            return treeParser;
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,7 +1,11 @@
 package com.dr.code.diff.util;
 
 import com.dr.code.diff.dto.MethodInfoResult;
+import com.dr.common.errorcode.BizCode;
+import com.dr.common.exception.BizException;
+import com.dr.common.log.LoggerUtil;
 import com.dr.common.utils.security.Md5Util;
+import com.github.javaparser.JavaParser;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
@@ -10,6 +14,7 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.google.common.base.Splitter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
 import java.io.FileInputStream;
@@ -27,6 +32,7 @@ import java.util.List;
  * <p>
  * Copyright: Copyright (c) 2021
  */
+@Slf4j
 public class MethodParserUtils {
 
 
@@ -49,10 +55,10 @@ public class MethodParserUtils {
             }
             cu.accept(new MethodVisitor(), list);
             return list;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            LoggerUtil.error(log,BizCode.PARSE_JAVA_FILE.getFixTips(),classFile,e.getStackTrace());
+            throw new BizException(BizCode.PARSE_JAVA_FILE);
         }
-        return null;
     }
 
     /**

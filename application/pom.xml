@@ -71,12 +71,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
             <groupId>cn.afterturn</groupId>
             <artifactId>easypoi-spring-boot-starter</artifactId>
         </dependency>
@@ -113,10 +107,10 @@
 
     <build>
         <plugins>
-
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.3.5.RELEASE</version>
                 <configuration>
                     <!--                    <mainClass>com.dr.application.Application</mainClass>-->
                     <fork>true</fork>
@@ -124,6 +118,7 @@
                 <executions>
                     <execution>
                         <goals>
+                            <!--可以把依赖的包都打包到生成的Jar包中-->
                             <goal>repackage</goal>
                         </goals>
                     </execution>

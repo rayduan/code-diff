@@ -87,7 +87,7 @@ public class GitVersionControl extends VersionControl {
     @Override
     public String getLocalNewPath(String filePackage) {
         String localDir = PathUtils.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getGitLocalBaseRepoDir(), "");
-        return PathUtils.getClassFilePath(localDir,versionControlDto.getBaseVersion(),filePackage);
+        return PathUtils.getClassFilePath(localDir,versionControlDto.getNowVersion(),filePackage);
     }
 
     /**

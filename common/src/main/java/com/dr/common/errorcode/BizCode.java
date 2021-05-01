@@ -10,6 +10,7 @@ public enum BizCode implements Code {
     CHARGE_PKG_SKU_INVALID(20001, "包裹商品数据不存在", "请检查包裹商品信息是否存在"),
     CREATE_JOB_FAIL(20002, "创建job失败", "请联系管理员"),
     PARSE_BRANCH_ERROR(20003, "解析分支失败", "请确认分支正常"),
+    PARSE_JAVA_FILE(20004, "解析java类失败", "请确认类是否有语法错误"),
 
 
 
