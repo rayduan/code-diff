@@ -1,8 +1,12 @@
 package com.dr.common.errorcode;
 
 /**
- *
- */
+* @date:2021/5/1
+* @className:BizCode
+* @author:Administrator
+* @description:  业务异常类
+*
+*/
 public enum BizCode implements Code {
 
     /**************************计费模块错误码******************************/
@@ -10,11 +14,7 @@ public enum BizCode implements Code {
     CHARGE_PKG_SKU_INVALID(20001, "包裹商品数据不存在", "请检查包裹商品信息是否存在"),
     CREATE_JOB_FAIL(20002, "创建job失败", "请联系管理员"),
     PARSE_BRANCH_ERROR(20003, "解析分支失败", "请确认分支正常"),
-    PARSE_JAVA_FILE(20004, "解析java类失败", "请确认类是否有语法错误"),
-
-
-
-    ;
+    PARSE_JAVA_FILE(20004, "解析java类失败", "请确认类是否有语法错误");
 
     private final int code;
     private final String info;
@@ -44,7 +44,7 @@ public enum BizCode implements Code {
      * 10004 rpc timeout
      * 10005 rpc invoke error
      *
-     * @return
+     * @return int
      */
     @Override
     public int getCode() {
@@ -54,7 +54,7 @@ public enum BizCode implements Code {
     /**
      * 错误码说明(内部日志，统计，查看使用)
      *
-     * @return
+     * @return String
      */
     @Override
     public String getInfo() {
@@ -64,7 +64,7 @@ public enum BizCode implements Code {
     /**
      * 错误码描述，对外输出
      *
-     * @return
+     * @return String
      */
     @Override
     public String getFixTips() {

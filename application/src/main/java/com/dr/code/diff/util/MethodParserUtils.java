@@ -1,11 +1,10 @@
 package com.dr.code.diff.util;
 
+import cn.hutool.crypto.SecureUtil;
 import com.dr.code.diff.dto.MethodInfoResult;
 import com.dr.common.errorcode.BizCode;
 import com.dr.common.exception.BizException;
 import com.dr.common.log.LoggerUtil;
-import com.dr.common.utils.security.Md5Util;
-import com.github.javaparser.JavaParser;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
@@ -13,12 +12,10 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import com.google.common.base.Splitter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,7 +67,7 @@ public class MethodParserUtils {
             //删除注释
             n.removeComment();
             //计算方法体的hash值，疑问，空格，特殊转义字符会影响结果，导致相同匹配为差异？建议提交代码时统一工具格式化
-            String md5 = Md5Util.encode(n.toString());
+            String md5 = SecureUtil.md5(n.toString());
             //参数处理
             StringBuilder params = new StringBuilder();
             NodeList<Parameter> parameters = n.getParameters();
