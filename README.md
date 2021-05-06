@@ -4,6 +4,7 @@
 
 ### 简介
 + 本项目主要是用于基于jacoco的增量代码统计，增量代码的统计核心问题是如何获得增量代码，网络上关于增量代码的获取相关资料比较少，而且代码注释也没有，阅读起来相对困难，我这边参考了几个项目后根据实际需求，进行了整理，整个项目工程，只有application模块为核心代码，其他都是辅助，请配合jacoco二开一起使用https://gitee.com/Dray/jacoco.git
+具体实现方案请参考[博客](https://blog.csdn.net/tushuping/article/details/112613528)
 
 
 
