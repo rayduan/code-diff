@@ -21,7 +21,6 @@ import java.util.List;
  * Copyright: Copyright (c) 2021
  */
 @Configuration
-@EnableWebMvc
 public class JsonConfig implements WebMvcConfigurer {
 
 
@@ -55,7 +54,7 @@ public class JsonConfig implements WebMvcConfigurer {
         //格式化日期
         fastJsonConfig.setDateFormat("YYYY-MM-dd HH:mm:ss");
         converter.setFastJsonConfig(fastJsonConfig);
-        converters.add(converter);
+        converters.add(0, converter);
     }
 
 
