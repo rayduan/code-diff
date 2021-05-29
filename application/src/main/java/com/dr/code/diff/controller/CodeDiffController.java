@@ -52,8 +52,8 @@ public class CodeDiffController {
                 .codeManageTypeEnum(CodeManageTypeEnum.GIT)
                 .build();
         List<ClassInfoResult> diffCodeList = codeDiffService.getDiffCode(diffMethodParams);
-        List<CodeDiffResultVO> codeDiffResultVOS = OrikaMapperUtils.mapList(diffCodeList, ClassInfoResult.class, CodeDiffResultVO.class);
-        return new UniqueApoResponse<List<CodeDiffResultVO>>().success(codeDiffResultVOS, JSON.toJSONString(codeDiffResultVOS,SerializerFeature.WriteNullListAsEmpty));
+        List<CodeDiffResultVO> list = OrikaMapperUtils.mapList(diffCodeList, ClassInfoResult.class, CodeDiffResultVO.class);
+        return new UniqueApoResponse<List<CodeDiffResultVO>>().success(list, JSON.toJSONString(list,SerializerFeature.WriteNullListAsEmpty));
     }
 
 
@@ -73,8 +73,8 @@ public class CodeDiffController {
                 .codeManageTypeEnum(CodeManageTypeEnum.SVN)
                 .build();
         List<ClassInfoResult> diffCodeList = codeDiffService.getDiffCode(diffMethodParams);
-        List<CodeDiffResultVO> codeDiffResultVOS = OrikaMapperUtils.mapList(diffCodeList, ClassInfoResult.class, CodeDiffResultVO.class);
-        return new UniqueApoResponse<List<CodeDiffResultVO>>().success(codeDiffResultVOS, JSON.toJSONString(codeDiffResultVOS,SerializerFeature.WriteNullListAsEmpty));
+        List<CodeDiffResultVO> list = OrikaMapperUtils.mapList(diffCodeList, ClassInfoResult.class, CodeDiffResultVO.class);
+        return new UniqueApoResponse<List<CodeDiffResultVO>>().success(list, JSON.toJSONString(list,SerializerFeature.WriteNullListAsEmpty));
     }
 
     @ApiOperation("svn不同分支获取差异代码")
@@ -91,8 +91,34 @@ public class CodeDiffController {
                 .codeManageTypeEnum(CodeManageTypeEnum.SVN)
                 .build();
         List<ClassInfoResult> diffCodeList = codeDiffService.getDiffCode(diffMethodParams);
-        List<CodeDiffResultVO> codeDiffResultVOS = OrikaMapperUtils.mapList(diffCodeList, ClassInfoResult.class, CodeDiffResultVO.class);
-        return new UniqueApoResponse<List<CodeDiffResultVO>>().success(codeDiffResultVOS, JSON.toJSONString(codeDiffResultVOS,SerializerFeature.WriteNullListAsEmpty));
+        List<CodeDiffResultVO> list = OrikaMapperUtils.mapList(diffCodeList, ClassInfoResult.class, CodeDiffResultVO.class);
+        return new UniqueApoResponse<List<CodeDiffResultVO>>().success(list, JSON.toJSONString(list,SerializerFeature.WriteNullListAsEmpty));
     }
+
+
+    @ApiOperation("svn不同分支不同reversion获取差异代码")
+    @RequestMapping(value = "svn/branch/reversion/list", method = RequestMethod.GET)
+    public UniqueApoResponse<List<CodeDiffResultVO>> getSvnBranchReversionList(
+            @ApiParam(required = true, name = "baseSvnUrl", value = "svn原始分支远程仓库地址,如svn:192.168.0.1:3690/svn/truck")
+            @RequestParam(value = "baseSvnUrl") String baseSvnUrl,
+            @ApiParam(required = true, name = "baseVersion", value = "svn原始分支,如：1")
+            @RequestParam(value = "baseVersion") String baseVersion,
+            @ApiParam(required = true, name = "nowSvnUrl", value = "svn现分支远程仓库地址,如svn:192.168.0.1:3690/svn/feature")
+            @RequestParam(value = "nowSvnUrl") String nowSvnUrl,
+            @ApiParam(required = true, name = "nowVersion", value = "svn现分支，如：2")
+            @RequestParam(value = "nowVersion") String nowVersion
+    ) {
+        DiffMethodParams diffMethodParams = DiffMethodParams.builder()
+                .repoUrl(baseSvnUrl)
+                .svnRepoUrl(nowSvnUrl)
+                .baseVersion(baseVersion)
+                .nowVersion(nowVersion)
+                .codeManageTypeEnum(CodeManageTypeEnum.SVN)
+                .build();
+        List<ClassInfoResult> diffCodeList = codeDiffService.getDiffCode(diffMethodParams);
+        List<CodeDiffResultVO> list = OrikaMapperUtils.mapList(diffCodeList, ClassInfoResult.class, CodeDiffResultVO.class);
+        return new UniqueApoResponse<List<CodeDiffResultVO>>().success(list, JSON.toJSONString(list,SerializerFeature.WriteNullListAsEmpty));
+    }
+
 
 }

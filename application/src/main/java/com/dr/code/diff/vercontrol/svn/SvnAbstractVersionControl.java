@@ -46,14 +46,13 @@ public class SvnAbstractVersionControl extends AbstractVersionControl {
             String nowSvnUrl = super.versionControlDto.getRepoUrl();
             SVNRevision oldVersion = null;
             SVNRevision newVersion = null;
-            //如果值不为空说明是不同分支比较,否则是同分支不同revision的比较
-            if (StringUtils.isNotBlank(super.versionControlDto.getSvnRepoUrl())) {
-                nowSvnUrl = super.versionControlDto.getSvnRepoUrl();
-                oldVersion = SVNRevision.HEAD;
-                newVersion = SVNRevision.HEAD;
-            } else {
+            //不同reversion的比较和最新reversion的比较
+            if (StringUtils.isNotBlank(super.versionControlDto.getNowVersion()) && StringUtils.isNotBlank(super.versionControlDto.getBaseVersion())) {
                 oldVersion = SVNRevision.create(Long.parseLong(super.versionControlDto.getBaseVersion()));
                 newVersion = SVNRevision.create(Long.parseLong(super.versionControlDto.getNowVersion()));
+            } else {
+                oldVersion = SVNRevision.HEAD;
+                newVersion = SVNRevision.HEAD;
             }
             String localBaseRepoDir = PathUtils.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getSvnLocalBaseRepoDir(), super.versionControlDto.getBaseVersion());
             String localNowRepoDir = PathUtils.getLocalDir(nowSvnUrl, customizeConfig.getSvnLocalBaseRepoDir(), super.versionControlDto.getNowVersion());
