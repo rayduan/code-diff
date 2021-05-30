@@ -18,6 +18,7 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -138,17 +139,30 @@ public class GitRepoUtil {
         return isExist;
     }
 
+
     /**
-     * 获取class文件的地址
+     * 取远程代码本地存储路径
      *
-     * @param git
-     * @param classPackage
+     * @param repoUrl
+     * @param localBaseRepoDir
+     * @param version
      * @return
      */
-    public String getClassFile(Git git, String classPackage) {
-        StringBuilder builder = new StringBuilder(git.getRepository().getDirectory().getParent());
-        return builder.append("/")
-                .append(classPackage).toString();
+    public static String getLocalDir(String repoUrl, String localBaseRepoDir, String version) {
+        StringBuilder localDir = new StringBuilder(localBaseRepoDir);
+        if (Strings.isNullOrEmpty(repoUrl)) {
+            return "";
+        }
+        localDir.append("/");
+        String repoName = Splitter.on("/")
+                .splitToStream(repoUrl).reduce((first, second) -> second)
+                .map(e -> Splitter.on(".").splitToStream(e).findFirst().get()).get();
+        localDir.append(repoName);
+        if(!StringUtils.isEmpty(version)){
+            localDir.append("/");
+            localDir.append(version);
+        }
+        return localDir.toString();
     }
 
 }

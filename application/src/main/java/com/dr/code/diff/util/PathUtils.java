@@ -35,28 +35,4 @@ public class PathUtils {
     }
 
 
-    /**
-     * 取远程代码本地存储路径
-     *
-     * @param repoUrl
-     * @param localBaseRepoDir
-     * @param version
-     * @return
-     */
-    public static String getLocalDir(String repoUrl, String localBaseRepoDir, String version) {
-        StringBuilder localDir = new StringBuilder(localBaseRepoDir);
-        if (Strings.isNullOrEmpty(repoUrl)) {
-            return "";
-        }
-        localDir.append("/");
-        String repoName = Splitter.on("/")
-                .splitToStream(repoUrl).reduce((first, second) -> second)
-                .map(e -> Splitter.on(".").splitToStream(e).findFirst().get()).get();
-        localDir.append(repoName);
-        if(!StringUtils.isEmpty(version)){
-            localDir.append("/");
-            localDir.append(version);
-        }
-        return localDir.toString();
-    }
 }
