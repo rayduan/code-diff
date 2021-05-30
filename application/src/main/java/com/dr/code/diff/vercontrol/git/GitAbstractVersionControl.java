@@ -1,12 +1,15 @@
 package com.dr.code.diff.vercontrol.git;
 
+import com.alibaba.fastjson.JSON;
 import com.dr.code.diff.config.CustomizeConfig;
 import com.dr.code.diff.dto.DiffEntryDto;
 import com.dr.code.diff.enums.CodeManageTypeEnum;
 import com.dr.code.diff.util.GitRepoUtil;
 import com.dr.code.diff.util.PathUtils;
 import com.dr.code.diff.vercontrol.AbstractVersionControl;
+import com.dr.common.log.LoggerUtil;
 import com.dr.common.utils.mapper.OrikaMapperUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -30,6 +33,7 @@ import java.util.stream.Collectors;
  * Copyright: Copyright (c) 2021
  */
 @Component
+@Slf4j
 public class GitAbstractVersionControl extends AbstractVersionControl {
 
     @Autowired
@@ -68,8 +72,11 @@ public class GitAbstractVersionControl extends AbstractVersionControl {
                     .filter(e -> DiffEntry.ChangeType.ADD.equals(e.getChangeType()) || DiffEntry.ChangeType.MODIFY.equals(e.getChangeType()))
                     .collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(validDiffList)) {
-                List<DiffEntryDto> diffEntrys = OrikaMapperUtils.mapList(validDiffList, DiffEntry.class, DiffEntryDto.class);
-                super.versionControlDto.setDiffClasses(diffEntrys);
+                List<DiffEntryDto> diffEntries = OrikaMapperUtils.mapList(validDiffList, DiffEntry.class, DiffEntryDto.class);
+                super.versionControlDto.setDiffClasses(diffEntries);
+                LoggerUtil.info(log,"需要对比的差异类为：", JSON.toJSON(diffEntries));
+            }else {
+                LoggerUtil.info(log,"没有需要对比的类：");
             }
         } catch (GitAPIException e) {
             e.printStackTrace();
