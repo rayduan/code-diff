@@ -54,8 +54,8 @@ public class SvnAbstractVersionControl extends AbstractVersionControl {
                 oldVersion = SVNRevision.HEAD;
                 newVersion = SVNRevision.HEAD;
             }
-            String localBaseRepoDir = PathUtils.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getSvnLocalBaseRepoDir(), super.versionControlDto.getBaseVersion());
-            String localNowRepoDir = PathUtils.getLocalDir(nowSvnUrl, customizeConfig.getSvnLocalBaseRepoDir(), super.versionControlDto.getNowVersion());
+            String localBaseRepoDir = SvnRepoUtil.getSvnLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getSvnLocalBaseRepoDir(), super.versionControlDto.getBaseVersion());
+            String localNowRepoDir = SvnRepoUtil.getSvnLocalDir(nowSvnUrl, customizeConfig.getSvnLocalBaseRepoDir(), super.versionControlDto.getNowVersion());
             SvnRepoUtil.cloneRepository(super.versionControlDto.getRepoUrl(), localBaseRepoDir, oldVersion, customizeConfig.getSvnUserName(), customizeConfig.getSvnPassWord());
             SvnRepoUtil.cloneRepository(nowSvnUrl, localNowRepoDir, newVersion, customizeConfig.getSvnUserName(), customizeConfig.getSvnPassWord());
             SVNDiffClient svnDiffClient = SvnRepoUtil.getSVNDiffClient(customizeConfig.getSvnUserName(), customizeConfig.getSvnPassWord());
@@ -77,7 +77,7 @@ public class SvnAbstractVersionControl extends AbstractVersionControl {
      */
     @Override
     public String getLocalNewPath(String filePackage) {
-        String localDir = PathUtils.getLocalDir(super.versionControlDto.getSvnRepoUrl(), customizeConfig.getSvnLocalBaseRepoDir(), "");
+        String localDir = SvnRepoUtil.getSvnLocalDir(super.versionControlDto.getSvnRepoUrl(), customizeConfig.getSvnLocalBaseRepoDir(), "");
         return PathUtils.getClassFilePath(localDir, versionControlDto.getBaseVersion(), filePackage);
     }
 
@@ -90,7 +90,7 @@ public class SvnAbstractVersionControl extends AbstractVersionControl {
      */
     @Override
     public String getLocalOldPath(String filePackage) {
-        String localDir = PathUtils.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getSvnLocalBaseRepoDir(), "");
+        String localDir = SvnRepoUtil.getSvnLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getSvnLocalBaseRepoDir(), "");
         return PathUtils.getClassFilePath(localDir, versionControlDto.getBaseVersion(), filePackage);
     }
 
