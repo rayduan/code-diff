@@ -121,7 +121,7 @@ public class GitRepoUtil {
         Boolean isExist = Boolean.FALSE;
         File repoGitDir = new File(codePath + "/.git");
         if (!repoGitDir.exists()) {
-            return false;
+            return isExist;
         }
         Git git = Git.open(new File(codePath));
         if (null == git) {

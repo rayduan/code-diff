@@ -44,6 +44,9 @@ public class SvnAbstractVersionControl extends AbstractVersionControl {
         try {
             MySVNDiffStatusHandler.list.clear();
             String nowSvnUrl = super.versionControlDto.getRepoUrl();
+            if(StringUtils.isNotBlank(super.versionControlDto.getSvnRepoUrl())){
+                nowSvnUrl = super.versionControlDto.getSvnRepoUrl();
+            }
             SVNRevision oldVersion = null;
             SVNRevision newVersion = null;
             //不同reversion的比较和最新reversion的比较
