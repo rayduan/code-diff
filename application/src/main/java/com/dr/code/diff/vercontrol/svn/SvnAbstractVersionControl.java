@@ -81,7 +81,7 @@ public class SvnAbstractVersionControl extends AbstractVersionControl {
     @Override
     public String getLocalNewPath(String filePackage) {
         String localDir = SvnRepoUtil.getSvnLocalDir(super.versionControlDto.getSvnRepoUrl(), customizeConfig.getSvnLocalBaseRepoDir(), "");
-        return PathUtils.getClassFilePath(localDir, versionControlDto.getBaseVersion(), filePackage);
+        return PathUtils.getClassFilePath(localDir, versionControlDto.getNowVersion(), filePackage);
     }
 
     /**
