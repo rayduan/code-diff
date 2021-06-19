@@ -12,6 +12,7 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.google.common.base.Joiner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
@@ -19,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @ProjectName: base-service
@@ -70,22 +72,12 @@ public class MethodParserUtils {
             n.removeComment();
             //计算方法体的hash值，疑问，空格，特殊转义字符会影响结果，导致相同匹配为差异？建议提交代码时统一工具格式化
             String md5 = SecureUtil.md5(n.toString());
-            //参数处理
-            StringBuilder params = new StringBuilder();
             NodeList<Parameter> parameters = n.getParameters();
-            if (!CollectionUtils.isEmpty(parameters)) {
-                for (int i = 0; i < parameters.size(); i++) {
-                    String param = parameters.get(i).getType().toString();
-                    params.append(param.replaceAll(" ", ""));
-                    if (i != parameters.size() - 1) {
-                        params.append("&");
-                    }
-                }
-            }
+            String params = parameters.stream().map(e -> e.getType().toString().trim()).collect(Collectors.joining("&", "", ""));
             MethodInfoResult result = MethodInfoResult.builder()
                     .md5(md5)
                     .methodName(n.getNameAsString())
-                    .parameters(params.toString())
+                    .parameters(params)
                     .build();
             list.add(result);
             super.visit(n, list);
