@@ -74,7 +74,7 @@ public class SvnRepoUtil {
         }
         localDir.append("/");
         String repoName = Splitter.on("/")
-                .splitToStream(repoUrl).reduce((first, second) -> second).get();
+                .splitToStream(repoUrl).reduce((first, second) -> second).orElse("");
         localDir.append(repoName);
         if(!StringUtils.isEmpty(version)){
             localDir.append("/");

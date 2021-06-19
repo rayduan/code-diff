@@ -53,6 +53,8 @@ public class GitAbstractVersionControl extends AbstractVersionControl {
         try {
             String localBaseRepoDir = GitRepoUtil.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getGitLocalBaseRepoDir(), super.versionControlDto.getBaseVersion());
             String localNowRepoDir = GitRepoUtil.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getGitLocalBaseRepoDir(), super.versionControlDto.getNowVersion());
+            super.versionControlDto.setNewLocalBasePath(localNowRepoDir);
+            super.versionControlDto.setOldLocalBasePath(localBaseRepoDir);
             //原有代码git对象
             Git baseGit = GitRepoUtil.cloneRepository(super.versionControlDto.getRepoUrl(), localBaseRepoDir, super.versionControlDto.getBaseVersion(), customizeConfig.getGitUserName(), customizeConfig.getGitPassWord());
             //现有代码git对象
@@ -93,8 +95,7 @@ public class GitAbstractVersionControl extends AbstractVersionControl {
      */
     @Override
     public String getLocalNewPath(String filePackage) {
-        String localDir = GitRepoUtil.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getGitLocalBaseRepoDir(), "");
-        return PathUtils.getClassFilePath(localDir,versionControlDto.getNowVersion(),filePackage);
+        return PathUtils.getClassFilePath(super.versionControlDto.getNewLocalBasePath(),filePackage);
     }
 
     /**
@@ -106,7 +107,6 @@ public class GitAbstractVersionControl extends AbstractVersionControl {
      */
     @Override
     public String getLocalOldPath(String filePackage) {
-        String localDir = GitRepoUtil.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getGitLocalBaseRepoDir(), "");
-        return PathUtils.getClassFilePath(localDir,versionControlDto.getBaseVersion(),filePackage);
+        return PathUtils.getClassFilePath(super.versionControlDto.getOldLocalBasePath(),filePackage);
     }
 }

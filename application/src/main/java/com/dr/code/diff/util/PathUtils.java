@@ -20,15 +20,10 @@ public class PathUtils {
      * @date:2021/4/5
      * @className:VersionControl
      * @author:Administrator
-     * @description:  获取类本地地址
-     *
+     * @description: 获取类本地地址
      */
-    public static String getClassFilePath(String baseDir, String version, String classPath) {
+    public static String getClassFilePath(String baseDir, String classPath) {
         StringBuilder builder = new StringBuilder(baseDir);
-        if(!StringUtils.isEmpty(version)){
-            builder.append("/");
-            builder.append(version);
-        }
         builder.append("/");
         builder.append(classPath);
         return builder.toString();

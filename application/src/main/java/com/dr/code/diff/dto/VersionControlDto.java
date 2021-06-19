@@ -40,6 +40,18 @@ public class VersionControlDto {
      * 专用于svn新分支
      */
     private String svnRepoUrl;
+
+
+    /**
+     * 本地旧文件基础地址
+     */
+    private String oldLocalBasePath;
+
+    /**
+     * 本地新文件基础地址
+     */
+    private String newLocalBasePath;
+
     /**
      * 版本控制类型
      */
