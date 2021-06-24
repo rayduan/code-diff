@@ -61,4 +61,11 @@ public class ClassInfoResult {
      */
     private String type;
 
+
+
+    /**
+     * 变更行
+     */
+    private List<ChangeLine> lines;
+
 }

@@ -3,6 +3,8 @@ package com.dr.code.diff.dto;
 import lombok.Data;
 import org.eclipse.jgit.diff.DiffEntry;
 
+import java.util.List;
+
 /**
  * @ProjectName: code-diff-parent
  * @Package: com.dr.code.diff.dto
@@ -26,4 +28,10 @@ public class DiffEntryDto {
      * 文件变更类型
      */
     private DiffEntry.ChangeType changeType;
+
+
+    /**
+     * 变更行
+     */
+    private List<ChangeLine> lines;
 }

@@ -54,7 +54,7 @@ public class SvnRepoUtil {
     }
 
 
-    public static SVNDiffClient getSVNDiffClient(String userName, String password) {
+    public static SVNDiffClient getSvnDiffClient(String userName, String password) {
         ISVNOptions options = SVNWCUtil.createDefaultOptions(true);
         //实例化客户端管理类
         return SVNClientManager.newInstance((DefaultSVNOptions) options, userName, password).getDiffClient();

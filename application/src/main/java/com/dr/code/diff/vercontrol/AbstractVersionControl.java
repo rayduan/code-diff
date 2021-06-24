@@ -130,6 +130,7 @@ public abstract class AbstractVersionControl {
                         .classFile(className)
                         .type(DiffEntry.ChangeType.ADD.name())
                         .moduleName(moduleName)
+                        .lines(diffEntry.getLines())
                         .build();
             }
             List<MethodInfoResult> diffMethods;
@@ -157,6 +158,7 @@ public abstract class AbstractVersionControl {
                     .methodInfos(diffMethods)
                     .type(DiffEntry.ChangeType.MODIFY.name())
                     .moduleName(moduleName)
+                    .lines(diffEntry.getLines())
                     .build();
         }, executor);
     }
