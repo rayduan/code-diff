@@ -2,24 +2,38 @@ package com.dr.code.diff.vercontrol.git;
 
 import com.alibaba.fastjson.JSON;
 import com.dr.code.diff.config.CustomizeConfig;
+import com.dr.code.diff.dto.ChangeLine;
 import com.dr.code.diff.dto.DiffEntryDto;
 import com.dr.code.diff.enums.CodeManageTypeEnum;
 import com.dr.code.diff.util.GitRepoUtil;
 import com.dr.code.diff.util.PathUtils;
 import com.dr.code.diff.vercontrol.AbstractVersionControl;
+import com.dr.common.errorcode.BizCode;
+import com.dr.common.exception.BizException;
 import com.dr.common.log.LoggerUtil;
 import com.dr.common.utils.mapper.OrikaMapperUtils;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.diff.Edit;
+import org.eclipse.jgit.diff.EditList;
+import org.eclipse.jgit.patch.FileHeader;
+import org.eclipse.jgit.patch.HunkHeader;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
+import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -73,16 +87,47 @@ public class GitAbstractVersionControl extends AbstractVersionControl {
                     //只计算新增和变更文件
                     .filter(e -> DiffEntry.ChangeType.ADD.equals(e.getChangeType()) || DiffEntry.ChangeType.MODIFY.equals(e.getChangeType()))
                     .collect(Collectors.toList());
-            if (!CollectionUtils.isEmpty(validDiffList)) {
-                List<DiffEntryDto> diffEntries = OrikaMapperUtils.mapList(validDiffList, DiffEntry.class, DiffEntryDto.class);
-                super.versionControlDto.setDiffClasses(diffEntries);
-                LoggerUtil.info(log,"需要对比的差异类为：", JSON.toJSON(diffEntries));
-            }else {
-                LoggerUtil.info(log,"没有需要对比的类：");
+
+            if (CollectionUtils.isEmpty(validDiffList)) {
+                LoggerUtil.info(log, "没有需要对比的类");
+                return;
             }
-        } catch (GitAPIException e) {
+            List<DiffEntryDto> diffEntries = OrikaMapperUtils.mapList(validDiffList, DiffEntry.class, DiffEntryDto.class);
+
+            Map<String, DiffEntryDto> diffMap = diffEntries.stream().collect(Collectors.toMap(DiffEntryDto::getNewPath, Function.identity()));
+            LoggerUtil.info(log, "需要对比的差异类为：", JSON.toJSON(diffEntries));
+            DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
+            diffFormatter.setRepository(nowGit.getRepository());
+            diffFormatter.setContext(0);
+            //此处是获取变更行，有群友需求新增行或变更行要在类中打标记，此处忽略删除行
+            for (DiffEntry diffClass : validDiffList) {
+                //获取变更行
+                EditList edits = diffFormatter.toFileHeader(diffClass).toEditList();
+                if (CollectionUtils.isEmpty(edits)) {
+                    continue;
+                }
+                //获取出新增行和变更行
+                List<Edit> list = edits.stream().filter(e -> Edit.Type.INSERT.equals(e.getType()) || Edit.Type.REPLACE.equals(e.getType())).collect(Collectors.toList());
+                List<ChangeLine> lines = new ArrayList<>(list.size());
+                list.forEach(
+                        edit -> {
+                            ChangeLine build = ChangeLine.builder().startLineNum(edit.getBeginB()).endLineNum(edit.getEndB()).type(edit.getType().name()).build();
+                            lines.add(build);
+                        }
+                );
+                if (diffMap.containsKey(diffClass.getNewPath())) {
+                    DiffEntryDto diffEntryDto = diffMap.get(diffClass.getNewPath());
+                    diffEntryDto.setLines(lines);
+                }
+            }
+            //设置变更行
+            super.versionControlDto.setDiffClasses(new ArrayList<DiffEntryDto>(diffMap.values()));
+        } catch (IOException |
+                GitAPIException e) {
             e.printStackTrace();
+            throw new BizException(BizCode.GET_DIFF_CLASS_ERROR);
         }
+
     }
 
 
@@ -95,7 +140,7 @@ public class GitAbstractVersionControl extends AbstractVersionControl {
      */
     @Override
     public String getLocalNewPath(String filePackage) {
-        return PathUtils.getClassFilePath(super.versionControlDto.getNewLocalBasePath(),filePackage);
+        return PathUtils.getClassFilePath(super.versionControlDto.getNewLocalBasePath(), filePackage);
     }
 
     /**
@@ -107,6 +152,6 @@ public class GitAbstractVersionControl extends AbstractVersionControl {
      */
     @Override
     public String getLocalOldPath(String filePackage) {
-        return PathUtils.getClassFilePath(super.versionControlDto.getOldLocalBasePath(),filePackage);
+        return PathUtils.getClassFilePath(super.versionControlDto.getOldLocalBasePath(), filePackage);
     }
 }

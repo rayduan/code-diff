@@ -1,5 +1,6 @@
 package com.dr.code.diff.vo.result;
 
+import com.dr.code.diff.dto.ChangeLine;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -42,5 +43,11 @@ public class CodeDiffResultVO {
      */
     @ApiModelProperty(name = "type", value = "修改类型", dataType = "String", example = "ADD")
     private String type;
+
+    /**
+     * 变更行
+     */
+    @ApiModelProperty(name = "lines", value = "变更行信息")
+    private List<ChangeLineVO> lines;
 
 }
