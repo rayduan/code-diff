@@ -23,6 +23,7 @@ import org.tmatesoft.svn.core.wc.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
 /**
  * @ProjectName: code-diff-parent
@@ -80,6 +81,9 @@ public class SvnRepoUtil {
             localDir.append("/");
             localDir.append(version);
         }
+        //加入uuid防止重复
+        localDir.append("/");
+        localDir.append(UUID.randomUUID());
         return localDir.toString();
     }
 

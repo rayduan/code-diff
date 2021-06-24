@@ -5,6 +5,8 @@ import com.dr.code.diff.enums.CodeManageTypeEnum;
 import com.dr.code.diff.util.PathUtils;
 import com.dr.code.diff.util.SvnRepoUtil;
 import com.dr.code.diff.vercontrol.AbstractVersionControl;
+import com.dr.common.log.LoggerUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,6 +26,7 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
  * <p>
  * Copyright: Copyright (c) 2021
  */
+@Slf4j
 @Component
 public class SvnAbstractVersionControl extends AbstractVersionControl {
 
@@ -59,6 +62,8 @@ public class SvnAbstractVersionControl extends AbstractVersionControl {
             }
             String localBaseRepoDir = SvnRepoUtil.getSvnLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getSvnLocalBaseRepoDir(), oldVersion.toString());
             String localNowRepoDir = SvnRepoUtil.getSvnLocalDir(nowSvnUrl, customizeConfig.getSvnLocalBaseRepoDir(), newVersion.toString());
+            LoggerUtil.info(log,"旧版本本地地址",localBaseRepoDir);
+            LoggerUtil.info(log,"新版本本地地址",localNowRepoDir);
             super.versionControlDto.setNewLocalBasePath(localNowRepoDir);
             super.versionControlDto.setOldLocalBasePath(localBaseRepoDir);
             SvnRepoUtil.cloneRepository(super.versionControlDto.getRepoUrl(), localBaseRepoDir, oldVersion, customizeConfig.getSvnUserName(), customizeConfig.getSvnPassWord());
