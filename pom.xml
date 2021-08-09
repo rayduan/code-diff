@@ -36,25 +36,10 @@
     </properties>
     <dependencyManagement>
         <dependencies>
-            <!--			<dependency>-->
-            <!--				<groupId>org.springframework.boot</groupId>-->
-            <!--				<artifactId>spring-boot-starter-quartz</artifactId>-->
-            <!--			</dependency>-->
             <dependency>
                 <groupId>com.dr</groupId>
                 <artifactId>common</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.mybatis.spring.boot</groupId>
-                <artifactId>mybatis-spring-boot-starter</artifactId>
-                <version>${mybatis.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.pagehelper</groupId>
-                <artifactId>pagehelper-spring-boot-starter</artifactId>
-                <version>${pageHelper.version}</version>
             </dependency>
 
             <dependency>
@@ -63,11 +48,6 @@
                 <version>${easypoi.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>druid-spring-boot-starter</artifactId>
-                <version>${druid.version}</version>
-            </dependency>
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>
@@ -89,22 +69,6 @@
                 <artifactId>swagger-bootstrap-ui</artifactId>
                 <version>${swagger.ui.version}</version>
             </dependency>
-<!--            <dependency>-->
-<!--                <groupId>com.github.xiaoymin</groupId>-->
-<!--                <artifactId>knife4j-spring-ui</artifactId>-->
-<!--                <version>${knife4j.ui.version}</version>-->
-<!--            </dependency>-->
-<!--            <dependency>-->
-<!--                <groupId>com.github.xiaoymin</groupId>-->
-<!--                <artifactId>knife4j-spring-boot-starter</artifactId>-->
-<!--                <version>${knife4j.version}</version>-->
-<!--            </dependency>-->
-            <!-- https://mvnrepository.com/artifact/org.apache.shiro/shiro-spring-boot-starter -->
-            <dependency>
-                <groupId>org.apache.shiro</groupId>
-                <artifactId>shiro-spring-boot-web-starter</artifactId>
-                <version>${shiro.version}</version>
-            </dependency>
             <!-- https://mvnrepository.com/artifact/com.github.whvcse/easy-captcha -->
             <dependency>
                 <groupId>com.github.whvcse</groupId>
@@ -119,18 +83,6 @@
                 <version>28.2-jre</version>
             </dependency>
 
-
-            <dependency>
-                <groupId>com.offbytwo.jenkins</groupId>
-                <artifactId>jenkins-client</artifactId>
-                <version>${jenkins.api.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.flywaydb</groupId>
-                <artifactId>flyway-core</artifactId>
-                <version>5.2.4</version>
-            </dependency>
 
             <dependency>
                 <groupId>com.github.javaparser</groupId>
