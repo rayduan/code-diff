@@ -101,7 +101,7 @@ public abstract class AbstractVersionControl {
         List<CompletableFuture<ClassInfoResult>> priceFuture = versionControlDto.getDiffClasses().stream()
                 .map(item -> getClassMethods(getLocalOldPath(item.getNewPath()), getLocalNewPath(item.getNewPath()), item))
                 .collect(Collectors.toList());
-        CompletableFuture.allOf(priceFuture.toArray(new CompletableFuture[0])).join();
+        CompletableFuture.allOf(priceFuture.stream().toArray(CompletableFuture[]::new)).join();
         List<ClassInfoResult> list = priceFuture.stream().map(CompletableFuture::join).filter(Objects::nonNull).collect(Collectors.toList());
         if(!CollectionUtils.isEmpty(list)){
             LoggerUtil.info(log,"计算出最终差异类数",list.size());
