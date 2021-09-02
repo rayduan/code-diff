@@ -17,6 +17,10 @@
       local:
         base:
           dir: D:\git-test
+    git支持ssh（目前支持分支）配置
+    git:
+      ssh:
+        priKey: C:\Users\mylocl/.ssh/id_rsa.
     ##基于svn
     svn:
       userName: admin
