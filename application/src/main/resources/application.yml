@@ -32,7 +32,7 @@ git:
     base:
       dir: D:\git-test
   ssh:
-    priKey: C:\Users\duanrui/.ssh/id_rsa.
+    priKey: C:\Users\mylocl/.ssh/id_rsa.
 svn:
   userName: admin
   password: 123456
