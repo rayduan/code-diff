@@ -1,7 +1,13 @@
 package com.dr.code.diff.config;
 
+import com.jcraft.jsch.Session;
 import lombok.Data;
+import org.eclipse.jgit.transport.JschConfigSessionFactory;
+import org.eclipse.jgit.transport.OpenSshConfig;
+import org.eclipse.jgit.transport.SshSessionFactory;
+import org.eclipse.jgit.transport.TransportGitSsh;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -53,4 +59,7 @@ public class CustomizeConfig {
      */
     @Value(value = "${svn.local.base.dir}")
     private String svnLocalBaseRepoDir;
+
+    @Value(value = "${git.ssh.priKey}")
+    private String gitSshPrivateKey;
 }

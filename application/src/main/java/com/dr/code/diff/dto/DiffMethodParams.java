@@ -1,6 +1,7 @@
 package com.dr.code.diff.dto;
 
 import com.dr.code.diff.enums.CodeManageTypeEnum;
+import com.dr.code.diff.enums.GitUrlTypeEnum;
 import lombok.Builder;
 import lombok.Data;
 
@@ -44,6 +45,5 @@ public class DiffMethodParams {
      * 版本控制类型
      */
     private CodeManageTypeEnum codeManageTypeEnum;
-
 
 }
