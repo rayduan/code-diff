@@ -130,13 +130,13 @@ public class GitRepoUtil {
         Git git = null;
         try {
             //ssh无法读取本地代码仓，先删除再clone
-            File repoGitDir = new File(codePath + GitUrlTypeEnum.SSH.getValue() + "/.git");
+            File repoGitDir = new File(codePath + "/.git");
             if (repoGitDir.exists()) {
                 FileUtil.removeDir(new File(codePath));
             }
             LoggerUtil.info(log, "本地代码不存在，clone", gitUrl, codePath);
             //为了区分ssh路径和http/s这里ssh多加了一层目录
-            git = instanceSshGit(gitUrl, codePath + GitUrlTypeEnum.SSH.getValue(), commitId, privateKey);
+            git = instanceSshGit(gitUrl, codePath, commitId, privateKey);
             // 下载指定branch,ssh好像不支持commitId
             git.checkout().setName(commitId).call();
         } catch (GitAPIException e) {

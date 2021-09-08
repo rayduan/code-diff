@@ -62,8 +62,6 @@ public class GitAbstractVersionControl extends AbstractVersionControl {
         try {
             String localBaseRepoDir = GitRepoUtil.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getGitLocalBaseRepoDir(), super.versionControlDto.getBaseVersion());
             String localNowRepoDir = GitRepoUtil.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getGitLocalBaseRepoDir(), super.versionControlDto.getNowVersion());
-            super.versionControlDto.setNewLocalBasePath(localNowRepoDir);
-            super.versionControlDto.setOldLocalBasePath(localBaseRepoDir);
             Git baseGit = null, nowGit = null;
             GitUrlTypeEnum gitUrlTypeEnum = GitRepoUtil.judgeUrlType(super.versionControlDto.getRepoUrl());
             switch (Objects.requireNonNull(gitUrlTypeEnum)) {
@@ -75,6 +73,8 @@ public class GitAbstractVersionControl extends AbstractVersionControl {
                     break;
                 }
                 case SSH: {
+                    localBaseRepoDir += GitUrlTypeEnum.SSH.getValue();
+                    localNowRepoDir += GitUrlTypeEnum.SSH.getValue();
                     //原有代码git对象
                     baseGit = GitRepoUtil.sshCloneRepository(super.versionControlDto.getRepoUrl(), localBaseRepoDir, super.versionControlDto.getBaseVersion(), customizeConfig.getGitSshPrivateKey());
                     //现有代码git对象
@@ -86,7 +86,8 @@ public class GitAbstractVersionControl extends AbstractVersionControl {
                     throw new BizException(BizCode.UNKNOWN_REPOSITY_URL);
                 }
             }
-
+            super.versionControlDto.setNewLocalBasePath(localNowRepoDir);
+            super.versionControlDto.setOldLocalBasePath(localBaseRepoDir);
             AbstractTreeIterator baseTree = GitRepoUtil.prepareTreeParser(baseGit.getRepository(), super.versionControlDto.getBaseVersion());
             AbstractTreeIterator nowTree = GitRepoUtil.prepareTreeParser(nowGit.getRepository(), super.versionControlDto.getNowVersion());
             //获取两个版本之间的差异代码
