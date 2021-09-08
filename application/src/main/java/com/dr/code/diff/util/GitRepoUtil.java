@@ -65,9 +65,10 @@ public class GitRepoUtil {
                 defaultJSch.addIdentity(privateKey);
                 return defaultJSch;
             }
+
             @Override
             public void configure(OpenSshConfig.Host hc, Session session) {
-                session.setConfig("StrictHostKeyChecking","no");
+                session.setConfig("StrictHostKeyChecking", "no");
             }
         };
         if (null != git) {
@@ -130,22 +131,13 @@ public class GitRepoUtil {
     public static Git sshCloneRepository(String gitUrl, String codePath, String commitId, String privateKey) {
         Git git = null;
         try {
-            if (!checkGitWorkSpace(gitUrl, codePath)) {
-                LoggerUtil.info(log, "本地代码不存在，clone", gitUrl, codePath);
-                git = instanceSshGit(gitUrl, codePath, commitId, null, privateKey);
-                // 下载指定commitId/branch
-                git.checkout().setName(commitId).call();
-            } else {
-                LoggerUtil.info(log, "本地代码存在,直接使用", gitUrl, codePath);
-                git = Git.open(new File(codePath));
-                git.getRepository().getFullBranch();
-                //判断是分支还是commitId，分支做更新，commitId无法改变用原有的
-                if (git.getRepository().exactRef(Constants.HEAD).isSymbolic()) {
-                    //更新代码
-                    instanceSshGit(gitUrl, codePath, commitId, null, privateKey);
-                }
-            }
-        } catch (IOException | GitAPIException e) {
+            //ssh无法读取本地代码仓，先删除再clone
+            FileUtil.removeDir(new File(codePath));
+            LoggerUtil.info(log, "本地代码不存在，clone", gitUrl, codePath);
+            git = instanceSshGit(gitUrl, codePath, commitId, null, privateKey);
+            // 下载指定branch,ssh好像不支持commitId
+            git.checkout().setName(commitId).call();
+        } catch (GitAPIException e) {
             if (e instanceof GitAPIException) {
                 throw new BizException(BizCode.GIT_AUTH_FAILED.getCode(), e.getMessage());
             }
