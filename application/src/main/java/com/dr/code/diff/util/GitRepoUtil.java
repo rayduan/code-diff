@@ -57,7 +57,7 @@ public class GitRepoUtil {
     }
 
 
-    public static Git instanceSshGit(String gitUrl, String codePath, String commitId, Git git, String privateKey) throws GitAPIException {
+    public static Git instanceSshGit(String gitUrl, String codePath, String commitId, String privateKey) throws GitAPIException {
         SshSessionFactory sshSessionFactory = new JschConfigSessionFactory() {
             @Override
             protected JSch createDefaultJSch(FS fs) throws JSchException {
@@ -71,13 +71,6 @@ public class GitRepoUtil {
                 session.setConfig("StrictHostKeyChecking", "no");
             }
         };
-        if (null != git) {
-            git.pull().setTransportConfigCallback(transport -> {
-                SshTransport sshTransport = (SshTransport) transport;
-                sshTransport.setSshSessionFactory(sshSessionFactory);
-            }).call();
-            return git;
-        }
         return Git.cloneRepository()
                 .setURI(gitUrl)
                 .setTransportConfigCallback(transport -> {
@@ -90,7 +83,7 @@ public class GitRepoUtil {
     }
 
     /**
-     * 克隆代码到本地
+     * 克隆代码到本地，http/s方式拉取代码
      *
      * @param gitUrl
      * @param codePath
@@ -127,14 +120,20 @@ public class GitRepoUtil {
         return git;
     }
 
-
+    /**
+     * @date:2021/9/8
+     * @className:GitRepoUtil
+     * @author:Administrator
+     * @description: ssh方式拉取代码
+     */
     public static Git sshCloneRepository(String gitUrl, String codePath, String commitId, String privateKey) {
         Git git = null;
         try {
             //ssh无法读取本地代码仓，先删除再clone
             FileUtil.removeDir(new File(codePath));
             LoggerUtil.info(log, "本地代码不存在，clone", gitUrl, codePath);
-            git = instanceSshGit(gitUrl, codePath, commitId, null, privateKey);
+            //为了区分ssh路径和http/s这里ssh多加了一层目录
+            git = instanceSshGit(gitUrl, codePath + GitUrlTypeEnum.SSH.getValue(), commitId, privateKey);
             // 下载指定branch,ssh好像不支持commitId
             git.checkout().setName(commitId).call();
         } catch (GitAPIException e) {
