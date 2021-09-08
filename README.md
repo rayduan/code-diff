@@ -329,4 +329,6 @@ java -jar  -Dlog.path=/app/data2/devops/code-diff/logs  -Dgit.local.base.dir=/ap
 ##问题点：
 如果ssh方式出现
 invalid privatekey: [B@6553d80f 则是ssh的版本太高，通过指定旧版本的方式重新生成即可
+```
 ssh-keygen -m PEM -t rsa
+```
