@@ -1,9 +1,7 @@
 package com.dr.code.diff.util;
 
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.ReadContext;
+import com.jayway.jsonpath.*;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
@@ -19,6 +17,7 @@ import java.util.List;
  * <p>
  * Copyright: Copyright (c) 2021
  */
+@Slf4j
 public class JsonUtils {
 
     public static void main(String[] args) {
@@ -59,27 +58,33 @@ public class JsonUtils {
      * @return
      */
     public static Boolean isSubJson(String actualJson, String expectJson) {
-        Configuration conf = Configuration.builder()
-                .options(Option.AS_PATH_LIST).build();
-        ReadContext ctx = JsonPath.using(conf).parse(expectJson);
-        //获取期望json的全目录
-        List<String> jsonPaths = ctx.read("$..*");
-        if (CollectionUtils.isEmpty(jsonPaths)) {
-            return Boolean.FALSE;
-        }
-        //排除非叶子结点
-        List<String> leafPaths = getPathList(jsonPaths);
-        ReadContext actualJsonCtx = JsonPath.parse(actualJson);
-        ReadContext expectJsonCtx = JsonPath.parse(expectJson);
-        //遍历子集，判断子集的value是否等于父集的
-        for (String path : leafPaths) {
-            Object actualVal = actualJsonCtx.read(path);
-            Object expectVal = expectJsonCtx.read(path);
-            if (!expectVal.equals(actualVal)) {
+        try {
+            Configuration conf = Configuration.builder()
+                    .options(Option.AS_PATH_LIST).build();
+            ReadContext ctx = JsonPath.using(conf).parse(expectJson);
+            //获取期望json的全目录
+            List<String> jsonPaths = ctx.read("$..*");
+            if (CollectionUtils.isEmpty(jsonPaths)) {
                 return Boolean.FALSE;
             }
+            //排除非叶子结点
+            List<String> leafPaths = getPathList(jsonPaths);
+            ReadContext actualJsonCtx = JsonPath.parse(actualJson);
+            ReadContext expectJsonCtx = JsonPath.parse(expectJson);
+            //遍历子集，判断子集的value是否等于父集的
+            for (String path : leafPaths) {
+                Object actualVal = actualJsonCtx.read(path);
+                Object expectVal = expectJsonCtx.read(path);
+                if (!expectVal.equals(actualVal)) {
+                    return Boolean.FALSE;
+                }
+            }
+            return Boolean.TRUE;
+        } catch (Exception e) {
+            log.error("比较json子集失败:{}", e.getMessage());
+            return Boolean.FALSE;
         }
-        return Boolean.TRUE;
+
     }
 
     /**
