@@ -73,7 +73,7 @@ public class MethodParserUtils {
             //计算方法体的hash值，疑问，空格，特殊转义字符会影响结果，导致相同匹配为差异？建议提交代码时统一工具格式化
             String md5 = SecureUtil.md5(n.toString());
             NodeList<Parameter> parameters = n.getParameters();
-            String params = parameters.stream().map(e -> e.getType().toString().trim()).collect(Collectors.joining("&", "", ""));
+            String params = parameters.stream().map(e -> e.getType().toString().replaceAll(" ", "")).collect(Collectors.joining("&", "", ""));
             MethodInfoResult result = MethodInfoResult.builder()
                     .md5(md5)
                     .methodName(n.getNameAsString())
