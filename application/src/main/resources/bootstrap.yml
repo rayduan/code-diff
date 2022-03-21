@@ -1,0 +1,17 @@
+server:
+  port: 8081
+log:
+  path: /Users/rayduan/logs
+management:
+  security:
+    enabled: false
+  endpoint:
+    shutdown:
+      enabled: true    # 启用shutdown功能
+    health:
+      show-details: always
+  endpoints:
+    web:
+#      base-path: ''/
+      exposure:
+        include: "*"

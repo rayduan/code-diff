@@ -26,8 +26,8 @@ Configuration:
     RollingFile: # 输出到文件，超过128MB归档
       - name: info
         ignoreExceptions: false
-        fileName: ${log.path}/${date:yyyy-MM}/${date:yyyy-MM-dd}/info.log
-        filePattern: "${log.path}/${date:yyyy-MM}/info-%d{yyyy-MM-dd}-%i.log.gz"
+        fileName: ${sys:log.path}/${date:yyyy-MM}/${date:yyyy-MM-dd}/info.log
+        filePattern: "${sys:log.path}/${date:yyyy-MM}/info-%d{yyyy-MM-dd}-%i.log.gz"
         ThresholdFilter:
           level: info
           onMatch: ACCEPT
@@ -41,8 +41,8 @@ Configuration:
           max: 1000
       - name: debug
         ignoreExceptions: false
-        fileName: ${log.path}/${date:yyyy-MM}/${date:yyyy-MM-dd}/debug.log
-        filePattern: "${log.path}/$${date:yyyy-MM}/debug-%d{yyyy-MM-dd}-%i.log.gz"
+        fileName: ${sys:log.path}/${date:yyyy-MM}/${date:yyyy-MM-dd}/debug.log
+        filePattern: "${sys:log.path}/$${date:yyyy-MM}/debug-%d{yyyy-MM-dd}-%i.log.gz"
         ThresholdFilter:
           level: debug
           onMatch: ACCEPT
@@ -56,8 +56,8 @@ Configuration:
           max: 1000
       - name: error
         ignoreExceptions: false
-        fileName: ${log.path}/${date:yyyy-MM}/${date:yyyy-MM-dd}/error.log
-        filePattern: "${log.path}/$${date:yyyy-MM}/error-%d{yyyy-MM-dd}-%i.log.gz"
+        fileName: ${sys:log.path}/${date:yyyy-MM}/${date:yyyy-MM-dd}/error.log
+        filePattern: "${sys:log.path}/$${date:yyyy-MM}/error-%d{yyyy-MM-dd}-%i.log.gz"
         ThresholdFilter:
           level: error
           onMatch: ACCEPT
