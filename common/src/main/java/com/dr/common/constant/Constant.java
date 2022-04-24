@@ -16,7 +16,7 @@ public class Constant {
     /**
      * 最大导出条数
      */
-    public final static int LIMIT_EXPORT_COUNT = 10000;
+    public final static int LIMIT_EXPORT_COUNT = 5000;
 
     /**
      * 云秀供应商商品ID
