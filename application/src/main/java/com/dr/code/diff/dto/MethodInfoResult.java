@@ -3,6 +3,8 @@ package com.dr.code.diff.dto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author dr
  */
@@ -20,6 +22,6 @@ public class MethodInfoResult {
     /**
      * 方法参数
      */
-    public String parameters;
+    public List<String> parameters;
 
 }

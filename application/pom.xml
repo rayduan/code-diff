@@ -119,6 +119,12 @@
             <artifactId>spring-cloud-context</artifactId>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.jayway.jsonpath/json-path -->
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
