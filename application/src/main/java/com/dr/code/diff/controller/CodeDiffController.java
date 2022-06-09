@@ -14,11 +14,13 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 /**
@@ -31,6 +33,7 @@ import java.util.List;
 @RestController
 @Api(value = "/api/code/diff", tags = "差异代码模块")
 @RequestMapping("/api/code/diff")
+@Validated
 public class CodeDiffController {
 
     @Autowired
@@ -40,10 +43,13 @@ public class CodeDiffController {
     @RequestMapping(value = "git/list", method = RequestMethod.GET)
     public UniqueApoResponse<List<CodeDiffResultVO>> getGitList(
             @ApiParam(required = true, name = "gitUrl", value = "git远程仓库地址")
+            @NotEmpty
             @RequestParam(value = "gitUrl") String gitUrl,
             @ApiParam(required = true, name = "baseVersion", value = "git原始分支或tag")
+            @NotEmpty
             @RequestParam(value = "baseVersion") String baseVersion,
             @ApiParam(required = true, name = "nowVersion", value = "git现分支或tag")
+            @NotEmpty
             @RequestParam(value = "nowVersion") String nowVersion) {
         DiffMethodParams diffMethodParams = DiffMethodParams.builder()
                 .repoUrl(StringUtils.trim(gitUrl))
@@ -60,10 +66,13 @@ public class CodeDiffController {
     @ApiOperation("svn同分支获取差异代码")
     @RequestMapping(value = "svn/list", method = RequestMethod.GET)
     public UniqueApoResponse<List<CodeDiffResultVO>> getSvnList(
+            @NotEmpty
             @ApiParam(required = true, name = "svnUrl", value = "svn远程仓库地址,如svn:192.168.0.1:3690/svn")
             @RequestParam(value = "svnUrl") String svnUrl,
+            @NotEmpty
             @ApiParam(required = true, name = "baseVersion", value = "svn原始分支,如：1")
             @RequestParam(value = "baseVersion") String baseVersion,
+            @NotEmpty
             @ApiParam(required = true, name = "nowVersion", value = "svn现分支，如：2")
             @RequestParam(value = "nowVersion") String nowVersion) {
         DiffMethodParams diffMethodParams = DiffMethodParams.builder()
@@ -81,8 +90,10 @@ public class CodeDiffController {
     @RequestMapping(value = "svn/branch/list", method = RequestMethod.GET)
     public UniqueApoResponse<List<CodeDiffResultVO>> getSvnBranchList(
             @ApiParam(required = true, name = "baseSvnUrl", value = "svn原始分支远程仓库地址,如svn:192.168.0.1:3690/svn/truck")
+            @NotEmpty
             @RequestParam(value = "baseSvnUrl") String baseSvnUrl,
             @ApiParam(required = true, name = "nowSvnUrl", value = "svn现分支远程仓库地址,如svn:192.168.0.1:3690/svn/feature")
+            @NotEmpty
             @RequestParam(value = "nowSvnUrl") String nowSvnUrl
     ) {
         DiffMethodParams diffMethodParams = DiffMethodParams.builder()
@@ -99,13 +110,17 @@ public class CodeDiffController {
     @ApiOperation("svn不同分支不同reversion获取差异代码")
     @RequestMapping(value = "svn/branch/reversion/list", method = RequestMethod.GET)
     public UniqueApoResponse<List<CodeDiffResultVO>> getSvnBranchReversionList(
+            @NotEmpty
             @ApiParam(required = true, name = "baseSvnUrl", value = "svn原始分支远程仓库地址,如svn:192.168.0.1:3690/svn/truck")
             @RequestParam(value = "baseSvnUrl") String baseSvnUrl,
             @ApiParam(required = true, name = "baseVersion", value = "svn原始分支,如：1")
+            @NotEmpty
             @RequestParam(value = "baseVersion") String baseVersion,
             @ApiParam(required = true, name = "nowSvnUrl", value = "svn现分支远程仓库地址,如svn:192.168.0.1:3690/svn/feature")
+            @NotEmpty
             @RequestParam(value = "nowSvnUrl") String nowSvnUrl,
             @ApiParam(required = true, name = "nowVersion", value = "svn现分支，如：2")
+            @NotEmpty
             @RequestParam(value = "nowVersion") String nowVersion
     ) {
         DiffMethodParams diffMethodParams = DiffMethodParams.builder()

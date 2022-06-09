@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @date:2021/1/9
  * @className:MethodInfoResultVO
@@ -29,7 +31,7 @@ public class MethodInfoResultVO {
      * 方法参数
      */
     @ApiModelProperty(name = "parameters", value = "parameters", dataType = "string")
-    public String parameters;
+    public List<String> parameters;
 
 
 }
