@@ -17,6 +17,10 @@
       local:
         base:
           dir: D:\git-test
+    git支持ssh（目前支持分支）配置
+    git:
+      ssh:
+        priKey: C:\Users\mylocl/.ssh/id_rsa.
     ##基于svn
     svn:
       userName: admin
@@ -320,3 +324,11 @@ java -jar  -Dlog.path=/app/data2/devops/code-diff/logs  -Dgit.local.base.dir=/ap
 如有疑问，请加群主入群
 
 ![输入图片说明](https://images.gitee.com/uploads/images/2021/0414/163539_9ff67f82_1007820.png "屏幕截图.png")
+
+
+##问题点：
+如果ssh方式出现
+invalid privatekey: [B@6553d80f 则是ssh的版本太高，通过指定旧版本的方式重新生成即可
+```
+ssh-keygen -m PEM -t rsa
+```

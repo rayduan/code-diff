@@ -1,6 +1,5 @@
 package com.dr.code.diff.vercontrol;
 
-import com.alibaba.fastjson.JSON;
 import com.dr.code.diff.dto.ClassInfoResult;
 import com.dr.code.diff.dto.DiffEntryDto;
 import com.dr.code.diff.dto.MethodInfoResult;
@@ -12,10 +11,8 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;

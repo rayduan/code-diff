@@ -5,6 +5,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.dr.code.diff.dto.ClassInfoResult;
 import com.dr.code.diff.dto.DiffMethodParams;
 import com.dr.code.diff.enums.CodeManageTypeEnum;
+import com.dr.code.diff.enums.GitUrlTypeEnum;
 import com.dr.code.diff.service.CodeDiffService;
 import com.dr.code.diff.vo.result.CodeDiffResultVO;
 import com.dr.common.response.UniqueApoResponse;

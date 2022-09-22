@@ -1,6 +1,7 @@
 package com.dr.code.diff.dto;
 
 import com.dr.code.diff.enums.CodeManageTypeEnum;
+import com.dr.code.diff.enums.GitUrlTypeEnum;
 import lombok.Builder;
 import lombok.Data;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -60,4 +61,5 @@ public class VersionControlDto {
 
 
     private List<DiffEntryDto> diffClasses;
+
 }

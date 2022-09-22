@@ -27,10 +27,12 @@ swagger:
 #    sessionIdUrlRewritingEnabled: false
 git:
   userName: rayduan
-  password: dsfsdf2323
+  password: $$$$$$!
   local:
     base:
       dir: D:\git-test
+  ssh:
+    priKey: C:\Users\mylocl/.ssh/id_rsa.
 svn:
   userName: admin
   password: 123456
