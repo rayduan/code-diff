@@ -12,6 +12,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.MergeCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectReader;
@@ -50,7 +51,7 @@ public class GitRepoUtil {
                 .setURI(gitUrl)
                 .setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitUserName, gitPassWord))
                 .setDirectory(new File(codePath))
-                .setBranch(commitId)
+//                .setBranch(commitId)
                 .call();
     }
 
