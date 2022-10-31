@@ -84,7 +84,6 @@ public class GitRepoUtil {
                     sshTransport.setSshSessionFactory(sshSessionFactory);
                 })
                 .setDirectory(new File(codePath))
-                .setBranch(commitId)
                 .call();
     }
 
