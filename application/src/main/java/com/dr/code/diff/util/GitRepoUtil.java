@@ -1,6 +1,5 @@
 package com.dr.code.diff.util;
 
-import cn.hutool.core.io.FileUtil;
 import com.dr.code.diff.enums.GitUrlTypeEnum;
 import com.dr.common.errorcode.BizCode;
 import com.dr.common.exception.BizException;
@@ -11,8 +10,8 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.MergeCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectReader;
@@ -42,17 +41,23 @@ import java.io.IOException;
 @Slf4j
 public class GitRepoUtil {
 
+
+    private static final  Integer COMMIT_ID_LENGTH = 40;
+
     public static Git instanceHttpGit(String gitUrl, String codePath, String commitId, Git git, String gitUserName, String gitPassWord) throws GitAPIException {
         if (null != git) {
             git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitUserName, gitPassWord)).call();
             return git;
         }
-        return Git.cloneRepository()
+        CloneCommand cloneCommand = Git.cloneRepository()
                 .setURI(gitUrl)
                 .setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitUserName, gitPassWord))
-                .setDirectory(new File(codePath))
-//                .setBranch(commitId)
-                .call();
+                .setDirectory(new File(codePath));
+        //说明不是commit_id
+        if(COMMIT_ID_LENGTH != commitId.length()){
+            cloneCommand.setBranch(commitId);
+        }
+        return cloneCommand.call();
     }
 
 
@@ -77,14 +82,18 @@ public class GitRepoUtil {
             }).call();
             return git;
         }
-        return Git.cloneRepository()
+        CloneCommand cloneCommand = Git.cloneRepository()
                 .setURI(gitUrl)
                 .setTransportConfigCallback(transport -> {
                     SshTransport sshTransport = (SshTransport) transport;
                     sshTransport.setSshSessionFactory(sshSessionFactory);
                 })
-                .setDirectory(new File(codePath))
-                .call();
+                .setDirectory(new File(codePath));
+        //说明不是commit_id
+        if(COMMIT_ID_LENGTH != commitId.length()){
+            cloneCommand.setBranch(commitId);
+        }
+        return cloneCommand.call();
     }
 
     /**
@@ -103,8 +112,10 @@ public class GitRepoUtil {
             if (!checkGitWorkSpace(gitUrl, codePath)) {
                 LoggerUtil.info(log, "本地代码不存在，clone", gitUrl, codePath);
                 git = instanceHttpGit(gitUrl, codePath, commitId, null, gitUserName, gitPassWord);
-                // 下载指定commitId/branch
-                git.checkout().setName(commitId).call();
+                // 下载指定commitId
+                if (git.getRepository().exactRef(Constants.HEAD).isSymbolic()){
+                    git.checkout().setName(commitId).call();
+                }
             } else {
                 LoggerUtil.info(log, "本地代码存在,直接使用", gitUrl, codePath);
                 git = Git.open(new File(codePath));
@@ -139,7 +150,9 @@ public class GitRepoUtil {
                 //为了区分ssh路径和http/s这里ssh多加了一层目录
                 git = instanceSshGit(gitUrl, codePath, commitId, null, privateKey);
                 // 下载指定branch,ssh好像不支持commitId
-                git.checkout().setName(commitId).call();
+                if (git.getRepository().exactRef(Constants.HEAD).isSymbolic()){
+                    git.checkout().setName(commitId).call();
+                }
             } else {
                 LoggerUtil.info(log, "本地代码存在,直接使用", gitUrl, codePath);
                 git = Git.open(new File(codePath));
