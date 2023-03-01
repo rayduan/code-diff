@@ -1,0 +1,36 @@
+package com.dr.code.diff.analyze.link;
+
+import com.dr.code.diff.CodeDiffApplicationTest;
+import com.dr.code.diff.analyze.bean.MethodInfo;
+import jdk.internal.org.objectweb.asm.ClassReader;
+import jdk.internal.org.objectweb.asm.ClassWriter;
+import org.junit.jupiter.api.Test;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @Package: com.dr.code.diff.analyze.link
+ * @Description: java类作用描述
+ * @Author: rayduan
+ * @CreateDate: 2023/2/24 14:53
+ * @Version: 1.0
+ * <p>
+ */
+class CallChainClassVisitorTest extends CodeDiffApplicationTest {
+
+    @Test
+    void visitMethod() throws IOException {
+        String sourceFilePath = "/Users/xx/app/cmdb/b20bb96a8ca5be1955f9427ccc1aac521d6cb955/cmdb-core/target/classes/com/dr/cmdb/core/service/impl/CiItemServiceImpl.class";
+        File fileReader = new File(sourceFilePath);
+        ClassReader cr = new ClassReader(Files.newInputStream(fileReader.toPath()));
+        List<MethodInfo> list = new ArrayList<>();
+        ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+        CallChainClassVisitor cv = new CallChainClassVisitor(cw,list);
+        cr.accept(cv, ClassReader.SKIP_FRAMES);
+        System.out.println(list);
+    }
+}

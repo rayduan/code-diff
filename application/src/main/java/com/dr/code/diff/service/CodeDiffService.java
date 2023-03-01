@@ -1,6 +1,7 @@
 package com.dr.code.diff.service;
 
-import com.dr.code.diff.dto.ClassInfoResult;
+import com.dr.code.diff.dto.DiffClassInfoResult;
+import com.dr.code.diff.dto.DiffInfo;
 import com.dr.code.diff.dto.DiffMethodParams;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public interface CodeDiffService {
      * @author:Administrator
      * @description: 获取差异代码
      */
-    List<ClassInfoResult> getDiffCode(DiffMethodParams diffMethodParams);
+    DiffInfo getDiffCode(DiffMethodParams diffMethodParams);
 
 
 }

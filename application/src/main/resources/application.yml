@@ -26,19 +26,21 @@ swagger:
 #  sessionManager:
 #    sessionIdUrlRewritingEnabled: false
 git:
-  userName: rayduan
-  password: $$$$$$!
+  userName: admin
+  password: 123456!
   local:
     base:
-      dir: D:\git-test
+      dir: /Users/rayduan/app
   ssh:
-    priKey: C:\Users\mylocl/.ssh/id_rsa.
+    priKey: /Users/rayduan/.ssh/id_rsa
 svn:
   userName: admin
   password: 123456
   local:
     base:
       dir: D:\svn-test
+maven:
+  home: /usr/local/app/apache-maven-3.8.3
 server:
   port: 8085
   servlet:

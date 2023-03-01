@@ -21,7 +21,7 @@ import java.util.List;
  */
 @Builder
 @Data
-public class ClassInfoResult {
+public class DiffClassInfoResult {
     /**
      * java文件
      */

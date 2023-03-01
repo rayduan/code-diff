@@ -62,4 +62,10 @@ public class CustomizeConfig {
 
     @Value(value = "${git.ssh.priKey}")
     private String gitSshPrivateKey;
+
+    /**
+     * maven的地址
+     */
+    @Value(value = "${maven.home}")
+    private String mavenHome;
 }

@@ -1,8 +1,9 @@
 package com.dr.code.diff.vercontrol;
 
-import com.dr.code.diff.dto.ClassInfoResult;
+import com.dr.code.diff.dto.DiffClassInfoResult;
+import com.dr.code.diff.dto.DiffInfo;
 import com.dr.code.diff.dto.VersionControlDto;
-import com.google.common.collect.Lists;
+import com.dr.code.diff.enums.CodeManageTypeEnum;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationContext;
@@ -11,6 +12,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @ProjectName: cmdb
@@ -27,37 +31,52 @@ public class VersionControlHandlerFactory implements CommandLineRunner, Applicat
     private volatile ApplicationContext applicationContext;
 
 
-    private static List<AbstractVersionControl> handlers;
+    private static Map<String, AbstractVersionControl> handlerMap;
 
 
     /**
-     * 拼接变种责任链
+     * 封装策略
+     *
      * @param args
      */
     @Override
     public void run(String... args) {
         Collection<AbstractVersionControl> checkHandlers = this.applicationContext.getBeansOfType(AbstractVersionControl.class).values();
-        handlers = Lists.newArrayList(checkHandlers);
+        setHandlerMap(checkHandlers.stream().collect(Collectors.toMap(e -> e.getType().getValue(), Function.identity())));
     }
 
+    /**
+     * 设置应用程序上下文
+     *
+     * @param applicationContext 应用程序上下文
+     * @throws BeansException
+     */
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 
+
+    /**
+     * 设置处理Map
+     *
+     * @param handlerMap
+     */
+    private static void setHandlerMap(Map<String, AbstractVersionControl> handlerMap) {
+        VersionControlHandlerFactory.handlerMap = handlerMap;
+    }
+
     /**
      * 执行方法校验
+     *
      * @param versionControlDto
      */
-    public static List<ClassInfoResult> processHandler(VersionControlDto versionControlDto) {
-        List<ClassInfoResult> result = null;
-        for (int i = 0; i < handlers.size(); i++) {
-            if(versionControlDto.getCodeManageTypeEnum().equals(handlers.get(i).getType())){
-                result = handlers.get(i).handler(versionControlDto);
-            }
+    public static DiffInfo processHandler(VersionControlDto versionControlDto) {
+        CodeManageTypeEnum codeManageTypeEnum = versionControlDto.getCodeManageTypeEnum();
+        if (handlerMap.containsKey(codeManageTypeEnum.getValue())) {
+            return handlerMap.get(codeManageTypeEnum.getValue()).handler(versionControlDto);
         }
-       return result;
-
+        return null;
     }
 
 

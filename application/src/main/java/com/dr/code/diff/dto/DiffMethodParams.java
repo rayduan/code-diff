@@ -5,6 +5,8 @@ import com.dr.code.diff.enums.GitUrlTypeEnum;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @ProjectName: base-service
  * @Package: com.dr.jenkins.jenkins.dto
@@ -45,5 +47,8 @@ public class DiffMethodParams {
      * 版本控制类型
      */
     private CodeManageTypeEnum codeManageTypeEnum;
+
+
+    private List<String> excludeFiles;
 
 }

@@ -102,7 +102,13 @@ public class GitAbstractVersionControl extends AbstractVersionControl {
                     //只计算新增和变更文件
                     .filter(e -> DiffEntry.ChangeType.ADD.equals(e.getChangeType()) || DiffEntry.ChangeType.MODIFY.equals(e.getChangeType()))
                     .collect(Collectors.toList());
-
+//            Collection<DiffEntry> xmlDiffList = diff.stream()
+//                    //只计算xml文件
+//                    .filter(e -> e.getNewPath().endsWith(".xml"))
+//                    //只计算新增和变更文件
+//                    .filter(e -> DiffEntry.ChangeType.MODIFY.equals(e.getChangeType()))
+//                    .collect(Collectors.toList());
+            //计算xml变更引起的mapper方法变更
             if (CollectionUtils.isEmpty(validDiffList)) {
                 LoggerUtil.info(log, "没有需要对比的类");
                 return;
@@ -138,7 +144,7 @@ public class GitAbstractVersionControl extends AbstractVersionControl {
             //设置变更行
             super.versionControlDto.setDiffClasses(new ArrayList<DiffEntryDto>(diffMap.values()));
         } catch (IOException |
-                GitAPIException e) {
+                 GitAPIException e) {
             e.printStackTrace();
             throw new BizException(BizCode.GET_DIFF_CLASS_ERROR);
         }

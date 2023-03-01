@@ -2,12 +2,15 @@ package com.dr.code.diff.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.dr.code.diff.dto.ClassInfoResult;
+import com.dr.code.diff.analyze.DeduceApiService;
+import com.dr.code.diff.dto.ApiModify;
+import com.dr.code.diff.dto.DiffClassInfoResult;
 import com.dr.code.diff.dto.DiffMethodParams;
 import com.dr.code.diff.enums.CodeManageTypeEnum;
-import com.dr.code.diff.enums.GitUrlTypeEnum;
 import com.dr.code.diff.service.CodeDiffService;
 import com.dr.code.diff.vo.result.CodeDiffResultVO;
+import com.dr.code.diff.vo.result.DeduceApiVO;
+import com.dr.common.response.ApiResponse;
 import com.dr.common.response.UniqueApoResponse;
 import com.dr.common.utils.mapper.OrikaMapperUtils;
 import io.swagger.annotations.Api;
@@ -40,6 +43,9 @@ public class CodeDiffController {
     @Autowired
     private CodeDiffService codeDiffService;
 
+    @Autowired
+    protected DeduceApiService deduceApiService;
+
     @ApiOperation("git获取差异代码")
     @RequestMapping(value = "git/list", method = RequestMethod.GET)
     public UniqueApoResponse<List<CodeDiffResultVO>> getGitList(
@@ -58,9 +64,9 @@ public class CodeDiffController {
                 .nowVersion(StringUtils.trim(nowVersion))
                 .codeManageTypeEnum(CodeManageTypeEnum.GIT)
                 .build();
-        List<ClassInfoResult> diffCodeList = codeDiffService.getDiffCode(diffMethodParams);
-        List<CodeDiffResultVO> list = OrikaMapperUtils.mapList(diffCodeList, ClassInfoResult.class, CodeDiffResultVO.class);
-        return new UniqueApoResponse<List<CodeDiffResultVO>>().success(list, JSON.toJSONString(list,SerializerFeature.WriteNullListAsEmpty));
+        List<DiffClassInfoResult> diffCodeList = codeDiffService.getDiffCode(diffMethodParams).getDiffClasses();
+        List<CodeDiffResultVO> list = OrikaMapperUtils.mapList(diffCodeList, DiffClassInfoResult.class, CodeDiffResultVO.class);
+        return new UniqueApoResponse<List<CodeDiffResultVO>>().success(list, JSON.toJSONString(list, SerializerFeature.WriteNullListAsEmpty));
     }
 
 
@@ -82,9 +88,9 @@ public class CodeDiffController {
                 .nowVersion(StringUtils.trim(nowVersion))
                 .codeManageTypeEnum(CodeManageTypeEnum.SVN)
                 .build();
-        List<ClassInfoResult> diffCodeList = codeDiffService.getDiffCode(diffMethodParams);
-        List<CodeDiffResultVO> list = OrikaMapperUtils.mapList(diffCodeList, ClassInfoResult.class, CodeDiffResultVO.class);
-        return new UniqueApoResponse<List<CodeDiffResultVO>>().success(list, JSON.toJSONString(list,SerializerFeature.WriteNullListAsEmpty));
+        List<DiffClassInfoResult> diffCodeList = codeDiffService.getDiffCode(diffMethodParams).getDiffClasses();
+        List<CodeDiffResultVO> list = OrikaMapperUtils.mapList(diffCodeList, DiffClassInfoResult.class, CodeDiffResultVO.class);
+        return new UniqueApoResponse<List<CodeDiffResultVO>>().success(list, JSON.toJSONString(list, SerializerFeature.WriteNullListAsEmpty));
     }
 
     @ApiOperation("svn不同分支获取差异代码")
@@ -102,9 +108,9 @@ public class CodeDiffController {
                 .svnRepoUrl(nowSvnUrl)
                 .codeManageTypeEnum(CodeManageTypeEnum.SVN)
                 .build();
-        List<ClassInfoResult> diffCodeList = codeDiffService.getDiffCode(diffMethodParams);
-        List<CodeDiffResultVO> list = OrikaMapperUtils.mapList(diffCodeList, ClassInfoResult.class, CodeDiffResultVO.class);
-        return new UniqueApoResponse<List<CodeDiffResultVO>>().success(list, JSON.toJSONString(list,SerializerFeature.WriteNullListAsEmpty));
+        List<DiffClassInfoResult> diffCodeList = codeDiffService.getDiffCode(diffMethodParams).getDiffClasses();
+        List<CodeDiffResultVO> list = OrikaMapperUtils.mapList(diffCodeList, DiffClassInfoResult.class, CodeDiffResultVO.class);
+        return new UniqueApoResponse<List<CodeDiffResultVO>>().success(list, JSON.toJSONString(list, SerializerFeature.WriteNullListAsEmpty));
     }
 
 
@@ -131,10 +137,57 @@ public class CodeDiffController {
                 .nowVersion(nowVersion)
                 .codeManageTypeEnum(CodeManageTypeEnum.SVN)
                 .build();
-        List<ClassInfoResult> diffCodeList = codeDiffService.getDiffCode(diffMethodParams);
-        List<CodeDiffResultVO> list = OrikaMapperUtils.mapList(diffCodeList, ClassInfoResult.class, CodeDiffResultVO.class);
-        return new UniqueApoResponse<List<CodeDiffResultVO>>().success(list, JSON.toJSONString(list,SerializerFeature.WriteNullListAsEmpty));
+        List<DiffClassInfoResult> diffCodeList = codeDiffService.getDiffCode(diffMethodParams).getDiffClasses();
+        List<CodeDiffResultVO> list = OrikaMapperUtils.mapList(diffCodeList, DiffClassInfoResult.class, CodeDiffResultVO.class);
+        return new UniqueApoResponse<List<CodeDiffResultVO>>().success(list, JSON.toJSONString(list, SerializerFeature.WriteNullListAsEmpty));
     }
 
+
+    @ApiOperation("git获取影响接口")
+    @RequestMapping(value = "git/deduce/api", method = RequestMethod.GET)
+    public ApiResponse<DeduceApiVO> getGitDeduceApiList(
+            @ApiParam(required = true, name = "gitUrl", value = "git远程仓库地址")
+            @NotEmpty
+            @RequestParam(value = "gitUrl") String gitUrl,
+            @ApiParam(required = true, name = "baseVersion", value = "git原始分支或tag")
+            @NotEmpty
+            @RequestParam(value = "baseVersion") String baseVersion,
+            @ApiParam(required = true, name = "nowVersion", value = "git现分支或tag")
+            @NotEmpty
+            @RequestParam(value = "nowVersion") String nowVersion) {
+        DiffMethodParams diffMethodParams = DiffMethodParams.builder()
+                .repoUrl(StringUtils.trim(gitUrl))
+                .baseVersion(StringUtils.trim(baseVersion))
+                .nowVersion(StringUtils.trim(nowVersion))
+                .codeManageTypeEnum(CodeManageTypeEnum.GIT)
+                .build();
+        ApiModify apiModify = deduceApiService.deduceApi(diffMethodParams);
+        DeduceApiVO deduceApiVO = OrikaMapperUtils.map(apiModify, DeduceApiVO.class);
+        return new ApiResponse<DeduceApiVO>().success(deduceApiVO);
+    }
+
+
+    @ApiOperation("svn获取影响接口")
+    @RequestMapping(value = "svn/deduce/api", method = RequestMethod.GET)
+    public ApiResponse<DeduceApiVO> getSvnDeduceApiList(
+            @NotEmpty
+            @ApiParam(required = true, name = "svnUrl", value = "svn远程仓库地址,如svn:192.168.0.1:3690/svn")
+            @RequestParam(value = "svnUrl") String svnUrl,
+            @NotEmpty
+            @ApiParam(required = true, name = "baseVersion", value = "svn原始分支,如：1")
+            @RequestParam(value = "baseVersion") String baseVersion,
+            @NotEmpty
+            @ApiParam(required = true, name = "nowVersion", value = "svn现分支，如：2")
+            @RequestParam(value = "nowVersion") String nowVersion) {
+        DiffMethodParams diffMethodParams = DiffMethodParams.builder()
+                .repoUrl(StringUtils.trim(svnUrl))
+                .baseVersion(StringUtils.trim(baseVersion))
+                .nowVersion(StringUtils.trim(nowVersion))
+                .codeManageTypeEnum(CodeManageTypeEnum.SVN)
+                .build();
+        ApiModify apiModify = deduceApiService.deduceApi(diffMethodParams);
+        DeduceApiVO deduceApiVO = OrikaMapperUtils.map(apiModify, DeduceApiVO.class);
+        return new ApiResponse<DeduceApiVO>().success(deduceApiVO);
+    }
 
 }

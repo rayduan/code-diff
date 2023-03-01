@@ -1,9 +1,6 @@
 package com.dr.code.diff.vercontrol;
 
-import com.dr.code.diff.dto.ClassInfoResult;
-import com.dr.code.diff.dto.DiffEntryDto;
-import com.dr.code.diff.dto.MethodInfoResult;
-import com.dr.code.diff.dto.VersionControlDto;
+import com.dr.code.diff.dto.*;
 import com.dr.code.diff.enums.CodeManageTypeEnum;
 import com.dr.code.diff.util.MethodParserUtils;
 import com.dr.common.log.LoggerUtil;
@@ -42,12 +39,18 @@ public abstract class AbstractVersionControl {
 
     /**
      * 执行handler
+     *
      * @return
      */
-    public List<ClassInfoResult> handler(VersionControlDto versionControlDto) {
+    public DiffInfo handler(VersionControlDto versionControlDto) {
         this.versionControlDto = versionControlDto;
         getDiffCodeClasses();
-        return getDiffCodeMethods();
+        List<DiffClassInfoResult> diffCodeMethods = getDiffCodeMethods();
+        return DiffInfo.builder()
+                .newProjectPath(versionControlDto.getNewLocalBasePath())
+                .oldProjectPath(versionControlDto.getOldLocalBasePath())
+                .diffClasses(diffCodeMethods)
+                .build();
     }
 
 
@@ -66,12 +69,11 @@ public abstract class AbstractVersionControl {
 
 
     /**
-    * @date:2021/4/24
-    * @className:VersionControl
-    * @author:Administrator
-    * @description: 获取旧版本文件本地路径
-    *
-    */
+     * @date:2021/4/24
+     * @className:VersionControl
+     * @author:Administrator
+     * @description: 获取旧版本文件本地路径
+     */
     public abstract String getLocalNewPath(String filePackage);
 
 
@@ -80,7 +82,6 @@ public abstract class AbstractVersionControl {
      * @className:VersionControl
      * @author:Administrator
      * @description: 获取新版本文件本地路径
-     *
      */
     public abstract String getLocalOldPath(String filePackage);
 
@@ -90,22 +91,21 @@ public abstract class AbstractVersionControl {
      * @author:Administrator
      * @description: 获取差异方法
      */
-    public List<ClassInfoResult> getDiffCodeMethods() {
-        if(CollectionUtils.isEmpty(versionControlDto.getDiffClasses())){
+    public List<DiffClassInfoResult> getDiffCodeMethods() {
+        if (CollectionUtils.isEmpty(versionControlDto.getDiffClasses())) {
             return null;
         }
-        LoggerUtil.info(log,"需要对比的差异类数",versionControlDto.getDiffClasses().size());
-        List<CompletableFuture<ClassInfoResult>> priceFuture = versionControlDto.getDiffClasses().stream()
+        LoggerUtil.info(log, "需要对比的差异类数", versionControlDto.getDiffClasses().size());
+        List<CompletableFuture<DiffClassInfoResult>> priceFuture = versionControlDto.getDiffClasses().stream()
                 .map(item -> getClassMethods(getLocalOldPath(item.getNewPath()), getLocalNewPath(item.getNewPath()), item))
                 .collect(Collectors.toList());
         CompletableFuture.allOf(priceFuture.toArray(new CompletableFuture[0])).join();
-        List<ClassInfoResult> list = priceFuture.stream().map(CompletableFuture::join).filter(Objects::nonNull).collect(Collectors.toList());
-        if(!CollectionUtils.isEmpty(list)){
-            LoggerUtil.info(log,"计算出最终差异类数",list.size());
+        List<DiffClassInfoResult> list = priceFuture.stream().map(CompletableFuture::join).filter(Objects::nonNull).collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(list)) {
+            LoggerUtil.info(log, "计算出最终差异类数", list.size());
         }
         return list;
     }
-
 
 
     /**
@@ -116,17 +116,19 @@ public abstract class AbstractVersionControl {
      * @param diffEntry    差异类
      * @return
      */
-    private CompletableFuture<ClassInfoResult> getClassMethods(String oldClassFile, String mewClassFile, DiffEntryDto diffEntry) {
+    private CompletableFuture<DiffClassInfoResult> getClassMethods(String oldClassFile, String mewClassFile, DiffEntryDto diffEntry) {
         //多线程获取差异方法，此处只要考虑增量代码太多的情况下，每个类都需要遍历所有方法，采用多线程方式加快速度
         return CompletableFuture.supplyAsync(() -> {
-            String className = "";
-            if(diffEntry.getNewPath().contains("src/main/java/")){
+            String className;
+            if (diffEntry.getNewPath().contains("src/main/java/")) {
                 className = diffEntry.getNewPath().split("src/main/java/")[1].split("\\.")[0];
+            } else {
+                className = "";
             }
             String moduleName = diffEntry.getNewPath().split("/")[0];
             //新增类直接标记，不用计算方法
             if (DiffEntry.ChangeType.ADD.equals(diffEntry.getChangeType())) {
-                return ClassInfoResult.builder()
+                return DiffClassInfoResult.builder()
                         .classFile(className)
                         .type(DiffEntry.ChangeType.ADD.name())
                         .moduleName(moduleName)
@@ -153,7 +155,10 @@ public abstract class AbstractVersionControl {
             if (CollectionUtils.isEmpty(diffMethods)) {
                 return null;
             }
-            return ClassInfoResult.builder()
+            diffMethods.forEach(e ->
+                    e.setMethodSign(className + "#" + e.getMethodName() + "#" + String.join(",", e.getParameters()))
+            );
+            return DiffClassInfoResult.builder()
                     .classFile(className)
                     .methodInfos(diffMethods)
                     .type(DiffEntry.ChangeType.MODIFY.name())

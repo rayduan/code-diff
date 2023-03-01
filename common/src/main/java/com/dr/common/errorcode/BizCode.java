@@ -17,8 +17,10 @@ public enum BizCode implements Code {
     PARSE_JAVA_FILE(20004, "解析java类失败", "请确认类是否有语法错误"),
     GIT_AUTH_FAILED(20005, "git认证失败", "git认证失败"),
     LOAD_CLASS_FAIL(20006, "读取java类失败", "读取java类失败，请稍后再试"),
-    UNKNOWN_REPOSITY_URL(20007, "未知仓库地址", "请检查仓库url");
+    UNKNOWN_REPOSITY_URL(20007, "未知仓库地址", "请检查仓库url"),
+    GET_METHOD_INVOKE_LINK_FAIL(20008, "获取方法调用链失败", "获取方法调用链失败"),
 
+    COMPILE_CODE_FAIL(20009, "编译源码失败", "获取classes文件失败");
     private final int code;
     private final String info;
     private final String fixTips;

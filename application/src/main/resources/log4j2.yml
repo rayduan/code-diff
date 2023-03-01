@@ -12,7 +12,7 @@ Configuration:
       - name: log.sql.level
         value: trace
       - name: log.path
-        value: D://logs
+        value: /Users/rayduan/logs
   Appenders:
     Console:  #输出到控制台
       name: CONSOLE
