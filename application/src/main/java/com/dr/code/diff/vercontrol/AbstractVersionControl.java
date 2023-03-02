@@ -135,6 +135,8 @@ public abstract class AbstractVersionControl {
                 if (CollectionUtils.isEmpty(methodSet)) {
                     return null;
                 }
+                methodSet.forEach(e ->
+                        e.setMethodSign(xmlDiffClassName + "#" + e.getMethodName() + "#" + String.join(",", e.getParameters())));
                 DiffClassInfoResult classInfoResult = DiffClassInfoResult.builder()
                         .classFile(xmlDiffClassName)
                         .methodInfos(new ArrayList<>(methodSet))

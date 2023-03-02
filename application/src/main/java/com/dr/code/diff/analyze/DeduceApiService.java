@@ -78,8 +78,12 @@ public class DeduceApiService {
         if (!CollectionUtils.isEmpty(modifyMethods)) {
             modifyMethodSigns = modifyMethods.stream().map(DiffClassInfoResult::getMethodInfos).flatMap(Collection::stream).filter(Objects::nonNull).map(MethodInfoResult::getMethodSign).collect(Collectors.toList());
         }
-        getDiffApi(httpMethodInfoList, dubboMethodInfoList, modifyMethodSigns, apiModify);
-        getDiffApi(httpMethodInfoList, dubboMethodInfoList, addClassNames, apiModify);
+        if (!CollectionUtils.isEmpty(httpMethodInfoList)) {
+            getDiffApi(httpMethodInfoList, dubboMethodInfoList, modifyMethodSigns, apiModify);
+        }
+        if (!CollectionUtils.isEmpty(dubboMethodInfoList)) {
+            getDiffApi(httpMethodInfoList, dubboMethodInfoList, addClassNames, apiModify);
+        }
         return apiModify;
 
     }
