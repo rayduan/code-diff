@@ -24,10 +24,6 @@ public class MethodInfoResult {
      */
     public List<String> parameters;
 
-    /**
-     * 参数类型
-     */
-    public List<String> parameterTypes;
     public String methodSign;
 
 }

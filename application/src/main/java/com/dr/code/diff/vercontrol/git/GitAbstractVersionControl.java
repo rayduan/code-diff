@@ -95,19 +95,18 @@ public class GitAbstractVersionControl extends AbstractVersionControl {
             diff = nowGit.diff().setOldTree(baseTree).setNewTree(nowTree).setShowNameAndStatusOnly(true).call();
             //过滤出有效的差异代码
             Collection<DiffEntry> validDiffList = diff.stream()
-                    //只计算java文件
-                    .filter(e -> e.getNewPath().endsWith(".java"))
+                    //只计算java文件和xml
+                    .filter(e -> e.getNewPath().endsWith(".java") || e.getNewPath().endsWith(".xml"))
                     //排除测试文件
-                    .filter(e -> e.getNewPath().contains("src/main/java"))
+                    .filter(e -> {
+                        if (e.getNewPath().endsWith(".java")) {
+                            return e.getNewPath().contains("src/main/java");
+                        }
+                        return Boolean.TRUE;
+                    })
                     //只计算新增和变更文件
                     .filter(e -> DiffEntry.ChangeType.ADD.equals(e.getChangeType()) || DiffEntry.ChangeType.MODIFY.equals(e.getChangeType()))
                     .collect(Collectors.toList());
-//            Collection<DiffEntry> xmlDiffList = diff.stream()
-//                    //只计算xml文件
-//                    .filter(e -> e.getNewPath().endsWith(".xml"))
-//                    //只计算新增和变更文件
-//                    .filter(e -> DiffEntry.ChangeType.MODIFY.equals(e.getChangeType()))
-//                    .collect(Collectors.toList());
             //计算xml变更引起的mapper方法变更
             if (CollectionUtils.isEmpty(validDiffList)) {
                 LoggerUtil.info(log, "没有需要对比的类");

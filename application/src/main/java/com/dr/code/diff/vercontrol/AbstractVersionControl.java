@@ -3,13 +3,17 @@ package com.dr.code.diff.vercontrol;
 import com.dr.code.diff.dto.*;
 import com.dr.code.diff.enums.CodeManageTypeEnum;
 import com.dr.code.diff.util.MethodParserUtils;
+import com.dr.code.diff.util.XmlDiffUtils;
 import com.dr.common.log.LoggerUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -119,13 +123,32 @@ public abstract class AbstractVersionControl {
     private CompletableFuture<DiffClassInfoResult> getClassMethods(String oldClassFile, String mewClassFile, DiffEntryDto diffEntry) {
         //多线程获取差异方法，此处只要考虑增量代码太多的情况下，每个类都需要遍历所有方法，采用多线程方式加快速度
         return CompletableFuture.supplyAsync(() -> {
+            String moduleName = diffEntry.getNewPath().split("/")[0];
+            //mybatis的xml变更
+            if (mewClassFile.endsWith(".xml")) {
+                String xmlDiffClassName = XmlDiffUtils.getXmlDiffClassName(mewClassFile);
+                if (StringUtils.isBlank(xmlDiffClassName)) {
+                    return null;
+                }
+                HashSet<MethodInfoResult> methodSet = new HashSet<>();
+                XmlDiffUtils.getXmlDiffMethod(oldClassFile, mewClassFile, methodSet);
+                if (CollectionUtils.isEmpty(methodSet)) {
+                    return null;
+                }
+                DiffClassInfoResult classInfoResult = DiffClassInfoResult.builder()
+                        .classFile(xmlDiffClassName)
+                        .methodInfos(new ArrayList<>(methodSet))
+                        .type(DiffEntry.ChangeType.MODIFY.name())
+                        .moduleName(moduleName)
+                        .build();
+                return classInfoResult;
+            }
             String className;
             if (diffEntry.getNewPath().contains("src/main/java/")) {
                 className = diffEntry.getNewPath().split("src/main/java/")[1].split("\\.")[0];
             } else {
                 className = "";
             }
-            String moduleName = diffEntry.getNewPath().split("/")[0];
             //新增类直接标记，不用计算方法
             if (DiffEntry.ChangeType.ADD.equals(diffEntry.getChangeType())) {
                 return DiffClassInfoResult.builder()
