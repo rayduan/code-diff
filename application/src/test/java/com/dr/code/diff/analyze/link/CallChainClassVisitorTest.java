@@ -24,7 +24,7 @@ class CallChainClassVisitorTest extends CodeDiffApplicationTest {
 
     @Test
     void visitMethod() throws IOException {
-        String sourceFilePath = "/Users/xx/app/cmdb/b20bb96a8ca5be1955f9427ccc1aac521d6cb955/cmdb-core/target/classes/com/dr/cmdb/core/service/impl/CiItemServiceImpl.class";
+        String sourceFilePath = "/Users/rayduan/IdeaProjects/code-diff/application/target/classes/com/dr/code/diff/analyze/InvokeLinkBuildService.class";
         File fileReader = new File(sourceFilePath);
         ClassReader cr = new ClassReader(Files.newInputStream(fileReader.toPath()));
         List<MethodInfo> list = new ArrayList<>();

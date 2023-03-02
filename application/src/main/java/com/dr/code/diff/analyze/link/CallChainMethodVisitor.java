@@ -8,6 +8,8 @@ import com.dr.code.diff.enums.MethodNodeTypeEnum;
 import com.dr.code.diff.util.StringUtil;
 import jdk.internal.org.objectweb.asm.*;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -77,6 +79,25 @@ public class CallChainMethodVisitor extends MethodVisitor {
         super.visitMethodInsn(opcode, owner, name, desc, itf);
     }
 
+
+    public void visitInvokeDynamicInsn(String name, String descriptor, Handle bootstrapMethodHandle, Object... bootstrapMethodArguments)  {
+//        if (bootstrapMethodHandle.getTag() == Opcodes.H_INVOKESTATIC) {
+//            String lambdaClassName = bootstrapMethodHandle.getOwner().replace('/', '.');
+//            try {
+//                InputStream classStream = getClass().getClassLoader().getResourceAsStream(lambdaClassName + ".class");
+//                ClassReader classReader = new ClassReader(classStream);
+//                classReader.accept(new CallChainClassVisitor(null), ClassReader.EXPAND_FRAMES);
+//                List<MethodCall> lambdaMethodCalls = ((MethodCallVisitor) classReader.getAnnotationsVisitor()).getMethodCalls();
+//                for (MethodCall lambdaMethodCall : lambdaMethodCalls) {
+//                    lambdaMethodCall.setCallFromMethod(currentMethodName);
+//                    lambdaMethodCall.setCallFromMethodDesc(currentMethodDesc);
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+        super.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
+    }
     /**
      * 访问注释
      *
