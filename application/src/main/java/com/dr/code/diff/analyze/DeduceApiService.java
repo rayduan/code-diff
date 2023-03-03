@@ -49,7 +49,10 @@ public class DeduceApiService {
         //先获取源码,获取差异代码
         DiffInfo diffCode = codeDiffService.getDiffCode(diffMethodParams);
         //然后编译源码
-        String pomPath = diffCode.getNewProjectPath() + "pom.xml";
+        String pomPath = diffCode.getNewProjectPath() + "/pom.xml";
+        if (diffCode.getNewProjectPath().endsWith("/")) {
+            pomPath = diffCode.getNewProjectPath() + "pom.xml";
+        }
         LoggerUtil.info(log, "开始编译项目", pomPath);
         mavenCmdInvokeService.compileCode(pomPath);
         LoggerUtil.info(log, "项目编译完成");
