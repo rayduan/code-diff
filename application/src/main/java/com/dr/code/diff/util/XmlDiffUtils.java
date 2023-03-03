@@ -7,14 +7,16 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.w3c.dom.Node;
 import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.builder.Input;
-import org.xmlunit.diff.*;
+import org.xmlunit.diff.DefaultNodeMatcher;
+import org.xmlunit.diff.Diff;
+import org.xmlunit.diff.Difference;
+import org.xmlunit.diff.ElementSelectors;
 import org.xmlunit.xpath.JAXPXPathEngine;
-import org.w3c.dom.Node;
 
 import javax.xml.transform.Source;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 

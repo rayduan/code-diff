@@ -28,7 +28,7 @@ class InvokeLinkBuildServiceTest extends CodeDiffApplicationTest {
     @Test
     void getMethodsInvokeLink() {
         List<String> dirs = new ArrayList<String>();
-        dirs.add("/Users/rayduan/app/cmdb/b20bb96a8ca5be1955f9427ccc1aac521d6cb955");
+        dirs.add("/Users/rayduan/app/code-diff/45031856562f74eceb5a036062d6d8c1bdc26cba");
         List<String> excludeFiles = null;
         Map<MethodNodeTypeEnum, List<MethodInfo>> methodsInvokeLink = invokeLinkBuildService.getMethodsInvokeLink(dirs, excludeFiles);
         System.out.println(methodsInvokeLink);

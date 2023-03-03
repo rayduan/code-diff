@@ -47,7 +47,7 @@ public class CallChainAnnotationVisitor extends AnnotationVisitor {
     @Override
     public void visit(String name, Object value) {
         // 这里是url
-        this.requestInfo.setRequestUrl((String) value);
+        this.requestInfo.setRequestUrl(null == value ? "" : (String) value);
         super.visit(name, value);
     }
 

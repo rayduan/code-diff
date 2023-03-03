@@ -188,11 +188,11 @@ public class InvokeLinkBuildService {
                         setSubMethod(e, abstractSubMethodMap);
                     } else {
                         List<MethodInfo> subList = map.get(e.getMethodSign());
-                        if (!CollectionUtils.isEmpty(subList)) {
-                            //校验父节点中是否已经存在的子节点
-                            subList = subList.stream().filter(s -> !JSON.toJSONString(e).contains(s.getMethodSign())).collect(Collectors.toList());
+//                        if (!CollectionUtils.isEmpty(subList)) {
+//                            //校验父节点中是否已经存在的子节点
+//                            subList = subList.stream().filter(s -> !JSON.toJSONString(e).contains(s.getMethodSign())).collect(Collectors.toList());
                             e.setCallerMethods(subList);
-                        }
+//                        }
                     }
                     if (CollUtil.isNotEmpty(e.getCallerMethods())) {
                         // 设置子节点
@@ -214,10 +214,7 @@ public class InvokeLinkBuildService {
             //过滤出实现类匹配的方法
             methodInfoList = methodInfoList.stream().filter(e ->
                     e.getMethodName().equals(methodInfo.getMethodName()) && String.join(",", e.getMethodParams()).equals(String.join(",", methodInfo.getMethodParams()))
-            ).map(e -> {
-                e.setCallerMethods(null);
-                return e;
-            }).collect(Collectors.toList());
+            ).collect(Collectors.toList());
             methodInfo.setCallerMethods(methodInfoList);
         }
     }
