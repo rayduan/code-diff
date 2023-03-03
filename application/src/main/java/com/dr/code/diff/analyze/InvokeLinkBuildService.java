@@ -42,6 +42,7 @@ public class InvokeLinkBuildService {
      * ant路径匹配器
      */
     private static final AntPathMatcher antPathMatcher = new AntPathMatcher();
+    private static final String URL_PREFIX = "/";
     @Resource(name = "asyncExecutor")
     private Executor executor;
 
@@ -146,8 +147,8 @@ public class InvokeLinkBuildService {
             //初始化子节点
             httpMethodInfoList.forEach(e -> {
                 e.setCallerMethods(null);
-                String methodUrl = e.getClassInfo().getRequestUrl() + "/" + e.getMappingUrl();
-                if (e.getClassInfo().getRequestUrl().endsWith("/") || e.getMappingUrl().startsWith("/")) {
+                String methodUrl = e.getClassInfo().getRequestUrl() + URL_PREFIX + e.getMappingUrl();
+                if (e.getClassInfo().getRequestUrl().endsWith(URL_PREFIX) || e.getMappingUrl().startsWith(URL_PREFIX)) {
                     methodUrl = e.getClassInfo().getRequestUrl() + e.getMappingUrl();
                 }
                 e.setMappingUrl(methodUrl);
@@ -188,11 +189,13 @@ public class InvokeLinkBuildService {
                         setSubMethod(e, abstractSubMethodMap);
                     } else {
                         List<MethodInfo> subList = map.get(e.getMethodSign());
-//                        if (!CollectionUtils.isEmpty(subList)) {
-//                            //校验父节点中是否已经存在的子节点
-//                            subList = subList.stream().filter(s -> !JSON.toJSONString(e).contains(s.getMethodSign())).collect(Collectors.toList());
-                            e.setCallerMethods(subList);
-//                        }
+                        if (!CollectionUtils.isEmpty(subList)) {
+                            //校验父节点中是否已经存在的子节点
+                            List<MethodInfo> vaildSubList = subList.stream().filter(s -> !JSON.toJSONString(e).contains(s.getMethodSign())).collect(Collectors.toList());
+                            if (!CollectionUtils.isEmpty(vaildSubList)) {
+                                e.setCallerMethods(vaildSubList);
+                            }
+                        }
                     }
                     if (CollUtil.isNotEmpty(e.getCallerMethods())) {
                         // 设置子节点
@@ -211,6 +214,10 @@ public class InvokeLinkBuildService {
     private void setSubMethod(MethodInfo methodInfo, Map<String, List<MethodInfo>> abstractSubMethodMap) {
         if (!CollectionUtils.isEmpty(abstractSubMethodMap) && abstractSubMethodMap.containsKey(methodInfo.getClassInfo().getClassName())) {
             List<MethodInfo> methodInfoList = abstractSubMethodMap.get(methodInfo.getClassInfo().getClassName());
+            if (CollectionUtils.isEmpty(methodInfoList)) {
+                return;
+            }
+            methodInfoList.forEach(e -> e.setCallerMethods(null));
             //过滤出实现类匹配的方法
             methodInfoList = methodInfoList.stream().filter(e ->
                     e.getMethodName().equals(methodInfo.getMethodName()) && String.join(",", e.getMethodParams()).equals(String.join(",", methodInfo.getMethodParams()))
