@@ -5,6 +5,7 @@ import com.dr.code.diff.analyze.bean.MethodInfo;
 import com.dr.code.diff.dto.*;
 import com.dr.code.diff.enums.MethodNodeTypeEnum;
 import com.dr.code.diff.service.CodeDiffService;
+import com.dr.code.diff.util.StringUtil;
 import com.dr.common.log.LoggerUtil;
 import com.dr.common.utils.mapper.OrikaMapperUtils;
 import com.google.common.collect.Lists;
@@ -49,10 +50,7 @@ public class DeduceApiService {
         //先获取源码,获取差异代码
         DiffInfo diffCode = codeDiffService.getDiffCode(diffMethodParams);
         //然后编译源码
-        String pomPath = diffCode.getNewProjectPath() + "/pom.xml";
-        if (diffCode.getNewProjectPath().endsWith("/")) {
-            pomPath = diffCode.getNewProjectPath() + "pom.xml";
-        }
+        String pomPath = StringUtil.connectPath(diffCode.getNewProjectPath(), "pom.xml");
         LoggerUtil.info(log, "开始编译项目", pomPath);
         mavenCmdInvokeService.compileCode(pomPath);
         LoggerUtil.info(log, "项目编译完成");

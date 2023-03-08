@@ -29,7 +29,19 @@ class CallChainClassVisitorTest extends CodeDiffApplicationTest {
         ClassReader cr = new ClassReader(Files.newInputStream(fileReader.toPath()));
         List<MethodInfo> list = new ArrayList<>();
         ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
-        CallChainClassVisitor cv = new CallChainClassVisitor(cw,list);
+        CallChainClassVisitor cv = new CallChainClassVisitor(cw, list, null);
+        cr.accept(cv, ClassReader.SKIP_FRAMES);
+        System.out.println(list);
+    }
+
+    @Test
+    void visitMethod2() throws IOException {
+        String sourceFilePath = "/Users/rayduan/IdeaProjects/relation-demo/target/classes/com/dr/test/MyClassInvoke.class";
+        File fileReader = new File(sourceFilePath);
+        ClassReader cr = new ClassReader(Files.newInputStream(fileReader.toPath()));
+        List<MethodInfo> list = new ArrayList<>();
+        ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+        CallChainClassVisitor cv = new CallChainClassVisitor(cw, list, null);
         cr.accept(cv, ClassReader.SKIP_FRAMES);
         System.out.println(list);
     }

@@ -66,6 +66,8 @@ public class MavenCmdInvokeService {
      * @param pomPath pom路径
      */
     public void compileCode(String pomPath) {
+        LoggerUtil.info(log,"开始编译代码");
         operationMavenCmd(pomPath, "clean compile -Dmaven.test.skip=true");
+        LoggerUtil.info(log,"代码编译完成");
     }
 }

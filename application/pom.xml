@@ -151,10 +151,10 @@
             <artifactId>xmlunit-core</artifactId>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>org.javers</groupId>-->
-<!--            <artifactId>javers-core</artifactId>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-model</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

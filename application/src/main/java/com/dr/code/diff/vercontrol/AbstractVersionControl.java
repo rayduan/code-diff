@@ -59,6 +59,17 @@ public abstract class AbstractVersionControl {
 
 
     /**
+     * 下载代码
+     *
+     * @param methodInvokeDto 方法调用dto
+     * @return {@link String}
+     */
+    public abstract String downloadCode(MethodInvokeDto methodInvokeDto);
+
+
+
+
+    /**
      * @date:2021/4/5
      * @className:VersionControl
      * @author:Administrator

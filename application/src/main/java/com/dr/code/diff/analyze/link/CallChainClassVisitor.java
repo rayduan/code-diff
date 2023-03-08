@@ -1,5 +1,6 @@
 package com.dr.code.diff.analyze.link;
 
+import com.dr.code.diff.analyze.bean.AdapterContext;
 import com.dr.code.diff.analyze.bean.ClassInfo;
 import com.dr.code.diff.analyze.bean.MethodInfo;
 import com.dr.code.diff.analyze.bean.RequestInfo;
@@ -42,13 +43,20 @@ public class CallChainClassVisitor extends ClassVisitor {
 
 
     /**
+     * 适配器上下文
+     */
+    private AdapterContext adapterContext;
+
+
+    /**
      * 调用链访问者构造函数
      *
      * @param cv 类访问者
      */
-    public CallChainClassVisitor(ClassVisitor cv, List<MethodInfo> list) {
+    public CallChainClassVisitor(ClassVisitor cv, List<MethodInfo> list, AdapterContext adapterContext) {
         super(Opcodes.ASM5, cv);
         this.methods = list;
+        this.adapterContext = adapterContext;
     }
 
     /**
@@ -140,7 +148,7 @@ public class CallChainClassVisitor extends ClassVisitor {
         MethodInfo currentMethod = builder.build();
         List<MethodInfo> callerMethods = new ArrayList<>();
         this.methods.add(currentMethod);
-        return new CallChainMethodVisitor(super.visitMethod(access, name, descriptor, signature, exceptions), currentMethod, callerMethods);
+        return new CallChainMethodVisitor(super.visitMethod(access, name, descriptor, signature, exceptions), currentMethod, callerMethods, adapterContext);
     }
 
 

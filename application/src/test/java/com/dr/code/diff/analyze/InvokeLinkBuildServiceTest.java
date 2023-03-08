@@ -1,5 +1,6 @@
 package com.dr.code.diff.analyze;
 
+import com.alibaba.fastjson.JSON;
 import com.dr.code.diff.CodeDiffApplicationTest;
 import com.dr.code.diff.analyze.bean.MethodInfo;
 import com.dr.code.diff.enums.MethodNodeTypeEnum;
@@ -31,6 +32,18 @@ class InvokeLinkBuildServiceTest extends CodeDiffApplicationTest {
         dirs.add("/Users/rayduan/app/code-diff/45031856562f74eceb5a036062d6d8c1bdc26cba");
         List<String> excludeFiles = null;
         Map<MethodNodeTypeEnum, List<MethodInfo>> methodsInvokeLink = invokeLinkBuildService.getMethodsInvokeLink(dirs, excludeFiles);
-        System.out.println(methodsInvokeLink);
+        System.out.println(JSON.toJSON(methodsInvokeLink));
     }
+
+
+    @Test
+    void getMethodsInvokeLink2() {
+        List<String> dirs = new ArrayList<String>();
+        dirs.add("/Users/rayduan/IdeaProjects/code-diff/application/target/classes");
+        List<String> excludeFiles = null;
+        Map<MethodNodeTypeEnum, List<MethodInfo>> methodsInvokeLink = invokeLinkBuildService.getMethodsInvokeLink(dirs, excludeFiles);
+        System.out.println(JSON.toJSON(methodsInvokeLink));
+    }
+
+
 }

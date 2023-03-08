@@ -2,6 +2,7 @@ package com.dr.code.diff.vercontrol;
 
 import com.dr.code.diff.dto.DiffClassInfoResult;
 import com.dr.code.diff.dto.DiffInfo;
+import com.dr.code.diff.dto.MethodInvokeDto;
 import com.dr.code.diff.dto.VersionControlDto;
 import com.dr.code.diff.enums.CodeManageTypeEnum;
 import org.springframework.beans.BeansException;
@@ -80,4 +81,11 @@ public class VersionControlHandlerFactory implements CommandLineRunner, Applicat
     }
 
 
+    public static String downloadCode(MethodInvokeDto methodInvokeDto) {
+        CodeManageTypeEnum codeManageTypeEnum = methodInvokeDto.getCodeManageTypeEnum();
+        if (handlerMap.containsKey(codeManageTypeEnum.getValue())) {
+            return handlerMap.get(codeManageTypeEnum.getValue()).downloadCode(methodInvokeDto);
+        }
+        return null;
+    }
 }

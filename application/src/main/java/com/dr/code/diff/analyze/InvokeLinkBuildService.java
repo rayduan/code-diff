@@ -3,9 +3,14 @@ package com.dr.code.diff.analyze;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileUtil;
 import com.alibaba.fastjson.JSON;
+import com.dr.code.diff.analyze.bean.AdapterContext;
 import com.dr.code.diff.analyze.bean.MethodInfo;
 import com.dr.code.diff.analyze.link.CallChainClassVisitor;
 import com.dr.code.diff.enums.MethodNodeTypeEnum;
+import com.dr.code.diff.util.StringUtil;
+import com.dr.common.errorcode.BaseCode;
+import com.dr.common.errorcode.BizCode;
+import com.dr.common.exception.BizException;
 import com.dr.common.log.LoggerUtil;
 import com.dr.common.utils.mapper.OrikaMapperUtils;
 import com.google.common.collect.Lists;
@@ -13,12 +18,16 @@ import jdk.internal.org.objectweb.asm.ClassReader;
 import jdk.internal.org.objectweb.asm.ClassWriter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.springframework.stereotype.Service;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -54,6 +63,7 @@ public class InvokeLinkBuildService {
      * @return {@link List}<{@link MethodInfo}>
      */
     public Map<MethodNodeTypeEnum, List<MethodInfo>> getMethodsInvokeLink(List<String> classesDir, List<String> excludeClasses) {
+        LoggerUtil.info(log, "开始获取调用链");
         if (CollectionUtils.isEmpty(classesDir)) {
             LoggerUtil.info(log, "请正确填写class文件地址");
             return Collections.emptyMap();
@@ -61,20 +71,39 @@ public class InvokeLinkBuildService {
         List<MethodInfo> allMethods = new ArrayList<>();
         classesDir.forEach(
                 e -> {
-                    //获取一个目录下的所有class文件
-                    List<File> files = FileUtil.loopFiles(new File(e), pathname -> pathname.getName().endsWith(".class"));
-                    if (CollectionUtils.isEmpty(files)) {
-                        return;
+                    try {
+                        //获取项目的groupId用于调用链降噪
+                        String pomPath = StringUtil.connectPath(e, "pom.xml");
+                        MavenXpp3Reader reader = new MavenXpp3Reader();
+                        String groupId = "";
+                        try {
+                            Model model = reader.read(new FileReader(pomPath));
+                            groupId = model.getGroupId();
+                            if (!StringUtils.isEmpty(groupId)) {
+                                groupId = groupId.replace(".", "/");
+                            }
+                        } catch (FileNotFoundException fileNotFoundException) {
+                            LoggerUtil.error(log, "非maven项目或者获取pom路径有误!");
+                        }
+                        AdapterContext adapterContext = AdapterContext.builder().basePackagePath(groupId).build();
+                        //获取一个目录下的所有class文件
+                        List<File> files = FileUtil.loopFiles(new File(e), pathname -> pathname.getName().endsWith(".class"));
+                        if (CollectionUtils.isEmpty(files)) {
+                            return;
+                        }
+                        //并发获取每个方法的调用方法
+                        List<CompletableFuture<List<MethodInfo>>> priceFuture = files.stream()
+                                .map(item -> CompletableFuture.supplyAsync(() -> getSingleClassMethodsInvoke(item, excludeClasses, adapterContext), executor))
+                                .collect(Collectors.toList());
+                        CompletableFuture.allOf(priceFuture.toArray(new CompletableFuture[0])).join();
+                        List<MethodInfo> list = priceFuture.stream().map(CompletableFuture::join).flatMap(Collection::stream).filter(Objects::nonNull).collect(Collectors.toList());
+                        allMethods.addAll(list);
+                    } catch (Exception ex) {
+                        throw new BizException(BizCode.GET_METHOD_INVOKE_LINK_FAIL);
                     }
-                    //并发获取每个方法的调用方法
-                    List<CompletableFuture<List<MethodInfo>>> priceFuture = files.stream()
-                            .map(item -> CompletableFuture.supplyAsync(() -> getSingleClassMethodsInvoke(item, excludeClasses), executor))
-                            .collect(Collectors.toList());
-                    CompletableFuture.allOf(priceFuture.toArray(new CompletableFuture[0])).join();
-                    List<MethodInfo> list = priceFuture.stream().map(CompletableFuture::join).flatMap(Collection::stream).filter(Objects::nonNull).collect(Collectors.toList());
-                    allMethods.addAll(list);
                 }
         );
+        LoggerUtil.info(log, "调用链获取完成");
         return buildMethodLink(allMethods);
     }
 
@@ -85,7 +114,7 @@ public class InvokeLinkBuildService {
      * @param file 文件
      * @return {@link List}<{@link MethodInfo}>
      */
-    public List<MethodInfo> getSingleClassMethodsInvoke(File file, List<String> excludeClasses) {
+    public List<MethodInfo> getSingleClassMethodsInvoke(File file, List<String> excludeClasses, AdapterContext adapterContext) {
         if (!CollectionUtils.isEmpty(excludeClasses)) {
             boolean excludeFlag = excludeClasses.stream().allMatch(e -> antPathMatcher.match(e, file.getPath()));
             if (excludeFlag) {
@@ -96,7 +125,7 @@ public class InvokeLinkBuildService {
         try {
             ClassReader cr = new ClassReader(Files.newInputStream(file.toPath()));
             ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
-            CallChainClassVisitor cv = new CallChainClassVisitor(cw, list);
+            CallChainClassVisitor cv = new CallChainClassVisitor(cw, list, adapterContext);
             cr.accept(cv, ClassReader.SKIP_FRAMES);
         } catch (Exception e) {
             LoggerUtil.error(log, "获取调用链失败", e.getMessage());

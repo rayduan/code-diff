@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.dr.code.diff.config.CustomizeConfig;
 import com.dr.code.diff.dto.ChangeLine;
 import com.dr.code.diff.dto.DiffEntryDto;
+import com.dr.code.diff.dto.MethodInvokeDto;
 import com.dr.code.diff.enums.CodeManageTypeEnum;
 import com.dr.code.diff.enums.GitUrlTypeEnum;
 import com.dr.code.diff.util.GitRepoUtil;
@@ -62,30 +63,8 @@ public class GitAbstractVersionControl extends AbstractVersionControl {
         try {
             String localBaseRepoDir = GitRepoUtil.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getGitLocalBaseRepoDir(), super.versionControlDto.getBaseVersion());
             String localNowRepoDir = GitRepoUtil.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getGitLocalBaseRepoDir(), super.versionControlDto.getNowVersion());
-            Git baseGit = null, nowGit = null;
-            GitUrlTypeEnum gitUrlTypeEnum = GitRepoUtil.judgeUrlType(super.versionControlDto.getRepoUrl());
-            switch (Objects.requireNonNull(gitUrlTypeEnum)) {
-                case HTTP: {
-                    //原有代码git对象
-                    baseGit = GitRepoUtil.httpCloneRepository(super.versionControlDto.getRepoUrl(), localBaseRepoDir, super.versionControlDto.getBaseVersion(), customizeConfig.getGitUserName(), customizeConfig.getGitPassWord());
-                    //现有代码git对象
-                    nowGit = GitRepoUtil.httpCloneRepository(super.versionControlDto.getRepoUrl(), localNowRepoDir, super.versionControlDto.getNowVersion(), customizeConfig.getGitUserName(), customizeConfig.getGitPassWord());
-                    break;
-                }
-                case SSH: {
-                    localBaseRepoDir += GitUrlTypeEnum.SSH.getValue();
-                    localNowRepoDir += GitUrlTypeEnum.SSH.getValue();
-                    //原有代码git对象
-                    baseGit = GitRepoUtil.sshCloneRepository(super.versionControlDto.getRepoUrl(), localBaseRepoDir, super.versionControlDto.getBaseVersion(), customizeConfig.getGitSshPrivateKey());
-                    //现有代码git对象
-                    nowGit = GitRepoUtil.sshCloneRepository(super.versionControlDto.getRepoUrl(), localNowRepoDir, super.versionControlDto.getNowVersion(), customizeConfig.getGitSshPrivateKey());
-                    break;
-                }
-                default: {
-                    LoggerUtil.error(log, "未知类型仓库地址");
-                    throw new BizException(BizCode.UNKNOWN_REPOSITY_URL);
-                }
-            }
+            Git baseGit = getGitInfo(super.versionControlDto.getRepoUrl(), super.versionControlDto.getBaseVersion());
+            Git nowGit = getGitInfo(super.versionControlDto.getRepoUrl(), super.versionControlDto.getNowVersion());
             super.versionControlDto.setNewLocalBasePath(localNowRepoDir);
             super.versionControlDto.setOldLocalBasePath(localBaseRepoDir);
             AbstractTreeIterator baseTree = GitRepoUtil.prepareTreeParser(baseGit.getRepository(), super.versionControlDto.getBaseVersion());
@@ -150,6 +129,53 @@ public class GitAbstractVersionControl extends AbstractVersionControl {
 
     }
 
+
+    /**
+     * 下载代码
+     *
+     * @param methodInvokeDto 方法调用dto
+     * @return {@link String}
+     */
+    @Override
+    public String downloadCode(MethodInvokeDto methodInvokeDto) {
+        getGitInfo(methodInvokeDto.getRepoUrl(), methodInvokeDto.getBranchName());
+        return GitRepoUtil.getLocalDir(methodInvokeDto.getRepoUrl(), customizeConfig.getGitLocalBaseRepoDir(), methodInvokeDto.getBranchName());
+    }
+
+
+    /**
+     * git获取信息
+     *
+     * @param repoUrl    仓库url
+     * @param branchName 分支机构名称
+     * @return {@link Git}
+     */
+    public Git getGitInfo(String repoUrl, String branchName) {
+        Git git = null;
+        String localBaseRepoDir = GitRepoUtil.getLocalDir(repoUrl, customizeConfig.getGitLocalBaseRepoDir(), branchName);
+        GitUrlTypeEnum gitUrlTypeEnum = GitRepoUtil.judgeUrlType(repoUrl);
+        if (null == gitUrlTypeEnum) {
+            throw new BizException(BizCode.UNKNOWN_REPOSITY_URL);
+        }
+        switch (Objects.requireNonNull(gitUrlTypeEnum)) {
+            case HTTP: {
+                //原有代码git对象
+                git = GitRepoUtil.httpCloneRepository(repoUrl, localBaseRepoDir, branchName, customizeConfig.getGitUserName(), customizeConfig.getGitPassWord());
+                break;
+            }
+            case SSH: {
+                localBaseRepoDir += GitUrlTypeEnum.SSH.getValue();
+                //原有代码git对象
+                git = GitRepoUtil.sshCloneRepository(repoUrl, localBaseRepoDir, branchName, customizeConfig.getGitSshPrivateKey());
+                break;
+            }
+            default: {
+                LoggerUtil.error(log, "未知类型仓库地址");
+                throw new BizException(BizCode.UNKNOWN_REPOSITY_URL);
+            }
+        }
+        return git;
+    }
 
     /**
      * @param filePackage

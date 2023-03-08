@@ -1,6 +1,7 @@
 package com.dr.code.diff.vercontrol.svn;
 
 import com.dr.code.diff.config.CustomizeConfig;
+import com.dr.code.diff.dto.MethodInvokeDto;
 import com.dr.code.diff.enums.CodeManageTypeEnum;
 import com.dr.code.diff.util.PathUtils;
 import com.dr.code.diff.util.SvnRepoUtil;
@@ -103,4 +104,14 @@ public class SvnAbstractVersionControl extends AbstractVersionControl {
         return PathUtils.getClassFilePath(super.versionControlDto.getOldLocalBasePath(), filePackage);
     }
 
+    /**
+     * 下载代码
+     *
+     * @param methodInvokeDto 方法调用dto
+     * @return {@link String}
+     */
+    @Override
+    public String downloadCode(MethodInvokeDto methodInvokeDto) {
+        return null;
+    }
 }

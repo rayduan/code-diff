@@ -35,5 +35,20 @@ public class StringUtil {
     }
 
 
+    /**
+     * 连接路径
+     *
+     * @param path     路径
+     * @param filename 文件名
+     * @return {@link String}
+     */
+    public static String connectPath(String path, String filename) {
+        if (path.endsWith("/")) {
+            return path + filename;
+        } else {
+            return path + "/" + filename;
+        }
+    }
+
 
 }

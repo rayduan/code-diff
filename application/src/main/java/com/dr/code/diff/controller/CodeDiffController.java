@@ -3,13 +3,16 @@ package com.dr.code.diff.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.dr.code.diff.analyze.DeduceApiService;
+import com.dr.code.diff.analyze.bean.MethodInfo;
 import com.dr.code.diff.dto.ApiModify;
 import com.dr.code.diff.dto.DiffClassInfoResult;
 import com.dr.code.diff.dto.DiffMethodParams;
+import com.dr.code.diff.dto.MethodInvokeParam;
 import com.dr.code.diff.enums.CodeManageTypeEnum;
 import com.dr.code.diff.service.CodeDiffService;
 import com.dr.code.diff.vo.result.CodeDiffResultVO;
 import com.dr.code.diff.vo.result.DeduceApiVO;
+import com.dr.code.diff.vo.result.MethodInfoVO;
 import com.dr.common.response.ApiResponse;
 import com.dr.common.response.UniqueApoResponse;
 import com.dr.common.utils.mapper.OrikaMapperUtils;
@@ -25,7 +28,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author rui.duan
@@ -188,6 +193,24 @@ public class CodeDiffController {
         ApiModify apiModify = deduceApiService.deduceApi(diffMethodParams);
         DeduceApiVO deduceApiVO = OrikaMapperUtils.map(apiModify, DeduceApiVO.class);
         return new ApiResponse<DeduceApiVO>().success(deduceApiVO);
+    }
+
+    @ApiOperation("获取git调用链")
+    @RequestMapping(value = "git/method/link", method = RequestMethod.GET)
+    public ApiResponse<Map<String, List<MethodInfoVO>>> getGitMethodLink(
+            @ApiParam(required = true, name = "gitUrl", value = "git远程仓库地址")
+            @NotEmpty
+            @RequestParam(value = "gitUrl") String gitUrl,
+            @ApiParam(required = true, name = "branchName", value = "git分支或tag")
+            @NotEmpty
+            @RequestParam(value = "branchName") String branchName) {
+        MethodInvokeParam methodInvokeParam = MethodInvokeParam.builder().repoUrl(gitUrl).branchName(branchName).codeManageTypeEnum(CodeManageTypeEnum.GIT).build();
+        Map<String, List<MethodInfo>> staticMethodInvoke = codeDiffService.getStaticMethodInvoke(methodInvokeParam);
+        Map<String, List<MethodInfoVO>> map = new HashMap<>();
+        staticMethodInvoke.forEach((k, v) -> {
+            map.put(k, OrikaMapperUtils.mapList(v, MethodInfo.class, MethodInfoVO.class));
+        });
+        return new ApiResponse<Map<String, List<MethodInfoVO>>>().success(map);
     }
 
 }

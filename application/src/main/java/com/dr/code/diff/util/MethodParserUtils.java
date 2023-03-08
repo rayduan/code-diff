@@ -81,18 +81,17 @@ public class MethodParserUtils {
 
         /**
          * 构造函数变更
+         *
          * @param n
          * @param list
          */
         @Override
-        public void visit(final ConstructorDeclaration n, List<MethodInfoResult> list){
+        public void visit(final ConstructorDeclaration n, List<MethodInfoResult> list) {
             n.removeComment();
             //删除方法内行注释
-            List<Comment> comments =  n.getAllContainedComments();
+            List<Comment> comments = n.getAllContainedComments();
             for (Comment comment : comments) {
-                if (comment instanceof LineComment) {
-                    comment.remove();
-                }
+                comment.remove();
             }
             String md5 = SecureUtil.md5(n.toString());
             NodeList<Parameter> parameters = n.getParameters();
@@ -118,7 +117,7 @@ public class MethodParserUtils {
             //删除外部注释
             m.removeComment();
             //删除方法内行注释
-            List<Comment> comments =  m.getAllContainedComments();
+            List<Comment> comments = m.getAllContainedComments();
             for (Comment comment : comments) {
                 if (comment instanceof LineComment) {
                     comment.remove();
@@ -143,7 +142,6 @@ public class MethodParserUtils {
             list.add(result);
             super.visit(m, list);
         }
-
 
 
     }

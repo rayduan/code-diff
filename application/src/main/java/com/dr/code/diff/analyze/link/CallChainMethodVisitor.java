@@ -1,5 +1,6 @@
 package com.dr.code.diff.analyze.link;
 
+import com.dr.code.diff.analyze.bean.AdapterContext;
 import com.dr.code.diff.analyze.bean.ClassInfo;
 import com.dr.code.diff.analyze.bean.MethodInfo;
 import com.dr.code.diff.analyze.bean.RequestInfo;
@@ -7,6 +8,7 @@ import com.dr.code.diff.analyze.constant.AnnotationConstant;
 import com.dr.code.diff.enums.MethodNodeTypeEnum;
 import com.dr.code.diff.util.StringUtil;
 import jdk.internal.org.objectweb.asm.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,16 +42,22 @@ public class CallChainMethodVisitor extends MethodVisitor {
      */
     private RequestInfo requestInfo;
 
-    public CallChainMethodVisitor(MethodVisitor mv, MethodInfo currentMethod, List<MethodInfo> callerMethods) {
+
+    /**
+     * 适配器上下文
+     */
+    private AdapterContext adapterContext;
+
+    public CallChainMethodVisitor(MethodVisitor mv, MethodInfo currentMethod, List<MethodInfo> callerMethods, AdapterContext adapterContext) {
         super(Opcodes.ASM5, mv);
         this.callerMethods = callerMethods;
         this.currentMethod = currentMethod;
+        this.adapterContext = adapterContext;
     }
 
     public void visitParameter(String name, int access) {
         super.visitParameter(name, access);
     }
-
 
 
     @Override
@@ -59,8 +67,12 @@ public class CallChainMethodVisitor extends MethodVisitor {
             // Ignore constructor and class initializer
             return;
         }
-//        // 如果当前指令是调用方法的指令
-//        if (opcode == Opcodes.INVOKEVIRTUAL || opcode == Opcodes.INVOKESPECIAL || opcode == Opcodes.INVOKESTATIC || opcode == Opcodes.INVOKEINTERFACE || opcode == Opcodes.INVOKEDYNAMIC) {
+        //非本包调用过滤
+        if (null != adapterContext && StringUtils.isNotBlank(adapterContext.getBasePackagePath())) {
+            if (!owner.contains(adapterContext.getBasePackagePath())) {
+                return;
+            }
+        }
         // 记录被调用方法的信息
         ClassInfo classInfo = ClassInfo.builder().className(owner).build();
         Type[] argumentTypes = Type.getArgumentTypes(desc);
@@ -75,12 +87,11 @@ public class CallChainMethodVisitor extends MethodVisitor {
                 .abstractFlag(Boolean.FALSE)
                 .build();
         this.callerMethods.add(methodCaller);
-//        }
         super.visitMethodInsn(opcode, owner, name, desc, itf);
     }
 
 
-    public void visitInvokeDynamicInsn(String name, String descriptor, Handle bootstrapMethodHandle, Object... bootstrapMethodArguments)  {
+    public void visitInvokeDynamicInsn(String name, String descriptor, Handle bootstrapMethodHandle, Object... bootstrapMethodArguments) {
 //        if (bootstrapMethodHandle.getTag() == Opcodes.H_INVOKESTATIC) {
 //            String lambdaClassName = bootstrapMethodHandle.getOwner().replace('/', '.');
 //            try {
@@ -98,6 +109,7 @@ public class CallChainMethodVisitor extends MethodVisitor {
 //        }
         super.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
     }
+
     /**
      * 访问注释
      *
