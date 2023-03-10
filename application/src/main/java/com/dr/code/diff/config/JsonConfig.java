@@ -47,6 +47,8 @@ public class JsonConfig implements WebMvcConfigurer {
                 SerializerFeature.WriteNullStringAsEmpty,
                 //空布尔值返回false
                 SerializerFeature.WriteNullBooleanAsFalse,
+                //禁止循环引用
+                SerializerFeature.DisableCircularReferenceDetect,
                 //结果是否格式化,默认为false
                 SerializerFeature.PrettyFormat);
 
