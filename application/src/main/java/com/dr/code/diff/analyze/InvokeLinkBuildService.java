@@ -146,7 +146,7 @@ public class InvokeLinkBuildService {
             return Collections.emptyMap();
         }
         Map<MethodNodeTypeEnum, List<MethodInfo>> map = new HashMap<>();
-        Map<String, List<MethodInfo>> methodCallMap = allMethods.stream().collect(Collectors.toMap(MethodInfo::getMethodSign, MethodInfo::getCallerMethods));
+        Map<String, List<MethodInfo>> methodCallMap = allMethods.stream().collect(Collectors.toMap(MethodInfo::getMethodSign, MethodInfo::getCallerMethods, (v1, v2) -> v2));
         //按照抽象方法的类名和其实现方法分组
         Map<String, List<MethodInfo>> abstractSubMethodMap = allMethods.stream().filter(e -> StringUtils.isNotBlank(e.getClassInfo().getSuperClassName())).collect(Collectors.groupingBy(e -> e.getClassInfo().getSuperClassName()));
         List<MethodInfo> allInterFaceList = new ArrayList<>();
