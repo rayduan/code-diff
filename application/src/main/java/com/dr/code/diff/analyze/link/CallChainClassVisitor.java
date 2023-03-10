@@ -179,7 +179,7 @@ public class CallChainClassVisitor extends ClassVisitor {
     @Override
     public void visitEnd() {
         if (null != this.requestInfo) {
-            this.classInfo.setRequestUrl(this.requestInfo.getRequestUrl());
+            this.classInfo.setRequestUrl(null == this.requestInfo.getRequestUrl() ? "" : this.requestInfo.getRequestUrl());
         }
         super.visitEnd();
     }

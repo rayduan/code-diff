@@ -175,10 +175,21 @@ public class InvokeLinkBuildService {
         if (!CollectionUtils.isEmpty(httpMethodInfoList)) {
             //初始化子节点
             httpMethodInfoList.forEach(e -> {
+                //重置调用节点，避免循环引用
                 e.setCallerMethods(null);
-                String methodUrl = e.getClassInfo().getRequestUrl() + URL_PREFIX + e.getMappingUrl();
-                if (e.getClassInfo().getRequestUrl().endsWith(URL_PREFIX) || e.getMappingUrl().startsWith(URL_PREFIX)) {
-                    methodUrl = e.getClassInfo().getRequestUrl() + e.getMappingUrl();
+                String controllerMappingUrl = e.getClassInfo().getRequestUrl();
+                String methodMappingUrl = e.getMappingUrl();
+                if (StringUtils.isBlank(controllerMappingUrl)) {
+                    controllerMappingUrl = "";
+                }
+                if (StringUtils.isBlank(methodMappingUrl)) {
+                    methodMappingUrl = "";
+                }
+                String methodUrl = "";
+                if (controllerMappingUrl.endsWith(URL_PREFIX) && methodMappingUrl.startsWith(URL_PREFIX)) {
+                    methodUrl = controllerMappingUrl + methodMappingUrl;
+                } else {
+                    methodUrl = StringUtil.connectPath(controllerMappingUrl, methodMappingUrl);
                 }
                 e.setMappingUrl(methodUrl);
             });

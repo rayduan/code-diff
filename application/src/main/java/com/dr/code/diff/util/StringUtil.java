@@ -43,6 +43,9 @@ public class StringUtil {
      * @return {@link String}
      */
     public static String connectPath(String path, String filename) {
+        if(StringUtils.isBlank(path)){
+            return filename;
+        }
         if (path.endsWith("/")) {
             return path + filename;
         } else {

@@ -149,7 +149,7 @@ public class GitRepoUtil {
                 LoggerUtil.info(log, "本地代码不存在，clone", gitUrl, codePath);
                 //为了区分ssh路径和http/s这里ssh多加了一层目录
                 git = instanceSshGit(gitUrl, codePath, commitId, null, privateKey);
-                // 下载指定branch,ssh好像不支持commitId
+                // 下载指定branch
                 if (git.getRepository().exactRef(Constants.HEAD).isSymbolic()){
                     git.checkout().setName(commitId).call();
                 }
