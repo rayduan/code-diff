@@ -74,40 +74,49 @@ public class CallChainMethodVisitor extends MethodVisitor {
             }
         }
         // 记录被调用方法的信息
-        ClassInfo classInfo = ClassInfo.builder().className(owner).build();
-        Type[] argumentTypes = Type.getArgumentTypes(desc);
-        List<String> params = Arrays.stream(argumentTypes).map(Type::getClassName)
-                .map(e -> StringUtil.getSplitLast(e, ".")).collect(Collectors.toList());
-        String methodSign = owner + "#" + name + "#" + String.join(",", params);
-        MethodInfo methodCaller = MethodInfo.builder()
-                .classInfo(classInfo)
-                .methodName(name)
-                .methodParams(params)
-                .methodSign(methodSign)
-                .abstractFlag(Boolean.FALSE)
-                .build();
-        this.callerMethods.add(methodCaller);
+        buildInvokeMethod(owner, name, desc);
         super.visitMethodInsn(opcode, owner, name, desc, itf);
     }
 
 
     public void visitInvokeDynamicInsn(String name, String descriptor, Handle bootstrapMethodHandle, Object... bootstrapMethodArguments) {
-//        if (bootstrapMethodHandle.getTag() == Opcodes.H_INVOKESTATIC) {
-//            String lambdaClassName = bootstrapMethodHandle.getOwner().replace('/', '.');
-//            try {
-//                InputStream classStream = getClass().getClassLoader().getResourceAsStream(lambdaClassName + ".class");
-//                ClassReader classReader = new ClassReader(classStream);
-//                classReader.accept(new CallChainClassVisitor(null), ClassReader.EXPAND_FRAMES);
-//                List<MethodCall> lambdaMethodCalls = ((MethodCallVisitor) classReader.getAnnotationsVisitor()).getMethodCalls();
-//                for (MethodCall lambdaMethodCall : lambdaMethodCalls) {
-//                    lambdaMethodCall.setCallFromMethod(currentMethodName);
-//                    lambdaMethodCall.setCallFromMethodDesc(currentMethodDesc);
-//                }
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
+        // 检查 bootstrapMethodHandle 中的 method descriptor 是否包含 "java/lang/invoke/LambdaMetafactory.metafactory"，
+        // 如果是，则说明当前的 invoke dynamic 指令为 Lambda 表达式
+        if (bootstrapMethodHandle.getTag() == Opcodes.H_INVOKESTATIC && bootstrapMethodHandle.getOwner().equals("java/lang/invoke/LambdaMetafactory") && bootstrapMethodHandle.getName().equals("metafactory")) {
+            // 获取 Lambda 表达式所绑定的方法
+            Handle methodHandle = (Handle) bootstrapMethodArguments[1];
+            String owner = methodHandle.getOwner();
+            String methodName = methodHandle.getName();
+            String methodDescriptor = methodHandle.getDesc();
+
+            // 记录被调用方法的信息
+            buildInvokeMethod(owner, methodName, methodDescriptor);
+        }
         super.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
+
+    }
+
+    /**
+     * 构建调用方法
+     *
+     * @param owner            老板
+     * @param methodName       方法名称
+     * @param methodDescriptor 方法描述符
+     */
+    private void buildInvokeMethod(String owner, String methodName, String methodDescriptor) {
+        ClassInfo classInfo = ClassInfo.builder().className(owner).build();
+        Type[] argumentTypes = Type.getArgumentTypes(methodDescriptor);
+        List<String> params = Arrays.stream(argumentTypes).map(Type::getClassName)
+                .map(e -> StringUtil.getSplitLast(e, ".")).collect(Collectors.toList());
+        String methodSign = owner + "#" + methodName + "#" + String.join(",", params);
+        MethodInfo methodCaller = MethodInfo.builder()
+                .classInfo(classInfo)
+                .methodName(methodName)
+                .methodParams(params)
+                .methodSign(methodSign)
+                .abstractFlag(Boolean.FALSE)
+                .build();
+        this.callerMethods.add(methodCaller);
     }
 
     /**

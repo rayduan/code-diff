@@ -8,10 +8,7 @@ import com.dr.common.log.LoggerUtil;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.ConstructorDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.comments.LineComment;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
@@ -87,41 +84,23 @@ public class MethodParserUtils {
          */
         @Override
         public void visit(final ConstructorDeclaration n, List<MethodInfoResult> list) {
-            n.removeComment();
-            //删除方法内行注释
-            List<Comment> comments = n.getAllContainedComments();
-            for (Comment comment : comments) {
-                comment.remove();
-            }
-            String md5 = SecureUtil.md5(n.toString());
-            NodeList<Parameter> parameters = n.getParameters();
-            List<String> params = parameters.stream().map(e -> {
-                if (e.getType().isClassOrInterfaceType()) {
-                    return e.getType().asClassOrInterfaceType().getNameAsString();
-                }
-                return e.getType().toString().trim();
-
-            }).collect(Collectors.toList());
-
-            MethodInfoResult result = MethodInfoResult.builder()
-                    .md5(md5)
-                    .methodName(n.getNameAsString())
-                    .parameters(params)
-                    .build();
-            list.add(result);
+            buildMethod(n, list);
             super.visit(n, list);
         }
 
         @Override
         public void visit(MethodDeclaration m, List<MethodInfoResult> list) {
+            buildMethod(m, list);
+            super.visit(m, list);
+        }
+
+        private void buildMethod(CallableDeclaration m, List<MethodInfoResult> list) {
             //删除外部注释
             m.removeComment();
             //删除方法内行注释
             List<Comment> comments = m.getAllContainedComments();
             for (Comment comment : comments) {
-                if (comment instanceof LineComment) {
-                    comment.remove();
-                }
+                comment.remove();
             }
             //计算方法体的hash值，疑问，空格，特殊转义字符会影响结果，导致相同匹配为差异？建议提交代码时统一工具格式化
             String md5 = SecureUtil.md5(m.toString());
@@ -140,7 +119,6 @@ public class MethodParserUtils {
                     .parameters(params)
                     .build();
             list.add(result);
-            super.visit(m, list);
         }
 
 

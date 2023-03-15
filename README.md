@@ -68,3 +68,9 @@ ssh-keygen -m PEM -t rsa
 maven:
   home: /usr/local/app/apache-maven-3.8.3
 ```
+---
+【add】
+### 修复：
+* 1.修复循环引用问题
+* 2.优化lambda表达式调用链问题
+

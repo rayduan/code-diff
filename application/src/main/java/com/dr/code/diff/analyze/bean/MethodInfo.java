@@ -73,4 +73,8 @@ public class MethodInfo {
      * 调用的方法
      */
     private List<MethodInfo> callerMethods;
+
+
+
+    private List<String> visitedMethods;
 }

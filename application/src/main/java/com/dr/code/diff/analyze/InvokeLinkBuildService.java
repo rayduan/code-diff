@@ -52,6 +52,9 @@ public class InvokeLinkBuildService {
      */
     private static final AntPathMatcher antPathMatcher = new AntPathMatcher();
     private static final String URL_PREFIX = "/";
+
+
+    private List<MethodInfo> httpMethodInfoList;
     @Resource(name = "asyncExecutor")
     private Executor executor;
 
@@ -142,6 +145,7 @@ public class InvokeLinkBuildService {
      * @return {@link List}<{@link MethodInfo}>
      */
     public Map<MethodNodeTypeEnum, List<MethodInfo>> buildMethodLink(List<MethodInfo> allMethods) {
+        //判断allMethods是否为空
         if (CollectionUtils.isEmpty(allMethods)) {
             return Collections.emptyMap();
         }
@@ -192,14 +196,19 @@ public class InvokeLinkBuildService {
                     methodUrl = StringUtil.connectPath(controllerMappingUrl, methodMappingUrl);
                 }
                 e.setMappingUrl(methodUrl);
+                e.setVisitedMethods(Lists.newArrayList(e.getMethodSign()));
             });
         }
         //2.dubbo方法
         List<MethodInfo> dubboMethodInfoList = methodTypeMap.get(MethodNodeTypeEnum.DUBBO);
         if (!CollectionUtils.isEmpty(dubboMethodInfoList)) {
             //初始化子节点
-            dubboMethodInfoList.forEach(e -> e.setCallerMethods(null));
+            dubboMethodInfoList.forEach(e -> {
+                e.setCallerMethods(null);
+                e.setVisitedMethods(Lists.newArrayList(e.getMethodSign()));
+            });
         }
+        this.httpMethodInfoList = httpMethodInfoList;
         //获取http的调用链
         loadChildren(methodCallMap, httpMethodInfoList, abstractSubMethodMap, abstractMethod);
         //获取dubbo的调用链
@@ -223,6 +232,7 @@ public class InvokeLinkBuildService {
         }
         parentList.forEach(
                 e -> {
+                    List<String> visitedMethods = e.getVisitedMethods();
                     //如果方法是抽象方法，则将其所有子类匹配的方法都加入链路中
                     if (abstractMethod.contains(e.getMethodSign())) {
                         //抽象和接口类处理
@@ -231,13 +241,22 @@ public class InvokeLinkBuildService {
                         List<MethodInfo> subList = map.get(e.getMethodSign());
                         if (!CollectionUtils.isEmpty(subList)) {
                             //校验父节点中是否已经存在的子节点
-                            List<MethodInfo> vaildSubList = subList.stream().filter(s -> !JSON.toJSONString(e).contains(s.getMethodSign())).collect(Collectors.toList());
+                            List<MethodInfo> vaildSubList = subList.stream().filter(s -> !e.getVisitedMethods().contains(s.getMethodSign())).collect(Collectors.toList());
                             if (!CollectionUtils.isEmpty(vaildSubList)) {
                                 e.setCallerMethods(vaildSubList);
                             }
                         }
                     }
                     if (CollUtil.isNotEmpty(e.getCallerMethods())) {
+                        //记录链路的方法用于校验循环引用
+                        e.getCallerMethods().forEach(c -> {
+                                    ArrayList<String> visited = new ArrayList<>(visitedMethods);
+                                    visited.add(c.getMethodSign());
+                                    c.setVisitedMethods(visited);
+                                }
+                        );
+                        //清理工作避免内存溢出
+                        e.setVisitedMethods(null);
                         // 设置子节点
                         loadChildren(map, e.getCallerMethods(), abstractSubMethodMap, abstractMethod);
                     }
