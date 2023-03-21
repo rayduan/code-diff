@@ -1,5 +1,6 @@
 package com.dr.code.diff.analyze;
 
+import cn.hutool.core.io.FileUtil;
 import com.dr.code.diff.config.CustomizeConfig;
 import com.dr.common.errorcode.BizCode;
 import com.dr.common.exception.BizException;
@@ -41,16 +42,11 @@ public class MavenCmdInvokeService {
         request.setPomFile(new File(pomPath));
         //操控的maven命令
         request.setGoals(Collections.singletonList(cmd));
+        InvocationOutputHandler outputHandler = s -> LoggerUtil.info(log, s);
+        request.setOutputHandler(outputHandler);
         Invoker invoker = new DefaultInvoker();
         //maven的位置
         invoker.setMavenHome(new File(customizeConfig.getMavenHome()));
-        invoker.setLogger(new PrintStreamLogger(System.err, InvokerLogger.ERROR) {
-        });
-        invoker.setOutputHandler(new InvocationOutputHandler() {
-            @Override
-            public void consumeLine(String s) throws IOException {
-            }
-        });
         try {
             invoker.execute(request);
         } catch (MavenInvocationException e) {
@@ -66,8 +62,14 @@ public class MavenCmdInvokeService {
      * @param pomPath pom路径
      */
     public void compileCode(String pomPath) {
-        LoggerUtil.info(log,"开始编译代码");
+        LoggerUtil.info(log, "开始编译代码");
+        //判断文件是否存在
+        boolean exist = FileUtil.exist(pomPath);
+        if (!exist) {
+            LoggerUtil.info(log, "pom文件不存在");
+            throw new BizException(BizCode.POM_NOT_EXIST_FAIL);
+        }
         operationMavenCmd(pomPath, "clean compile -Dmaven.test.skip=true");
-        LoggerUtil.info(log,"代码编译完成");
+        LoggerUtil.info(log, "代码编译完成");
     }
 }

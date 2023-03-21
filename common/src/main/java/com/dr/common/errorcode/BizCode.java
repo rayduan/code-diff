@@ -20,7 +20,8 @@ public enum BizCode implements Code {
     UNKNOWN_REPOSITY_URL(20007, "未知仓库地址", "请检查仓库url"),
     GET_METHOD_INVOKE_LINK_FAIL(20008, "获取方法调用链失败", "获取方法调用链失败"),
 
-    COMPILE_CODE_FAIL(20009, "编译源码失败", "获取classes文件失败");
+    COMPILE_CODE_FAIL(20009, "编译源码失败", "获取classes文件失败"),
+    POM_NOT_EXIST_FAIL(20010, "pom文件不存在", "编译源码失败,pom文件不存在");
     private final int code;
     private final String info;
     private final String fixTips;

@@ -23,4 +23,8 @@ class MavenCmdInvokeServiceTest extends CodeDiffApplicationTest {
     void operationMavenCmd() {
         mavenCmdInvoke.operationMavenCmd("/Users/xx/app/code-diff/5eca0308727bded21576c8756e9f93b53fd03109","clean install -Dmaven.test.skip=true");
     }
+    @Test
+    void compileCode() {
+        mavenCmdInvoke.compileCode("/Users/rayduan/app/code-diff/5eca0308727bded21576c8756e9f93b53fd03109");
+    }
 }
