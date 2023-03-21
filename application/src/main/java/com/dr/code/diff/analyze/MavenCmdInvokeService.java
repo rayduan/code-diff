@@ -66,7 +66,7 @@ public class MavenCmdInvokeService {
         //判断文件是否存在
         boolean exist = FileUtil.exist(pomPath);
         if (!exist) {
-            LoggerUtil.info(log, "pom文件不存在");
+            LoggerUtil.info(log, "pom文件不存在:",pomPath);
             throw new BizException(BizCode.POM_NOT_EXIST_FAIL);
         }
         operationMavenCmd(pomPath, "clean compile -Dmaven.test.skip=true");
