@@ -139,8 +139,8 @@ public class GitAbstractVersionControl extends AbstractVersionControl {
      */
     @Override
     public String downloadCode(MethodInvokeDto methodInvokeDto) {
-        getGitInfo(methodInvokeDto.getRepoUrl(), methodInvokeDto.getBranchName());
-        return GitRepoUtil.getLocalDir(methodInvokeDto.getRepoUrl(), customizeConfig.getGitLocalBaseRepoDir(), methodInvokeDto.getBranchName());
+        GitInfoDto gitInfo = getGitInfo(methodInvokeDto.getRepoUrl(), methodInvokeDto.getBranchName());
+        return gitInfo.getLocalBaseRepoDir();
     }
 
 

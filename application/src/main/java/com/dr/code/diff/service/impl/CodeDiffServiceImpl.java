@@ -73,9 +73,7 @@ public class CodeDiffServiceImpl implements CodeDiffService {
             return Collections.emptyMap();
         }
         Map<String, List<MethodInfo>> linksMap = new HashMap<>();
-        methodsInvokeLink.forEach((k, v) -> {
-            linksMap.put(k.getValue(), v);
-        });
+        methodsInvokeLink.forEach((k, v) -> linksMap.put(k.getValue(), v));
         return linksMap;
     }
 }
