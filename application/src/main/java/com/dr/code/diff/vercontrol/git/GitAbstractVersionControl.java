@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.dr.code.diff.config.CustomizeConfig;
 import com.dr.code.diff.dto.ChangeLine;
 import com.dr.code.diff.dto.DiffEntryDto;
+import com.dr.code.diff.dto.GitInfoDto;
 import com.dr.code.diff.dto.MethodInvokeDto;
 import com.dr.code.diff.enums.CodeManageTypeEnum;
 import com.dr.code.diff.enums.GitUrlTypeEnum;
@@ -61,12 +62,12 @@ public class GitAbstractVersionControl extends AbstractVersionControl {
     @Override
     public void getDiffCodeClasses() {
         try {
-            String localBaseRepoDir = GitRepoUtil.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getGitLocalBaseRepoDir(), super.versionControlDto.getBaseVersion());
-            String localNowRepoDir = GitRepoUtil.getLocalDir(super.versionControlDto.getRepoUrl(), customizeConfig.getGitLocalBaseRepoDir(), super.versionControlDto.getNowVersion());
-            Git baseGit = getGitInfo(super.versionControlDto.getRepoUrl(), super.versionControlDto.getBaseVersion());
-            Git nowGit = getGitInfo(super.versionControlDto.getRepoUrl(), super.versionControlDto.getNowVersion());
-            super.versionControlDto.setNewLocalBasePath(localNowRepoDir);
-            super.versionControlDto.setOldLocalBasePath(localBaseRepoDir);
+            GitInfoDto baseGitInfo = getGitInfo(super.versionControlDto.getRepoUrl(), super.versionControlDto.getBaseVersion());
+            Git baseGit = baseGitInfo.getGit();
+            GitInfoDto nowGitInfo = getGitInfo(super.versionControlDto.getRepoUrl(), super.versionControlDto.getNowVersion());
+            Git nowGit = nowGitInfo.getGit();
+            super.versionControlDto.setNewLocalBasePath(nowGitInfo.getLocalBaseRepoDir());
+            super.versionControlDto.setOldLocalBasePath(baseGitInfo.getLocalBaseRepoDir());
             AbstractTreeIterator baseTree = GitRepoUtil.prepareTreeParser(baseGit.getRepository(), super.versionControlDto.getBaseVersion());
             AbstractTreeIterator nowTree = GitRepoUtil.prepareTreeParser(nowGit.getRepository(), super.versionControlDto.getNowVersion());
             //获取两个版本之间的差异代码
@@ -148,9 +149,9 @@ public class GitAbstractVersionControl extends AbstractVersionControl {
      *
      * @param repoUrl    仓库url
      * @param branchName 分支机构名称
-     * @return {@link Git}
+     * @return {@link GitInfoDto}
      */
-    public Git getGitInfo(String repoUrl, String branchName) {
+    public GitInfoDto getGitInfo(String repoUrl, String branchName) {
         Git git = null;
         String localBaseRepoDir = GitRepoUtil.getLocalDir(repoUrl, customizeConfig.getGitLocalBaseRepoDir(), branchName);
         GitUrlTypeEnum gitUrlTypeEnum = GitRepoUtil.judgeUrlType(repoUrl);
@@ -174,7 +175,7 @@ public class GitAbstractVersionControl extends AbstractVersionControl {
                 throw new BizException(BizCode.UNKNOWN_REPOSITY_URL);
             }
         }
-        return git;
+        return GitInfoDto.builder().git(git).localBaseRepoDir(localBaseRepoDir).build();
     }
 
     /**
