@@ -73,17 +73,20 @@ public class DeduceApiService {
         List<String> modifyMethodSigns = new ArrayList<String>();
         //新增类集合
         List<String> addClassNames = new ArrayList<String>();
+        List<String> modifyList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(addMethods)) {
             addClassNames = addMethods.stream().map(DiffClassInfoResult::getClassFile).collect(Collectors.toList());
         }
         if (!CollectionUtils.isEmpty(modifyMethods)) {
             modifyMethodSigns = modifyMethods.stream().map(DiffClassInfoResult::getMethodInfos).flatMap(Collection::stream).filter(Objects::nonNull).map(MethodInfoResult::getMethodSign).collect(Collectors.toList());
         }
+        modifyList.addAll(addClassNames);
+        modifyList.addAll(modifyMethodSigns);
         if (!CollectionUtils.isEmpty(httpMethodInfoList)) {
-            getDiffApi(httpMethodInfoList, dubboMethodInfoList, modifyMethodSigns, apiModify);
+            getDiffApi(httpMethodInfoList, dubboMethodInfoList, modifyList, apiModify);
         }
         if (!CollectionUtils.isEmpty(dubboMethodInfoList)) {
-            getDiffApi(httpMethodInfoList, dubboMethodInfoList, addClassNames, apiModify);
+            getDiffApi(httpMethodInfoList, dubboMethodInfoList, modifyList, apiModify);
         }
         return apiModify;
 
