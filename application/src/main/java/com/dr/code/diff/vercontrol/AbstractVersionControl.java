@@ -1,5 +1,6 @@
 package com.dr.code.diff.vercontrol;
 
+import cn.hutool.core.io.FileUtil;
 import com.dr.code.diff.dto.*;
 import com.dr.code.diff.enums.CodeManageTypeEnum;
 import com.dr.code.diff.util.MethodParserUtils;
@@ -141,7 +142,7 @@ public abstract class AbstractVersionControl {
                 }
                 HashSet<MethodInfoResult> methodSet = new HashSet<>();
                 //如果旧的mapper不存在，说明是新增的，java mapper会识别到，这里不用对比
-                if (StringUtils.isBlank(oldClassFile)) {
+                if (StringUtils.isBlank(oldClassFile) || !FileUtil.exist(oldClassFile)) {
                     return null;
                 }
                 XmlDiffUtils.getXmlDiffMethod(oldClassFile, mewClassFile, methodSet);
