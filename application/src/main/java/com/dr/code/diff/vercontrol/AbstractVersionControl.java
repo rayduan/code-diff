@@ -67,8 +67,6 @@ public abstract class AbstractVersionControl {
     public abstract String downloadCode(MethodInvokeDto methodInvokeDto);
 
 
-
-
     /**
      * @date:2021/4/5
      * @className:VersionControl
@@ -142,6 +140,10 @@ public abstract class AbstractVersionControl {
                     return null;
                 }
                 HashSet<MethodInfoResult> methodSet = new HashSet<>();
+                //如果旧的mapper不存在，说明是新增的，java mapper会识别到，这里不用对比
+                if (StringUtils.isBlank(oldClassFile)) {
+                    return null;
+                }
                 XmlDiffUtils.getXmlDiffMethod(oldClassFile, mewClassFile, methodSet);
                 if (CollectionUtils.isEmpty(methodSet)) {
                     return null;
