@@ -1,6 +1,7 @@
 package com.dr.code.diff.vercontrol;
 
 import cn.hutool.core.io.FileUtil;
+import com.dr.code.diff.config.CustomizeConfig;
 import com.dr.code.diff.dto.*;
 import com.dr.code.diff.enums.CodeManageTypeEnum;
 import com.dr.code.diff.util.MethodParserUtils;
@@ -10,6 +11,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.diff.DiffEntry;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
@@ -41,6 +43,9 @@ public abstract class AbstractVersionControl {
     @Resource(name = "asyncExecutor")
     private Executor executor;
 
+
+    @Autowired
+    private CustomizeConfig customizeConfig;
 
     /**
      * 执行handler
@@ -160,7 +165,7 @@ public abstract class AbstractVersionControl {
                 return classInfoResult;
             }
             String className;
-            if (diffEntry.getNewPath().contains("src/main/java/")) {
+            if (diffEntry.getNewPath().contains(customizeConfig.getRootCodePath())) {
                 className = diffEntry.getNewPath().split("src/main/java/")[1].split("\\.")[0];
             } else {
                 className = "";
@@ -176,13 +181,13 @@ public abstract class AbstractVersionControl {
             }
             List<MethodInfoResult> diffMethods;
             //获取新类的所有方法
-            List<MethodInfoResult> newMethodInfoResults = MethodParserUtils.parseMethods(mewClassFile);
+            List<MethodInfoResult> newMethodInfoResults = MethodParserUtils.parseMethods(mewClassFile, customizeConfig.getRootCodePath());
             //如果新类为空，没必要比较
             if (CollectionUtils.isEmpty(newMethodInfoResults)) {
                 return null;
             }
             //获取旧类的所有方法
-            List<MethodInfoResult> oldMethodInfoResults = MethodParserUtils.parseMethods(oldClassFile);
+            List<MethodInfoResult> oldMethodInfoResults = MethodParserUtils.parseMethods(oldClassFile, customizeConfig.getRootCodePath());
             //如果旧类为空，新类的方法所有为增量
             if (CollectionUtils.isEmpty(oldMethodInfoResults)) {
                 diffMethods = newMethodInfoResults;

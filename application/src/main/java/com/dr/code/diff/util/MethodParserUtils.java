@@ -44,12 +44,12 @@ public class MethodParserUtils {
      * @param classFile
      * @return
      */
-    public static List<MethodInfoResult> parseMethods(String classFile) {
+    public static List<MethodInfoResult> parseMethods(String classFile,String rootCodePath) {
         List<MethodInfoResult> list = new ArrayList<>();
         try (FileInputStream in = new FileInputStream(classFile)) {
             JavaParser javaParser = new JavaParser();
             CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
-            String sourcePath = classFile.split("src/main/java/")[0];
+            String sourcePath = classFile.split(rootCodePath)[0];
             combinedTypeSolver.add(new JavaParserTypeSolver(new File(sourcePath)));
             combinedTypeSolver.add(new ReflectionTypeSolver());
             JavaSymbolSolver symbolSolver = new JavaSymbolSolver(combinedTypeSolver);

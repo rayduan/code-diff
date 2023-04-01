@@ -16,6 +16,8 @@ logging:
 swagger:
   enabled: true
   base-package: com.dr.code.diff.controller
+log:
+  path: D://my-logs
 ##日志配置
 #logging:
 #  config: classpath:log4j2.yml
@@ -26,13 +28,13 @@ swagger:
 #  sessionManager:
 #    sessionIdUrlRewritingEnabled: false
 git:
-  userName: admin
-  password: 123456!
+  userName: ray1
+  password: 12345456
   local:
     base:
-      dir: /Users/rayduan/app
+      dir: D:\git-test
   ssh:
-    priKey: /Users/rayduan/.ssh/id_rsa
+    priKey: C:\Users\mylocl/.ssh/id_rsa.
 svn:
   userName: admin
   password: 123456
@@ -40,7 +42,11 @@ svn:
     base:
       dir: D:\svn-test
 maven:
-  home: /usr/local/app/apache-maven-3.8.3
+  home: E:/Program Files/apache-maven-3.6.3
+#代码的根目录，非标准maven项目需要自定义
+root:
+  code:
+    path: src/main/java/
 server:
   port: 8085
   servlet:

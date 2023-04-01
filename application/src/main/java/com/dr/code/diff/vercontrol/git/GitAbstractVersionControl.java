@@ -80,7 +80,7 @@ public class GitAbstractVersionControl extends AbstractVersionControl {
                     //排除测试文件
                     .filter(e -> {
                         if (e.getNewPath().endsWith(".java")) {
-                            return e.getNewPath().contains("src/main/java");
+                            return e.getNewPath().contains(customizeConfig.getRootCodePath());
                         }
                         return Boolean.TRUE;
                     })

@@ -68,4 +68,7 @@ public class CustomizeConfig {
      */
     @Value(value = "${maven.home}")
     private String mavenHome;
+
+    @Value(value = "${root.code.path}")
+    private String rootCodePath;
 }
