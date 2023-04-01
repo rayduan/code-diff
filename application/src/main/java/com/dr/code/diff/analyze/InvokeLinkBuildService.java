@@ -54,7 +54,6 @@ public class InvokeLinkBuildService {
     private static final String URL_PREFIX = "/";
 
 
-    private List<MethodInfo> httpMethodInfoList;
     @Resource(name = "asyncExecutor")
     private Executor executor;
 
@@ -208,7 +207,6 @@ public class InvokeLinkBuildService {
                 e.setVisitedMethods(Lists.newArrayList(e.getMethodSign()));
             });
         }
-        this.httpMethodInfoList = httpMethodInfoList;
         //获取http的调用链
         loadChildren(methodCallMap, httpMethodInfoList, abstractSubMethodMap, abstractMethod);
         //获取dubbo的调用链

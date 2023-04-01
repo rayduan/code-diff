@@ -14,7 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 /**
@@ -32,12 +35,14 @@ public class DeduceApiService {
     @Autowired
     private CodeDiffService codeDiffService;
 
-
     @Autowired
     private MavenCmdInvokeService mavenCmdInvokeService;
 
     @Autowired
     private InvokeLinkBuildService invokeLinkBuildService;
+
+    @Resource(name = "asyncExecutor")
+    private Executor executor;
 
     /**
      * 推断api
@@ -82,14 +87,8 @@ public class DeduceApiService {
         }
         modifyList.addAll(addClassNames);
         modifyList.addAll(modifyMethodSigns);
-        if (!CollectionUtils.isEmpty(httpMethodInfoList)) {
-            getDiffApi(httpMethodInfoList, dubboMethodInfoList, modifyList, apiModify);
-        }
-        if (!CollectionUtils.isEmpty(dubboMethodInfoList)) {
-            getDiffApi(httpMethodInfoList, dubboMethodInfoList, modifyList, apiModify);
-        }
+        getDiffApi(httpMethodInfoList, dubboMethodInfoList, modifyList, apiModify);
         return apiModify;
-
     }
 
     /**
@@ -102,21 +101,21 @@ public class DeduceApiService {
      */
     private void getDiffApi(List<MethodInfo> httpMethodInfoList, List<MethodInfo> dubboMethodInfoList, List<String> keys, ApiModify apiModify) {
         if (!CollectionUtils.isEmpty(keys)) {
-            keys.forEach(e -> {
-                        //计算http接口变更
+            //并发获取每个方法的调用方法
+            CompletableFuture.allOf(keys.stream()
+                    .map(item -> CompletableFuture.runAsync(() -> {               //计算http接口变更
                         if (!CollectionUtils.isEmpty(httpMethodInfoList)) {
-                            List<MethodInfo> httpModify = httpMethodInfoList.stream().filter(h -> JSON.toJSONString(h).contains(e)).collect(Collectors.toList());
+                            List<MethodInfo> httpModify = httpMethodInfoList.stream().filter(h -> JSON.toJSONString(h).contains(item)).collect(Collectors.toList());
                             List<HttpApiModify> httpApiModifies = OrikaMapperUtils.mapList(httpModify, MethodInfo.class, HttpApiModify.class);
                             apiModify.getHttpApiModifies().addAll(httpApiModifies);
                         }
                         //计算dubbo接口变更
                         if (!CollectionUtils.isEmpty(dubboMethodInfoList)) {
-                            List<MethodInfo> dubboModify = dubboMethodInfoList.stream().filter(h -> JSON.toJSONString(h).contains(e)).collect(Collectors.toList());
+                            List<MethodInfo> dubboModify = dubboMethodInfoList.stream().filter(h -> JSON.toJSONString(h).contains(item)).collect(Collectors.toList());
                             List<DubboApiModify> dubboApiModifies = OrikaMapperUtils.mapList(dubboModify, MethodInfo.class, DubboApiModify.class);
                             apiModify.getDubboApiModifies().addAll(dubboApiModifies);
                         }
-                    }
-            );
+                    }, executor)).toArray(CompletableFuture[]::new)).join();
         }
     }
 
