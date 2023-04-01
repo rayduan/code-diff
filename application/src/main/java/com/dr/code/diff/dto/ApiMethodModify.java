@@ -19,7 +19,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DubboApiModify {
+public class ApiMethodModify {
 
 
     /**

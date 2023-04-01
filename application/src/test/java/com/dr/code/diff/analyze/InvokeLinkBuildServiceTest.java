@@ -29,7 +29,7 @@ class InvokeLinkBuildServiceTest extends CodeDiffApplicationTest {
     @Test
     void getMethodsInvokeLink() {
         List<String> dirs = new ArrayList<String>();
-        dirs.add("/Users/rayduan/IdeaProjects/code-diff/application");
+        dirs.add("D:\\IdeaProjects\\code-diff\\application");
         List<String> excludeFiles = null;
         Map<MethodNodeTypeEnum, List<MethodInfo>> methodsInvokeLink = invokeLinkBuildService.getMethodsInvokeLink(dirs, excludeFiles);
         System.out.println(JSON.toJSON(methodsInvokeLink));

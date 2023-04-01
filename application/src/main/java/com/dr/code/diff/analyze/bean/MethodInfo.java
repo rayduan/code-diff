@@ -68,7 +68,7 @@ public class MethodInfo {
     /**
      * 方法节点类型枚举
      */
-    private MethodNodeTypeEnum methodNodeTypeEnum = MethodNodeTypeEnum.GENERAL;
+    private MethodNodeTypeEnum methodNodeTypeEnum;
     /**
      * 调用的方法
      */

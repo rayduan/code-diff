@@ -1,12 +1,7 @@
 package com.dr.code.diff.vo.result;
 
-import com.dr.code.diff.dto.DubboApiModify;
-import com.dr.code.diff.dto.HttpApiModify;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.List;
 import java.util.Set;
 
 /**

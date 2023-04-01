@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 public class CallChainClassVisitor extends ClassVisitor {
 
 
+    public static final String JAVA_LANG_OBJECT = "java/lang/Object";
+    public static final String SPILT_CHAR = "#";
     /**
      * 类信息
      */
@@ -33,7 +35,7 @@ public class CallChainClassVisitor extends ClassVisitor {
     /**
      * 类中的方法
      */
-    private List<MethodInfo> methods;
+    private final List<MethodInfo> methods;
 
 
     /**
@@ -45,7 +47,7 @@ public class CallChainClassVisitor extends ClassVisitor {
     /**
      * 适配器上下文
      */
-    private AdapterContext adapterContext;
+    private final AdapterContext adapterContext;
 
 
     /**
@@ -87,7 +89,7 @@ public class CallChainClassVisitor extends ClassVisitor {
             classInfoBuilder.abstractFlag(Boolean.TRUE);
         }
         //说明是抽象类的实现类
-        if (!"java/lang/Object".equals(superName)) {
+        if (!JAVA_LANG_OBJECT.equals(superName)) {
             classInfoBuilder.superClassName(superName);
         }
         if (null != interfaces && interfaces.length > 0) {
@@ -124,13 +126,12 @@ public class CallChainClassVisitor extends ClassVisitor {
         Type[] argumentTypes = Type.getArgumentTypes(descriptor);
         List<String> params = Arrays.stream(argumentTypes).map(Type::getClassName)
                 .map(e -> StringUtil.getSplitLast(e, ".")).collect(Collectors.toList());
-        String methodSign = classInfo.getClassName() + "#" + name + "#" + String.join(",", params);
+        String methodSign = classInfo.getClassName() + SPILT_CHAR + name + SPILT_CHAR + String.join(",", params);
         MethodInfo.MethodInfoBuilder builder = MethodInfo
                 .builder()
                 .methodName(name)
                 .methodParams(params)
                 .methodSign(methodSign)
-                .methodNodeTypeEnum(MethodNodeTypeEnum.GENERAL)
                 .classInfo(this.classInfo)
                 .abstractFlag(Boolean.FALSE);
         // 如果是interface,这里也标记方法为无法直接调用的方法
@@ -153,7 +154,7 @@ public class CallChainClassVisitor extends ClassVisitor {
 
 
     @Override
-    public AnnotationVisitor visitAnnotation(String descriptor, boolean visiable) {
+    public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         //说明是controller层
         if (Arrays.asList(AnnotationConstant.controllerAnnotation).contains(descriptor)) {
             this.classInfo.setControllerFlag(Boolean.TRUE);
@@ -169,11 +170,11 @@ public class CallChainClassVisitor extends ClassVisitor {
             if (Arrays.asList(AnnotationConstant.requestAnnotation).contains(descriptor)) {
                 this.requestInfo = new RequestInfo();
                 // 这里去获取类的 requestMappingValue
-                return new CallChainAnnotationVisitor(super.visitAnnotation(descriptor, visiable), this.requestInfo);
+                return new CallChainAnnotationVisitor(super.visitAnnotation(descriptor, visible), this.requestInfo);
             }
         }
 
-        return super.visitAnnotation(descriptor, visiable);
+        return super.visitAnnotation(descriptor, visible);
     }
 
     @Override

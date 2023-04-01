@@ -14,12 +14,14 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum MethodNodeTypeEnum {
     //普通方法
-    GENERAL(0, "general"),
     //http方法
     HTTP(1, "http"),
     //dubbo方法
     DUBBO(2, "dubbo"),
 
+    //自定义
+    CUSTOM_CLASS(3, "custom_class"),
+    CUSTOM_METHOD(4, "custom_method"),
     ;
 
     private Integer code;

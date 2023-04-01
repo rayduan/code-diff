@@ -29,12 +29,12 @@ public class CallChainMethodVisitor extends MethodVisitor {
     /**
      * 调用方法
      */
-    private List<MethodInfo> callerMethods;
+    private final List<MethodInfo> callerMethods;
 
     /**
      * 当前方法
      */
-    private MethodInfo currentMethod;
+    private final MethodInfo currentMethod;
 
 
     /**
@@ -46,7 +46,7 @@ public class CallChainMethodVisitor extends MethodVisitor {
     /**
      * 适配器上下文
      */
-    private AdapterContext adapterContext;
+    private final AdapterContext adapterContext;
 
     public CallChainMethodVisitor(MethodVisitor mv, MethodInfo currentMethod, List<MethodInfo> callerMethods, AdapterContext adapterContext) {
         super(Opcodes.ASM5, mv);
@@ -123,11 +123,11 @@ public class CallChainMethodVisitor extends MethodVisitor {
      * 访问注释
      *
      * @param descriptor 描述符
-     * @param visiable   有形
+     * @param visible   有形
      * @return {@link AnnotationVisitor}
      */
     @Override
-    public AnnotationVisitor visitAnnotation(String descriptor, boolean visiable) {
+    public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         //说明是request接口方法
         if (Arrays.asList(AnnotationConstant.requestAnnotation).contains(descriptor)) {
             //说明方法是http接口方法
@@ -137,9 +137,9 @@ public class CallChainMethodVisitor extends MethodVisitor {
             if (AnnotationConstant.requestAnnotationMap.containsKey(descriptor)) {
                 this.requestInfo.setMappingMethod(AnnotationConstant.requestAnnotationMap.get(descriptor));
             }
-            return new CallChainAnnotationVisitor(super.visitAnnotation(descriptor, visiable), requestInfo);
+            return new CallChainAnnotationVisitor(super.visitAnnotation(descriptor, visible), requestInfo);
         }
-        return super.visitAnnotation(descriptor, visiable);
+        return super.visitAnnotation(descriptor, visible);
     }
 
     /**

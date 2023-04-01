@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  */
 public class CallChainAnnotationVisitor extends AnnotationVisitor {
 
-    private RequestInfo requestInfo;
+    private final RequestInfo requestInfo;
 
     public CallChainAnnotationVisitor(AnnotationVisitor annotationVisitor, RequestInfo requestInfo) {
         super(Opcodes.ASM5, annotationVisitor);

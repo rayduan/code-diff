@@ -2,13 +2,12 @@ package com.dr.code.diff.analyze;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileUtil;
-import com.alibaba.fastjson.JSON;
 import com.dr.code.diff.analyze.bean.AdapterContext;
 import com.dr.code.diff.analyze.bean.MethodInfo;
 import com.dr.code.diff.analyze.link.CallChainClassVisitor;
+import com.dr.code.diff.config.CustomizeLinkStartConfig;
 import com.dr.code.diff.enums.MethodNodeTypeEnum;
 import com.dr.code.diff.util.StringUtil;
-import com.dr.common.errorcode.BaseCode;
 import com.dr.common.errorcode.BizCode;
 import com.dr.common.exception.BizException;
 import com.dr.common.log.LoggerUtil;
@@ -20,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.CollectionUtils;
@@ -56,6 +56,10 @@ public class InvokeLinkBuildService {
 
     @Resource(name = "asyncExecutor")
     private Executor executor;
+
+
+    @Autowired
+    private CustomizeLinkStartConfig customizeLinkStartConfig;
 
     /**
      * get方法调用链接
@@ -171,8 +175,27 @@ public class InvokeLinkBuildService {
         abstractSubMethodMap.putAll(interFaceMethodMap);
         //获取所有的抽象或者接口方法
         List<String> abstractMethod = allMethods.stream().filter(MethodInfo::getAbstractFlag).map(MethodInfo::getMethodSign).collect(Collectors.toList());
+        buildLinkStartMap(allMethods, map);
+        if (CollectionUtils.isEmpty(map)) {
+            return map;
+        }
+        map.values().forEach(e -> loadChildren(methodCallMap, e, abstractSubMethodMap, abstractMethod));
+        return map;
+    }
+
+
+    /**
+     * 建立链接起始Map
+     *
+     * @param allMethods 所有方法
+     * @param startMap   起始Map
+     */
+    private void buildLinkStartMap(List<MethodInfo> allMethods, Map<MethodNodeTypeEnum, List<MethodInfo>> startMap) {
+        if (CollectionUtils.isEmpty(allMethods)) {
+            return;
+        }
         //先找出起点方法
-        Map<MethodNodeTypeEnum, List<MethodInfo>> methodTypeMap = allMethods.stream().collect(Collectors.groupingBy(MethodInfo::getMethodNodeTypeEnum));
+        Map<MethodNodeTypeEnum, List<MethodInfo>> methodTypeMap = allMethods.stream().filter(e -> null != e.getMethodNodeTypeEnum()).collect(Collectors.groupingBy(MethodInfo::getMethodNodeTypeEnum));
         //1.http接口方法
         List<MethodInfo> httpMethodInfoList = methodTypeMap.get(MethodNodeTypeEnum.HTTP);
         if (!CollectionUtils.isEmpty(httpMethodInfoList)) {
@@ -197,6 +220,7 @@ public class InvokeLinkBuildService {
                 e.setMappingUrl(methodUrl);
                 e.setVisitedMethods(Lists.newArrayList(e.getMethodSign()));
             });
+            startMap.put(MethodNodeTypeEnum.HTTP, httpMethodInfoList);
         }
         //2.dubbo方法
         List<MethodInfo> dubboMethodInfoList = methodTypeMap.get(MethodNodeTypeEnum.DUBBO);
@@ -206,14 +230,28 @@ public class InvokeLinkBuildService {
                 e.setCallerMethods(null);
                 e.setVisitedMethods(Lists.newArrayList(e.getMethodSign()));
             });
+            startMap.put(MethodNodeTypeEnum.DUBBO, dubboMethodInfoList);
         }
-        //获取http的调用链
-        loadChildren(methodCallMap, httpMethodInfoList, abstractSubMethodMap, abstractMethod);
-        //获取dubbo的调用链
-        loadChildren(methodCallMap, dubboMethodInfoList, abstractSubMethodMap, abstractMethod);
-        map.put(MethodNodeTypeEnum.HTTP, httpMethodInfoList);
-        map.put(MethodNodeTypeEnum.DUBBO, dubboMethodInfoList);
-        return map;
+        //自定义类
+        List<String> customLinkStartClassName = customizeLinkStartConfig.getClassNameList();
+        if (!CollectionUtils.isEmpty(customLinkStartClassName)) {
+            List<MethodInfo> customClassList = allMethods.stream().filter(e -> customLinkStartClassName.contains(e.getClassInfo().getClassName())).collect(Collectors.toList());
+            customClassList.forEach(e -> {
+                e.setCallerMethods(null);
+                e.setVisitedMethods(Lists.newArrayList(e.getMethodSign()));
+            });
+            startMap.put(MethodNodeTypeEnum.CUSTOM_CLASS, customClassList);
+        }
+        //自定义方法
+        List<String> customLinkStartMethodSign = customizeLinkStartConfig.getMethodSignList();
+        if (!CollectionUtils.isEmpty(customLinkStartMethodSign)) {
+            List<MethodInfo> customMethodSignList = allMethods.stream().filter(e -> customLinkStartMethodSign.contains(e.getMethodSign())).collect(Collectors.toList());
+            customMethodSignList.forEach(e -> {
+                e.setCallerMethods(null);
+                e.setVisitedMethods(Lists.newArrayList(e.getMethodSign()));
+            });
+            startMap.put(MethodNodeTypeEnum.CUSTOM_METHOD, customMethodSignList);
+        }
     }
 
 
@@ -261,6 +299,7 @@ public class InvokeLinkBuildService {
                 }
         );
     }
+
 
     /**
      * 设置子方法

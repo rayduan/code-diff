@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -31,6 +30,16 @@ public class ApiModify {
     /**
      * dubbo api修改
      */
-    private Set<DubboApiModify> dubboApiModifies;
+    private Set<ApiMethodModify> dubboApiModifies;
+
+
+
+
+    private Set<ApiMethodModify> customClassModifies;
+
+
+
+
+    private Set<ApiMethodModify> customMethodSignModifies;
 
 }

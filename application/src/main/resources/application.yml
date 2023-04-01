@@ -47,6 +47,14 @@ maven:
 root:
   code:
     path: src/main/java/
+custom:
+  link:
+    start:
+      classNameList:
+        - com/dr/common/utils/mapper/OrikaMapperUtils
+      methodSignList:
+        - com/dr/code/diff/service/CodeDiffService#getDiffCode#DiffMethodParams
+        - com/dr/code/diff/analyze/bean/ClassInfo#getSuperClassName#
 server:
   port: 8085
   servlet:

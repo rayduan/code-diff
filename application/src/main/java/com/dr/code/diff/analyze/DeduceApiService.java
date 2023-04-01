@@ -51,7 +51,7 @@ public class DeduceApiService {
      * @return {@link ApiModify}
      */
     public ApiModify deduceApi(DiffMethodParams diffMethodParams) {
-        ApiModify apiModify = ApiModify.builder().httpApiModifies(new HashSet<>()).dubboApiModifies(new HashSet<>()).build();
+        ApiModify apiModify = ApiModify.builder().httpApiModifies(new HashSet<>()).dubboApiModifies(new HashSet<>()).customClassModifies(new HashSet<>()).customMethodSignModifies(new HashSet<>()).build();
         //先获取源码,获取差异代码
         DiffInfo diffCode = codeDiffService.getDiffCode(diffMethodParams);
         //然后编译源码
@@ -69,8 +69,8 @@ public class DeduceApiService {
         if (CollectionUtils.isEmpty(diffCode.getDiffClasses())) {
             return apiModify;
         }
-        List<MethodInfo> httpMethodInfoList = methodsInvokeLink.get(MethodNodeTypeEnum.HTTP);
-        List<MethodInfo> dubboMethodInfoList = methodsInvokeLink.get(MethodNodeTypeEnum.DUBBO);
+//        List<MethodInfo> httpMethodInfoList = methodsInvokeLink.get(MethodNodeTypeEnum.HTTP);
+//        List<MethodInfo> dubboMethodInfoList = methodsInvokeLink.get(MethodNodeTypeEnum.DUBBO);
         Map<String, List<DiffClassInfoResult>> typeMap = diffCode.getDiffClasses().stream().collect(Collectors.groupingBy(DiffClassInfoResult::getType));
         List<DiffClassInfoResult> addMethods = typeMap.get("ADD");
         List<DiffClassInfoResult> modifyMethods = typeMap.get("MODIFY");
@@ -87,34 +87,46 @@ public class DeduceApiService {
         }
         modifyList.addAll(addClassNames);
         modifyList.addAll(modifyMethodSigns);
-        getDiffApi(httpMethodInfoList, dubboMethodInfoList, modifyList, apiModify);
+        getDiffApi(methodsInvokeLink, modifyList, apiModify);
         return apiModify;
     }
 
     /**
      * 得到diff api
      *
-     * @param httpMethodInfoList  http方法信息列表
-     * @param dubboMethodInfoList dubbo方法信息列表
-     * @param keys                变更类的键值
-     * @param apiModify           api修改
+     * @param keys              变更类的键值
+     * @param apiModify         api修改
+     * @param methodsInvokeLink 方法调用链接
      */
-    private void getDiffApi(List<MethodInfo> httpMethodInfoList, List<MethodInfo> dubboMethodInfoList, List<String> keys, ApiModify apiModify) {
+    private void getDiffApi(Map<MethodNodeTypeEnum, List<MethodInfo>> methodsInvokeLink, List<String> keys, ApiModify apiModify) {
         if (!CollectionUtils.isEmpty(keys)) {
             //并发获取每个方法的调用方法
             CompletableFuture.allOf(keys.stream()
-                    .map(item -> CompletableFuture.runAsync(() -> {               //计算http接口变更
-                        if (!CollectionUtils.isEmpty(httpMethodInfoList)) {
-                            List<MethodInfo> httpModify = httpMethodInfoList.stream().filter(h -> JSON.toJSONString(h).contains(item)).collect(Collectors.toList());
-                            List<HttpApiModify> httpApiModifies = OrikaMapperUtils.mapList(httpModify, MethodInfo.class, HttpApiModify.class);
-                            apiModify.getHttpApiModifies().addAll(httpApiModifies);
-                        }
-                        //计算dubbo接口变更
-                        if (!CollectionUtils.isEmpty(dubboMethodInfoList)) {
-                            List<MethodInfo> dubboModify = dubboMethodInfoList.stream().filter(h -> JSON.toJSONString(h).contains(item)).collect(Collectors.toList());
-                            List<DubboApiModify> dubboApiModifies = OrikaMapperUtils.mapList(dubboModify, MethodInfo.class, DubboApiModify.class);
-                            apiModify.getDubboApiModifies().addAll(dubboApiModifies);
-                        }
+                    .map(item -> CompletableFuture.runAsync(() -> {
+                        methodsInvokeLink.forEach(
+                                (k, v) -> {
+                                    if (CollectionUtils.isEmpty(v)) {
+                                        return;
+                                    }
+                                    if (MethodNodeTypeEnum.HTTP.equals(k)) {
+                                        //计算http接口变更
+                                        List<MethodInfo> httpModify = v.stream().filter(h -> JSON.toJSONString(h).contains(item)).collect(Collectors.toList());
+                                        List<HttpApiModify> httpApiModifies = OrikaMapperUtils.mapList(httpModify, MethodInfo.class, HttpApiModify.class);
+                                        apiModify.getHttpApiModifies().addAll(httpApiModifies);
+                                    } else {
+                                        List<MethodInfo> modifies = v.stream().filter(h -> JSON.toJSONString(h).contains(item)).collect(Collectors.toList());
+                                        List<ApiMethodModify> apiModifies = OrikaMapperUtils.mapList(modifies, MethodInfo.class, ApiMethodModify.class);
+                                        if (MethodNodeTypeEnum.DUBBO.equals(k)) {
+                                            apiModify.getDubboApiModifies().addAll(apiModifies);
+                                        } else if (MethodNodeTypeEnum.CUSTOM_CLASS.equals(k)) {
+                                            apiModify.getCustomClassModifies().addAll(apiModifies);
+                                        } else if (MethodNodeTypeEnum.CUSTOM_METHOD.equals(k)) {
+                                            apiModify.getCustomMethodSignModifies().addAll(apiModifies);
+                                        }
+                                    }
+                                }
+                        );
+
                     }, executor)).toArray(CompletableFuture[]::new)).join();
         }
     }

@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.List;
+
 /**
  * @ProjectName: cmdb
  * @Package: com.dr.cmdb.application.config
@@ -69,6 +71,11 @@ public class CustomizeConfig {
     @Value(value = "${maven.home}")
     private String mavenHome;
 
+    /**
+     * 根代码路径
+     */
     @Value(value = "${root.code.path}")
     private String rootCodePath;
+
+
 }
