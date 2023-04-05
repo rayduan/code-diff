@@ -94,9 +94,14 @@ maven:
    当然我已经构建了一个通用[镜像](https://hub.docker.com/layers/rayduan/code-diff/v1/images/sha256-eefb21263cef421866ff68b193b4311a877e29e20a5acb2ef5745de1aefd396f?context=repo)
    获取镜像后只需运行
 
-   ```docker run -d -p 8085:8085  --restart=always -e JAVA_OPTS="-Xms512m -Xmx1g  -Dspring.profiles.active=docker"   --name code-diff rayduan/code-diff:v1 ```
-  镜像中内置了git和maven，maven settings使用了阿里云镜像，如果需要私服可以手动修改镜像内的文件，或者重新自己构建镜像，另外私钥地址可以运行时指定卷映射出去(-v root/.ssh/id_rsa.:~/.ssh/id_rsa.)，然后通过jvm参数指定，具体涉及到docker相关姿势请手动上网，一般情况下运行上述命令即可，无需做任何改动
+   ``` 
+   
+    docker run -d -p 8085:8085  --restart=always -e JAVA_OPTS="-Xms512m -Xmx1g  -Dspring.profiles.active=docker"   --name code-diff rayduan/code-diff:v1
+   
+   ```
+
+  镜像中内置了git和maven，maven settings使用了阿里云镜像，如果需要私服可以手动修改镜像内的文件，或者重新自己构建镜像，另外私钥地址可以运行时指定卷映射出去(-v root/.ssh/id_rsa:root/.ssh/id_rsa)，然后通过jvm参数指定，具体涉及到docker相关姿势请手动上网，一般情况下运行上述命令即可，无需做任何改动
   运行时参数可以通过修改JAVA_OPTS指定，如git的账号密码：
   ```
-     JAVA_OPTS="-Dgit.userName=zs -Dgit.password=123456" 
+     JAVA_OPTS="-Dgit.userName=zs -Dgit.password=123456 -Dgit.ssh.priKey=/root/.ssh/id_rsa" 
   ```
