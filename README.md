@@ -1,5 +1,5 @@
 # code-diff
-基於git或svn的差异代码获取
+基于git或svn的差异代码获取
 
 
 ### 简介
@@ -7,8 +7,11 @@
 具体实现方案请参考[博客](https://blog.csdn.net/tushuping/article/details/112613528)
 
 ### 功能介绍
-* 支持基于git的差异方法获取（验证支持账号密码和秘钥）
+* 支持基于git的差异方法获取
+ > 1. 验证支持账号密码和秘钥
+ > 2. git支持基于分支对比，基于commitId对比，以及基于tag对比
 * 支持基于svn的差异方法获取
+ > 1. svn支持基于同分支不同reversion，不同分支同一reversion，不同分支不同reversion
 * 支持基于git的方法的静态调用链
 * 支持基于git的变更代码影响接口
 * 支持基于svn的变更代码影响接口
@@ -80,3 +83,15 @@ maven:
 * 1.修复循环引用问题
 * 2.优化lambda表达式调用链问题
 
+【modify】 2023-04-05
+### 变更：
+1. 为了降低使用门槛合并代码结构为单模块
+2. 增加了dockerfile，在工程目录下只需执行以下命令就可以构建镜像
+    ```
+   mvn clean package -Dmaven.tesr.skip=true
+   docker build -t code-diff .
+   ```
+   当然我已经构建了一个通用[镜像](https://hub.docker.com/layers/rayduan/code-diff/v1/images/sha256-eefb21263cef421866ff68b193b4311a877e29e20a5acb2ef5745de1aefd396f?context=repo)
+   获取镜像后只需运行
+
+   ```docker run -d -p 8085:8085  --restart=always -e JAVA_OPTS="-Xms512m -Xmx1g"   --name code-diff rayduan/code-diff:v1 ```
