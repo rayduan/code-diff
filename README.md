@@ -94,4 +94,4 @@ maven:
    当然我已经构建了一个通用[镜像](https://hub.docker.com/layers/rayduan/code-diff/v1/images/sha256-eefb21263cef421866ff68b193b4311a877e29e20a5acb2ef5745de1aefd396f?context=repo)
    获取镜像后只需运行
 
-   ```docker run -d -p 8085:8085  --restart=always -e JAVA_OPTS="-Xms512m -Xmx1g"   --name code-diff rayduan/code-diff:v1 ```
+   ```docker run -d -p 8085:8085  --restart=always -e JAVA_OPTS="-Xms512m -Xmx1g  -Dspring.profiles.active=docker"   --name code-diff rayduan/code-diff:v1 ```
