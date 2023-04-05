@@ -1,9 +1,9 @@
 package com.dr.code.diff.util;
 
-import com.dr.code.diff.enums.GitUrlTypeEnum;
 import com.dr.code.diff.common.errorcode.BizCode;
 import com.dr.code.diff.common.exception.BizException;
 import com.dr.code.diff.common.log.LoggerUtil;
+import com.dr.code.diff.enums.GitUrlTypeEnum;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.jcraft.jsch.JSch;
@@ -75,6 +75,7 @@ public class GitRepoUtil {
                 session.setConfig("StrictHostKeyChecking", "no");
             }
         };
+
         if (null != git) {
             git.pull().setTransportConfigCallback(transport -> {
                 SshTransport sshTransport = (SshTransport) transport;

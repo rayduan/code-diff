@@ -1,16 +1,8 @@
 package com.dr.code.diff.config;
 
-import com.jcraft.jsch.Session;
 import lombok.Data;
-import org.eclipse.jgit.transport.JschConfigSessionFactory;
-import org.eclipse.jgit.transport.OpenSshConfig;
-import org.eclipse.jgit.transport.SshSessionFactory;
-import org.eclipse.jgit.transport.TransportGitSsh;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.List;
 
 /**
  * @ProjectName: cmdb
