@@ -95,3 +95,8 @@ maven:
    获取镜像后只需运行
 
    ```docker run -d -p 8085:8085  --restart=always -e JAVA_OPTS="-Xms512m -Xmx1g  -Dspring.profiles.active=docker"   --name code-diff rayduan/code-diff:v1 ```
+  镜像中内置了git和maven，maven settings使用了阿里云镜像，如果需要私服可以手动修改镜像内的文件，或者重新自己构建镜像，另外私钥地址可以运行时指定卷映射出去(-v root/.ssh/id_rsa.:~/.ssh/id_rsa.)，然后通过jvm参数指定，具体涉及到docker相关姿势请手动上网，一般情况下运行上述命令即可，无需做任何改动
+  运行时参数可以通过修改JAVA_OPTS指定，如git的账号密码：
+  ```
+     JAVA_OPTS="-Dgit.userName=zs -Dgit.password=123456" 
+  ```
