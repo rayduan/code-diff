@@ -1,0 +1,61 @@
+spring:
+  messages:
+    basename: i18n/Messages,i18n/Pages
+    # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+
+  main:
+    allow-bean-definition-overriding: true
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+logging:
+  config: classpath:log4j2.yml
+swagger:
+  enabled: true
+  base-package: com.dr.code.diff.controller
+##日志配置
+#logging:
+#  config: classpath:log4j2.yml
+#shiro:
+#  loginUrl: /view/sys/user/login
+#  successUrl: /view/sys/index
+#  unauthorizedUrl: /view/sys/unauthorized
+#  sessionManager:
+#    sessionIdUrlRewritingEnabled: false
+git:
+  userName: ray
+  password: 123456
+  local:
+    base:
+      dir: /home/git-test
+  ssh:
+    priKey: ~/.ssh/id_rsa.
+svn:
+  userName: admin
+  password: 123456
+  local:
+    base:
+      dir: /home/svn-test
+maven:
+  home: /usr/share/java/maven-3
+root:
+  code:
+    path: src/main/java/
+
+custom:
+  link:
+    start:
+      classNameList:
+        - com/dr/common/utils/mapper/OrikaMapperUtils
+      methodSignList:
+        - com/dr/code/diff/service/CodeDiffService#getDiffCode#DiffMethodParams
+        - com/dr/code/diff/analyze/bean/ClassInfo#getSuperClassName#
+server:
+  port: 8085
+  servlet:
+    session:
+      timeout: 3600
+#jenkins:
+#  url: http://192.168.80.128:8081
+#  userName: admin
+#  password: 1
