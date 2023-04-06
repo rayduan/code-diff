@@ -1,13 +1,16 @@
 package com.dr.code.diff.util;
 
 
-import com.dr.code.diff.dto.MethodInfoResult;
 import com.dr.code.diff.common.log.LoggerUtil;
+import com.dr.code.diff.dto.MethodInfoResult;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.builder.Input;
 import org.xmlunit.diff.DefaultNodeMatcher;
@@ -16,7 +19,13 @@ import org.xmlunit.diff.Difference;
 import org.xmlunit.diff.ElementSelectors;
 import org.xmlunit.xpath.JAXPXPathEngine;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.List;
 import java.util.Set;
 
@@ -32,8 +41,8 @@ import java.util.Set;
 @Slf4j
 public class XmlDiffUtils {
 
-
-    private static final JAXPXPathEngine xpathEngine = new JAXPXPathEngine();
+    private static JAXPXPathEngine xpathEngine = new JAXPXPathEngine();
+    private static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
 
     /**
@@ -45,44 +54,64 @@ public class XmlDiffUtils {
      * @param list       列表
      */
     public static void getXmlDiffMethod(String oldXmlPath, String newXmlPath, Set<MethodInfoResult> list) {
-        Source source = Input.fromFile(oldXmlPath).build();
-        Source target = Input.fromFile(newXmlPath).build();
-        Diff diff = DiffBuilder.compare(source)
-                .withTest(target)
-                .checkForSimilar()
-                .ignoreWhitespace()
-                .ignoreComments()
-                .withNodeMatcher(new DefaultNodeMatcher(ElementSelectors.byNameAndAllAttributes))
-                .build();
-        //先获取对比差异
-        Iterable<Difference> differences = diff.getDifferences();
-        if(!differences.iterator().hasNext()){
-            return;
+        try {
+            Source source = Input.fromFile(oldXmlPath).build();
+            Source target = Input.fromFile(newXmlPath).build();
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setValidating(false);
+            dbf.setFeature("http://xml.org/sax/features/validation", false);
+            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            Diff diff = DiffBuilder.compare(source)
+                    .withTest(target)
+                    .checkForSimilar()
+                    .ignoreWhitespace()
+                    .ignoreComments()
+                    .withNodeMatcher(new DefaultNodeMatcher(ElementSelectors.byNameAndAllAttributes))
+                    .withDocumentBuilderFactory(dbf)
+                    .build();
+            //先获取对比差异
+            Iterable<Difference> differences = diff.getDifferences();
+            if (!differences.iterator().hasNext()) {
+                return;
+            }
+            differences.forEach(
+                    e -> {
+                        String xPath = e.getComparison().getControlDetails().getXPath();
+                        String pathValid = getPathValid(xPath);
+                        if (StringUtils.isBlank(pathValid)) {
+                            return;
+                        }
+                        try {
+                            DocumentBuilder builder = factory.newDocumentBuilder();
+                            builder.setEntityResolver((publicId, systemId) -> {
+                                System.out.println("Ignoring " + publicId + ", " + systemId);
+                                return new InputSource(new StringReader(""));
+                            });
+                            Document document = builder.parse(new File(newXmlPath));
+                            Iterable<Node> methodNode = xpathEngine.selectNodes(pathValid, document.getDocumentElement());
+                            if (!methodNode.iterator().hasNext()) {
+                                return;
+                            }
+                            Node targetNode = methodNode.iterator().next();
+                            //获取方法名
+                            String methodName = targetNode.getAttributes().getNamedItem("id").getNodeValue();
+                            //获取方法参数
+                            String paramType = "";
+                            String parameterType = targetNode.getAttributes().getNamedItem("parameterType").getNodeValue();
+                            if (!StringUtils.isBlank(parameterType)) {
+                                paramType = StringUtil.getSplitLast(parameterType, ".");
+                            }
+                            MethodInfoResult methodInfoResult = MethodInfoResult.builder().methodName(methodName).parameters(Lists.newArrayList(paramType)).build();
+                            list.add(methodInfoResult);
+                        } catch (SAXException | IOException | ParserConfigurationException ex) {
+                            LoggerUtil.error(log, "获取xml信息失败", ex.getMessage());
+                        }
+                    }
+            );
+        } catch (Exception e) {
+            LoggerUtil.error(log, "xml对比失败", e.getMessage());
         }
-        differences.forEach(
-                e -> {
-                    String xPath = e.getComparison().getControlDetails().getXPath();
-                    String pathValid = getPathValid(xPath);
-                    if (StringUtils.isBlank(pathValid)) {
-                        return;
-                    }
-                    Iterable<Node> methodNode = xpathEngine.selectNodes(pathValid, target);
-                    if (!methodNode.iterator().hasNext()) {
-                        return;
-                    }
-                    Node targetNode = methodNode.iterator().next();
-                    //获取方法名
-                    String methodName = targetNode.getAttributes().getNamedItem("id").getNodeValue();
-                    //获取方法参数
-                    String paramType = "";
-                    String parameterType = targetNode.getAttributes().getNamedItem("parameterType").getNodeValue();
-                    if (!StringUtils.isBlank(parameterType)) {
-                        paramType = StringUtil.getSplitLast(parameterType, ".");
-                    }
-                    MethodInfoResult methodInfoResult = MethodInfoResult.builder().methodName(methodName).parameters(Lists.newArrayList(paramType)).build();
-                    list.add(methodInfoResult);
-                }
-        );
     }
 
 
@@ -94,18 +123,28 @@ public class XmlDiffUtils {
      */
     public static String getXmlDiffClassName(String newXmlPath) {
         String namespace = "";
-        Source target = Input.fromFile(newXmlPath).build();
-        //先获取对比差异
-        Iterable<Node> mapperMatches = xpathEngine.selectNodes("/mapper", target);
-        if (!mapperMatches.iterator().hasNext()) {
-            return StringUtils.EMPTY;
-        } else {
-            Node mapper = mapperMatches.iterator().next();
-            //获取mapper的namespace
-            namespace = mapper.getAttributes().getNamedItem("namespace").getNodeValue();
-            namespace = namespace.replace(".", "/");
+        try {
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            builder.setEntityResolver((publicId, systemId) -> {
+                System.out.println("Ignoring " + publicId + ", " + systemId);
+                return new InputSource(new StringReader(""));
+            });
+            Document document = builder.parse(new File(newXmlPath));
+            //先获取对比差异
+            Iterable<Node> mapperMatches = xpathEngine.selectNodes("/mapper", document.getDocumentElement());
+            if (!mapperMatches.iterator().hasNext()) {
+                return StringUtils.EMPTY;
+            } else {
+                Node mapper = mapperMatches.iterator().next();
+                //获取mapper的namespace
+                namespace = mapper.getAttributes().getNamedItem("namespace").getNodeValue();
+                namespace = namespace.replace(".", "/");
+            }
+            return namespace;
+        } catch (IOException | SAXException | ParserConfigurationException e) {
+            LoggerUtil.error(log, "非mybatis xml文件", e.getMessage());
+            return "";
         }
-        return namespace;
     }
 
 
