@@ -94,6 +94,9 @@ public class XmlDiffUtils {
                                 return;
                             }
                             Node targetNode = methodNode.iterator().next();
+                            if(null == targetNode){
+                                return;
+                            }
                             //获取方法名
                             String methodName = targetNode.getAttributes().getNamedItem("id").getNodeValue();
                             //获取方法参数

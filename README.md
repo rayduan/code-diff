@@ -72,7 +72,7 @@ ssh-keygen -m PEM -t rsa
 * 1.方法中的注释 // 应该不做代码差异
 * 2.缺失构造方法的diff
 * 3.根据包名对调用链进行降噪
-#### 注意，因为需要变异代码，所以要配置maven，另外本项目运行和编译的代码均采用jdk1.8
+#### 注意，因为需要编译代码，所以要配置maven，另外本项目运行和编译的代码均采用jdk1.8
 ```agsl
 maven:
   home: /usr/local/app/apache-maven-3.8.3
@@ -88,7 +88,7 @@ maven:
 1. 为了降低使用门槛合并代码结构为单模块
 2. 增加了dockerfile，在工程目录下只需执行以下命令就可以构建镜像
     ```
-   mvn clean package -Dmaven.tesr.skip=true
+   mvn clean package -Dmaven.test.skip=true
    docker build -t code-diff .
    ```
    当然我已经构建了一个通用[镜像](https://hub.docker.com/layers/rayduan/code-diff/v1/images/sha256-eefb21263cef421866ff68b193b4311a877e29e20a5acb2ef5745de1aefd396f?context=repo)
