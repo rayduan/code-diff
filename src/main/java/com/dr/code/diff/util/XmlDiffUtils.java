@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -94,16 +95,23 @@ public class XmlDiffUtils {
                                 return;
                             }
                             Node targetNode = methodNode.iterator().next();
-                            if(null == targetNode){
+                            if (null == targetNode) {
                                 return;
                             }
+                            if (!targetNode.hasAttributes()) {
+                                return;
+                            }
+                            NamedNodeMap attributes = targetNode.getAttributes();
                             //获取方法名
-                            String methodName = targetNode.getAttributes().getNamedItem("id").getNodeValue();
+                            String methodName = attributes.getNamedItem("id").getNodeValue();
                             //获取方法参数
                             String paramType = "";
-                            String parameterType = targetNode.getAttributes().getNamedItem("parameterType").getNodeValue();
-                            if (!StringUtils.isBlank(parameterType)) {
-                                paramType = StringUtil.getSplitLast(parameterType, ".");
+                            Node parameterTypeNode = attributes.getNamedItem("parameterType");
+                            if (null != parameterTypeNode) {
+                                String parameterType = parameterTypeNode.getNodeValue();
+                                if (!StringUtils.isBlank(parameterType)) {
+                                    paramType = StringUtil.getSplitLast(parameterType, ".");
+                                }
                             }
                             MethodInfoResult methodInfoResult = MethodInfoResult.builder().methodName(methodName).parameters(Lists.newArrayList(paramType)).build();
                             list.add(methodInfoResult);
