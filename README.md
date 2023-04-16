@@ -105,3 +105,6 @@ maven:
   ```
      JAVA_OPTS="-Dgit.userName=zs -Dgit.password=123456 -Dgit.ssh.priKey=/root/.ssh/id_rsa" 
   ```
+
+【modify】2023-04-16
+支持jacoco报告生成，操作步骤参考[这里](https://gitee.com/Dray/code-diff/wikis/%E4%BD%BF%E7%94%A8jacoco%E5%91%BD%E4%BB%A4%E7%94%9F%E6%88%90jacoco%E6%8A%A5%E5%91%8A?sort_id=8001440)

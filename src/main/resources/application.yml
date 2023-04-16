@@ -16,6 +16,12 @@ logging:
 swagger:
   enabled: true
   base-package: com.dr.code.diff.controller
+  globalOperationParameters:
+    - name: Authorization
+      description: 验证
+      type: string
+      required: false
+      parameterType: header
 log:
   path: D://my-logs
 ##日志配置
@@ -47,6 +53,9 @@ maven:
 root:
   code:
     path: src/main/java/
+jacoco:
+  root:
+    path: H:/jacoco/root/
 custom:
   link:
     start:
@@ -60,12 +69,10 @@ server:
   servlet:
     session:
       timeout: 3600
+
+
 #jenkins:
 #  url: http://192.168.80.128:8081
 #  userName: admin
 #  password: 1
----
-server:
-  port: 8084
-spring:
-  profiles: test
+

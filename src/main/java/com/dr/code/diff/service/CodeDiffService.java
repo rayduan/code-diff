@@ -27,6 +27,8 @@ public interface CodeDiffService {
      */
     DiffInfo getDiffCode(DiffMethodParams diffMethodParams);
 
+
+
     /**
      * 得到静态方法调用
      *
