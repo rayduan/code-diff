@@ -100,22 +100,22 @@ public class GitRepoUtil {
     /**
      * 克隆代码到本地，http/s方式拉取代码
      *
-     * @param gitUrl
-     * @param codePath
-     * @param commitId
-     * @return
-     * @throws GitAPIException
-     * @throws IOException
+     * @param gitUrl      git url
+     * @param codePath    代码路径
+     * @param branchName  分支名称
+     * @param gitUserName git用户名
+     * @param gitPassWord git密码
+     * @return {@link Git}
      */
-    public static Git httpCloneRepository(String gitUrl, String codePath, String commitId, String gitUserName, String gitPassWord) {
+    public static Git httpCloneRepository(String gitUrl, String codePath, String branchName, String gitUserName, String gitPassWord) {
         Git git = null;
         try {
             if (!checkGitWorkSpace(gitUrl, codePath)) {
                 LoggerUtil.info(log, "本地代码不存在，clone", gitUrl, codePath);
-                git = instanceHttpGit(gitUrl, codePath, commitId, null, gitUserName, gitPassWord);
-                // 下载指定commitId
+                git = instanceHttpGit(gitUrl, codePath, branchName, null, gitUserName, gitPassWord);
+                // 下载指定分支,如果是commitId在上一步已经下载了
                 if (git.getRepository().exactRef(Constants.HEAD).isSymbolic()){
-                    git.checkout().setName(commitId).call();
+                    git.checkout().setName(branchName).call();
                 }
             } else {
                 LoggerUtil.info(log, "本地代码存在,直接使用", gitUrl, codePath);
@@ -123,8 +123,8 @@ public class GitRepoUtil {
                 git.getRepository().getFullBranch();
                 //判断是分支还是commitId，分支做更新，commitId无法改变用原有的
                 if (git.getRepository().exactRef(Constants.HEAD).isSymbolic()) {
-                    //更新代码
-                    instanceHttpGit(gitUrl, codePath, commitId, git, gitUserName, gitPassWord);
+                    //更新分支代码
+                    instanceHttpGit(gitUrl, codePath, branchName, git, gitUserName, gitPassWord);
                 }
             }
         } catch (IOException | GitAPIException e) {
@@ -138,21 +138,28 @@ public class GitRepoUtil {
     }
 
     /**
+     * ssh克隆存储库
+     *
+     * @param gitUrl     git url
+     * @param codePath   代码路径
+     * @param branchName 分支名称
+     * @param privateKey 私钥
+     * @return {@link Git}
      * @date:2021/9/8
      * @className:GitRepoUtil
      * @author:Administrator
      * @description: ssh方式拉取代码
      */
-    public static Git sshCloneRepository(String gitUrl, String codePath, String commitId, String privateKey) {
+    public static Git sshCloneRepository(String gitUrl, String codePath, String branchName, String privateKey) {
         Git git = null;
         try {
             if (!checkGitWorkSpace(gitUrl, codePath)) {
                 LoggerUtil.info(log, "本地代码不存在，clone", gitUrl, codePath);
                 //为了区分ssh路径和http/s这里ssh多加了一层目录
-                git = instanceSshGit(gitUrl, codePath, commitId, null, privateKey);
+                git = instanceSshGit(gitUrl, codePath, branchName, null, privateKey);
                 // 下载指定branch
                 if (git.getRepository().exactRef(Constants.HEAD).isSymbolic()){
-                    git.checkout().setName(commitId).call();
+                    git.checkout().setName(branchName).call();
                 }
             } else {
                 LoggerUtil.info(log, "本地代码存在,直接使用", gitUrl, codePath);
@@ -161,7 +168,7 @@ public class GitRepoUtil {
                 //判断是分支还是commitId，分支做更新，commitId无法改变用原有的
                 if (git.getRepository().exactRef(Constants.HEAD).isSymbolic()) {
                     //更新代码
-                    instanceSshGit(gitUrl, codePath, commitId, git, privateKey);
+                    instanceSshGit(gitUrl, codePath, branchName, git, privateKey);
                 }
             }
 
