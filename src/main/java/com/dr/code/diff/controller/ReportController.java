@@ -91,7 +91,7 @@ public class ReportController {
         List<CodeDiffResultVO> list = OrikaMapperUtils.mapList(diffCodeList, DiffClassInfoResult.class, CodeDiffResultVO.class);
         String diffCodePath = customizeConfig.getJacocoRootPath() + "/diff/" + diffName;
         if (!CollectionUtils.isEmpty(list)) {
-            FileUtil.writeUtf8String(JSONUtil.toJsonStr(diffName), diffCodePath);
+            FileUtil.writeUtf8String(JSONUtil.toJsonStr(list), diffCodePath);
         }
         return new ApiResponse<String>().success(diffCodePath);
     }
