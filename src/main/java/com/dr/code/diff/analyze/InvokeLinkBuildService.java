@@ -242,6 +242,18 @@ public class InvokeLinkBuildService {
             });
             startMap.put(MethodNodeTypeEnum.CUSTOM_CLASS, customClassList);
         }
+
+        // 遍历集合，执行异步操作
+//        List<CompletableFuture<Void>> futures = new ArrayList<>();
+//        k8sCmdParam.getPods().forEach(pod -> {
+//            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+//                // 异步操作
+//                podExec(pod, k8sCmdParam.getCmd(), k8sCmdParam.getNamespace(), client);
+//                getFile(pod, k8sCmdParam.getNamespace(), client, k8sCmdParam.getWorkspace());
+//            }, k8sCmdParam.getExecutor());
+//            futures.add(future);
+//        });
+
         //自定义方法
         List<String> customLinkStartMethodSign = customizeLinkStartConfig.getMethodSignList();
         if (!CollectionUtils.isEmpty(customLinkStartMethodSign)) {

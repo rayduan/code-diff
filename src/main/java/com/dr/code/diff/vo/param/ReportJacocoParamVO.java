@@ -37,7 +37,7 @@ public class ReportJacocoParamVO {
     /**
      * 排除类目录
      */
-    private List<String> excludedClassesDirectory;
+    private String excludedClassesDirectory;
 
     /**
      * 0

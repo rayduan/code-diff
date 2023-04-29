@@ -83,9 +83,9 @@ public class ReportAction {
             // 如果有增量参数将其设置进去
             if (null != reportJacocoParam.getDiffCodeFile()) {
                 builder = new CoverageBuilder(
-                        JsonReadUtil.readJsonToString(reportJacocoParam.getDiffCodeFile()));
+                        JsonReadUtil.readJsonToString(reportJacocoParam.getDiffCodeFile()), reportJacocoParam.getExcludedClassesDirectory());
             } else {
-                builder = new CoverageBuilder();
+                builder = new CoverageBuilder(reportJacocoParam.getExcludedClassesDirectory());
             }
             final Analyzer analyzer = new Analyzer(execFileLoader.getExecutionDataStore(), builder);
             List<String> classesDirectory = reportJacocoParam.getClassesDirectory();
