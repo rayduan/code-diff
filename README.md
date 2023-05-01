@@ -3,7 +3,7 @@
 
 
 ### 简介
-+ 本项目主要是用于基于jacoco的增量代码统计，增量代码的统计核心问题是如何获得增量代码，网络上关于增量代码的获取相关资料比较少，而且代码注释也没有，阅读起来相对困难，我这边参考了几个项目后根据实际需求，进行了整理，整个项目工程，只有application模块为核心代码，其他都是辅助，请配合jacoco二开一起使用https://gitee.com/Dray/jacoco.git
++ 本项目主要是用于基于jacoco的增量代码统计，增量代码的统计核心问题是如何获得增量代码，网络上关于增量代码的获取相关资料比较少，而且代码注释也没有，阅读起来相对困难，本工程包含了jacoco二开，实现了增量覆盖率功能，当然也包含其他功能。
 具体实现方案请参考[博客](https://blog.csdn.net/tushuping/article/details/112613528)
 
 ### 功能介绍
@@ -16,6 +16,7 @@
 * 支持基于git的变更代码影响接口
 * 支持基于svn的变更代码影响接口
 * 影响接口支持http，dubbo以及自定义起始类，自定义起始方法
+* 支持全量和增量代码覆盖率的生成
 
 ### 使用方法
 #### 1、修改application.yml
@@ -105,3 +106,6 @@ maven:
   ```
      JAVA_OPTS="-Dgit.userName=zs -Dgit.password=123456 -Dgit.ssh.priKey=/root/.ssh/id_rsa" 
   ```
+
+【modify】2023-04-16
+支持jacoco报告生成，操作步骤参考[这里](https://gitee.com/Dray/code-diff/wikis/%E4%BD%BF%E7%94%A8jacoco%E5%91%BD%E4%BB%A4%E7%94%9F%E6%88%90jacoco%E6%8A%A5%E5%91%8A?sort_id=8001440)

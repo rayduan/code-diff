@@ -10,8 +10,6 @@ import com.dr.code.diff.util.StringUtil;
 import jdk.internal.org.objectweb.asm.*;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,6 +24,7 @@ import java.util.stream.Collectors;
  */
 public class CallChainMethodVisitor extends MethodVisitor {
 
+    public static final String JAVA = "java";
     /**
      * 调用方法
      */
@@ -69,8 +68,14 @@ public class CallChainMethodVisitor extends MethodVisitor {
         }
         //非本包调用过滤
         if (null != adapterContext && StringUtils.isNotBlank(adapterContext.getBasePackagePath())) {
-            if (!owner.contains(adapterContext.getBasePackagePath())) {
-                return;
+            if (JAVA.equals(adapterContext.getBasePackagePath())) {
+                if (owner.startsWith(adapterContext.getBasePackagePath())) {
+                    return;
+                }
+            } else {
+                if (!owner.contains(adapterContext.getBasePackagePath())) {
+                    return;
+                }
             }
         }
         // 记录被调用方法的信息
@@ -123,7 +128,7 @@ public class CallChainMethodVisitor extends MethodVisitor {
      * 访问注释
      *
      * @param descriptor 描述符
-     * @param visible   有形
+     * @param visible    有形
      * @return {@link AnnotationVisitor}
      */
     @Override

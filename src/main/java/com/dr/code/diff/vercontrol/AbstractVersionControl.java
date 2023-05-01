@@ -166,7 +166,7 @@ public abstract class AbstractVersionControl {
             }
             String className;
             if (diffEntry.getNewPath().contains(customizeConfig.getRootCodePath())) {
-                className = diffEntry.getNewPath().split("src/main/java/")[1].split("\\.")[0];
+                className = diffEntry.getNewPath().split(customizeConfig.getRootCodePath())[1].split("\\.")[0];
             } else {
                 className = "";
             }

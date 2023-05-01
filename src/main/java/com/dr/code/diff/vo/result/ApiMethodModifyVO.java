@@ -1,6 +1,5 @@
 package com.dr.code.diff.vo.result;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +21,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DubboApiModifyVO {
+public class ApiMethodModifyVO {
 
 
     /**

@@ -69,5 +69,14 @@ public class CustomizeConfig {
     @Value(value = "${root.code.path}")
     private String rootCodePath;
 
+    /**
+     * jacoco exec路径
+     */
+    @Value(value = "${jacoco.root.path}")
+    private String jacocoRootPath;
+
+
+    @Value(value = "${custom.link.type:1}")
+    private Integer linkType;
 
 }

@@ -21,7 +21,12 @@ public enum BizCode implements Code {
     GET_METHOD_INVOKE_LINK_FAIL(20008, "获取方法调用链失败", "获取方法调用链失败"),
 
     COMPILE_CODE_FAIL(20009, "编译源码失败", "获取classes文件失败"),
-    POM_NOT_EXIST_FAIL(20010, "pom文件不存在", "编译源码失败,pom文件不存在");
+    POM_NOT_EXIST_FAIL(20010, "pom文件不存在", "编译源码失败,pom文件不存在"),
+    JACOCO_EXEC_NOT_EXIST(20011, "exec文件不存在", "exec文件不存在,请检查目录"),
+    JACOCO_REPORT_FAIL(20012, "生成jacoco报告失败", "生成jacoco报告失败"),
+
+    GET_CODE_FAIL(20013, "获取代码失败", "获取代码失败，请排查日志"),
+    ;
     private final int code;
     private final String info;
     private final String fixTips;

@@ -1,6 +1,7 @@
 package com.dr.code.diff.vercontrol.svn;
 
 import com.dr.code.diff.dto.DiffEntryDto;
+import lombok.Data;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.wc.ISVNDiffStatusHandler;
@@ -21,10 +22,16 @@ import java.util.List;
  * <p>
  * Copyright: Copyright (c) 2021
  */
+@Data
 public class MySVNDiffStatusHandler implements ISVNDiffStatusHandler {
 
-    public  final static  List<DiffEntryDto> list = Collections.synchronizedList(new ArrayList<DiffEntryDto>());;
+    public  final static  List<DiffEntryDto> list = Collections.synchronizedList(new ArrayList<DiffEntryDto>());
 
+    private String rootCodePath;
+
+    public MySVNDiffStatusHandler(String rootCodePath) {
+        this.rootCodePath = rootCodePath;
+    }
 
     @Override
     public void handleDiffStatus(SVNDiffStatus svnDiffStatus) throws SVNException {
@@ -33,7 +40,7 @@ public class MySVNDiffStatusHandler implements ISVNDiffStatusHandler {
             return;
         }
         //过滤测试文件
-        if(!svnDiffStatus.getPath().contains("src/main/java")){
+        if(!svnDiffStatus.getPath().contains(rootCodePath)){
             return;
         }
         DiffEntryDto entry = new DiffEntryDto();

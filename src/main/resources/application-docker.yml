@@ -10,9 +10,13 @@ spring:
     time-zone: GMT+8
 logging:
   config: classpath:log4j2.yml
+springfox:
+  documentation:
+    enabled: true
 swagger:
-  enabled: true
   base-package: com.dr.code.diff.controller
+  authorization:
+    type: None
 ##日志配置
 #logging:
 #  config: classpath:log4j2.yml
