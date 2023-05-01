@@ -13,9 +13,11 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum LinKScopeTypeEnum {
-    //待通知
+    //排除jdk方法
     EXCLUDE_JDK_TYPE(1, "exclude_jdk"),
+    //只包本工程groupId的方法
     GROUP_ONLY_TYPE(2, "group_only"),
+    //全部调用链
     ALL_TYPE(3, "all"),
     ;
 
