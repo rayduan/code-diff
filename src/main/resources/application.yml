@@ -68,6 +68,7 @@ custom:
       methodSignList:
         - com/dr/code/diff/service/CodeDiffService#getDiffCode#DiffMethodParams
         - com/dr/code/diff/analyze/bean/ClassInfo#getSuperClassName#
+    type: 1
 server:
   port: 8085
   servlet:

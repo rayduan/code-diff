@@ -5,7 +5,9 @@ import cn.hutool.core.io.FileUtil;
 import com.dr.code.diff.analyze.bean.AdapterContext;
 import com.dr.code.diff.analyze.bean.MethodInfo;
 import com.dr.code.diff.analyze.link.CallChainClassVisitor;
+import com.dr.code.diff.config.CustomizeConfig;
 import com.dr.code.diff.config.CustomizeLinkStartConfig;
+import com.dr.code.diff.enums.LinKScopeTypeEnum;
 import com.dr.code.diff.enums.MethodNodeTypeEnum;
 import com.dr.code.diff.util.StringUtil;
 import com.dr.code.diff.common.errorcode.BizCode;
@@ -61,6 +63,10 @@ public class InvokeLinkBuildService {
     @Autowired
     private CustomizeLinkStartConfig customizeLinkStartConfig;
 
+
+    @Autowired
+    private CustomizeConfig customizeConfig;
+
     /**
      * get方法调用链接
      *
@@ -91,7 +97,14 @@ public class InvokeLinkBuildService {
                         } catch (FileNotFoundException fileNotFoundException) {
                             LoggerUtil.error(log, "非maven项目或者获取pom路径有误!");
                         }
-                        AdapterContext adapterContext = AdapterContext.builder().basePackagePath(groupId).build();
+                        AdapterContext.AdapterContextBuilder builder = AdapterContext.builder();
+                        if (LinKScopeTypeEnum.EXCLUDE_JDK_TYPE.getCode().equals(customizeConfig.getLinkType())) {
+                            builder.basePackagePath("java");
+                        } else if (LinKScopeTypeEnum.GROUP_ONLY_TYPE.getCode().equals(customizeConfig.getLinkType())) {
+                            builder.basePackagePath(groupId);
+                        } else if (LinKScopeTypeEnum.ALL_TYPE.getCode().equals(customizeConfig.getLinkType())) {
+                            builder.basePackagePath("");
+                        }
                         //获取一个目录下的所有class文件
                         List<File> files = FileUtil.loopFiles(new File(e), pathname -> pathname.getName().endsWith(".class"));
                         if (CollectionUtils.isEmpty(files)) {
@@ -99,7 +112,7 @@ public class InvokeLinkBuildService {
                         }
                         //并发获取每个方法的调用方法
                         List<CompletableFuture<List<MethodInfo>>> priceFuture = files.stream()
-                                .map(item -> CompletableFuture.supplyAsync(() -> getSingleClassMethodsInvoke(item, excludeClasses, adapterContext), executor))
+                                .map(item -> CompletableFuture.supplyAsync(() -> getSingleClassMethodsInvoke(item, excludeClasses, builder.build()), executor))
                                 .collect(Collectors.toList());
                         CompletableFuture.allOf(priceFuture.toArray(new CompletableFuture[0])).join();
                         List<MethodInfo> list = priceFuture.stream().map(CompletableFuture::join).flatMap(Collection::stream).filter(Objects::nonNull).collect(Collectors.toList());

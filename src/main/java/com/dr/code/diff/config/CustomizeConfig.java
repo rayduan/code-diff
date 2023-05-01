@@ -75,4 +75,8 @@ public class CustomizeConfig {
     @Value(value = "${jacoco.root.path}")
     private String jacocoRootPath;
 
+
+    @Value(value = "${custom.link.type:1}")
+    private Integer linkType;
+
 }

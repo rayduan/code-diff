@@ -70,7 +70,7 @@ public class SvnAbstractVersionControl extends AbstractVersionControl {
             SvnRepoUtil.cloneRepository(super.versionControlDto.getRepoUrl(), localBaseRepoDir, oldVersion, customizeConfig.getSvnUserName(), customizeConfig.getSvnPassWord());
             SvnRepoUtil.cloneRepository(nowSvnUrl, localNowRepoDir, newVersion, customizeConfig.getSvnUserName(), customizeConfig.getSvnPassWord());
             SVNDiffClient svnDiffClient = SvnRepoUtil.getSvnDiffClient(customizeConfig.getSvnUserName(), customizeConfig.getSvnPassWord());
-            svnDiffClient.doDiffStatus(SVNURL.parseURIEncoded(super.versionControlDto.getRepoUrl()), oldVersion, SVNURL.parseURIEncoded(nowSvnUrl), newVersion, SVNDepth.INFINITY, true, new MySVNDiffStatusHandler());
+            svnDiffClient.doDiffStatus(SVNURL.parseURIEncoded(super.versionControlDto.getRepoUrl()), oldVersion, SVNURL.parseURIEncoded(nowSvnUrl), newVersion, SVNDepth.INFINITY, true, new MySVNDiffStatusHandler(customizeConfig.getRootCodePath()));
             //将差异代码设置进集合
             super.versionControlDto.setDiffClasses(MySVNDiffStatusHandler.list);
         } catch (SVNException e) {
