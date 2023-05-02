@@ -8,6 +8,7 @@ import com.dr.code.diff.analyze.constant.AnnotationConstant;
 import com.dr.code.diff.enums.MethodNodeTypeEnum;
 import com.dr.code.diff.util.StringUtil;
 import jdk.internal.org.objectweb.asm.*;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -94,6 +95,11 @@ public class CallChainClassVisitor extends ClassVisitor {
         }
         if (null != interfaces && interfaces.length > 0) {
             classInfoBuilder.interfacesClassNames(new ArrayList<>(Arrays.asList(interfaces)));
+        }
+        if (null != adapterContext && !CollectionUtils.isEmpty(adapterContext.getDubboClasses())) {
+            if (adapterContext.getDubboClasses().contains(name)) {
+                classInfoBuilder.dubboFlag(Boolean.TRUE);
+            }
         }
         this.classInfo = classInfoBuilder.build();
         super.visit(version, access, name, signature, superName, interfaces);

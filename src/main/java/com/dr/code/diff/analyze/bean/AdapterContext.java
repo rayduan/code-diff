@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * 适配器上下文
  *
@@ -27,4 +29,9 @@ public class AdapterContext {
      * 基本包路径
      */
     private String basePackagePath;
+
+    /**
+     * dubbo xml指定的类
+     */
+    private List<String> dubboClasses;
 }

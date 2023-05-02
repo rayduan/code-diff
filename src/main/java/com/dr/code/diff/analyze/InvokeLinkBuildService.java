@@ -14,6 +14,7 @@ import com.dr.code.diff.common.errorcode.BizCode;
 import com.dr.code.diff.common.exception.BizException;
 import com.dr.code.diff.common.log.LoggerUtil;
 import com.dr.code.diff.common.utils.mapper.OrikaMapperUtils;
+import com.dr.code.diff.util.XmlDubboUtil;
 import com.google.common.collect.Lists;
 import jdk.internal.org.objectweb.asm.ClassReader;
 import jdk.internal.org.objectweb.asm.ClassWriter;
@@ -105,6 +106,9 @@ public class InvokeLinkBuildService {
                         } else if (LinKScopeTypeEnum.ALL_TYPE.getCode().equals(customizeConfig.getLinkType())) {
                             builder.basePackagePath("");
                         }
+                        //获取dubbo xml的配置
+                        List<String> dubboService = XmlDubboUtil.scanDubboService();
+                        builder.dubboClasses(dubboService);
                         //获取一个目录下的所有class文件
                         List<File> files = FileUtil.loopFiles(new File(e), pathname -> pathname.getName().endsWith(".class"));
                         if (CollectionUtils.isEmpty(files)) {
