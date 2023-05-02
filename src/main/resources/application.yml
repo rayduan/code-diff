@@ -69,6 +69,9 @@ custom:
         - com/dr/code/diff/service/CodeDiffService#getDiffCode#DiffMethodParams
         - com/dr/code/diff/analyze/bean/ClassInfo#getSuperClassName#
     type: 1 #此处表示调用链排除jdk本身方法
+  dubbo:
+    xml:
+      path: classpath:dubbo-provider.xml
 server:
   port: 8085
   servlet:

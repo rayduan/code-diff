@@ -2,20 +2,19 @@ package com.dr.code.diff.util;
 
 import com.dr.code.diff.common.log.LoggerUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.util.CollectionUtils;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xmlunit.xpath.JAXPXPathEngine;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -34,11 +33,10 @@ import java.util.List;
  */
 @Slf4j
 public class XmlDubboUtil {
-    private static JAXPXPathEngine xpathEngine = new JAXPXPathEngine();
     private static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
-    public static String getDubboService(InputStream inputStream) {
-        String className = "";
+    public static List<String> getDubboService(InputStream inputStream) {
+        List<String> classNames = new ArrayList<>();
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
             builder.setEntityResolver((publicId, systemId) -> {
@@ -46,35 +44,42 @@ public class XmlDubboUtil {
                 return new InputSource(new StringReader(""));
             });
             Document document = builder.parse(inputStream);
-            //先获取对比差异
-            Iterable<Node> dubboMatches = xpathEngine.selectNodes("/beans/dubbo:service", document.getDocumentElement());
-            if (!dubboMatches.iterator().hasNext()) {
-                return StringUtils.EMPTY;
-            } else {
-                Node service = dubboMatches.iterator().next();
-                //获取dubbo的class
-                className = service.getAttributes().getNamedItem("interface").getNodeValue();
+            //获取dubbo的service
+            NodeList serviceList = document.getElementsByTagName("dubbo:service");
+            for (int i = 0; i < serviceList.getLength(); i++) {
+                Element serviceElement = (Element) serviceList.item(i);
+                String className = serviceElement.getAttribute("interface");
                 className = className.replace(".", "/");
+                classNames.add(className);
             }
-            return className;
+            return classNames;
         } catch (IOException | SAXException | ParserConfigurationException e) {
             LoggerUtil.error(log, "非dubbo xml文件", e.getMessage());
-            return "";
+            return null;
         }
     }
 
 
-    public static List<String> scanDubboService() throws IOException {
-        List<String> dubboServices = new ArrayList<String>();
-        ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        Resource[] resources = resolver.getResources("classpath*:/**/*.xml");
-        for (Resource resource : resources) {
-            // 处理 resource
-            // 例如，可以使用 resource.getInputStream() 来读取 XML 内容
-            String dubboService = getDubboService(resource.getInputStream());
-            dubboServices.add(dubboService);
+    public static List<String> scanDubboService(String dubboXmlPath) {
+        try {
+            List<String> dubboServices = new ArrayList<String>();
+            ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+            Resource[] resources = resolver.getResources(dubboXmlPath);
+            for (Resource resource : resources) {
+                // 处理 resource
+                // 例如，可以使用 resource.getInputStream() 来读取 XML 内容
+                List<String> dubboService = getDubboService(resource.getInputStream());
+                if (CollectionUtils.isEmpty(dubboService)) {
+                    continue;
+                }
+                dubboServices.addAll(dubboService);
+            }
+            return dubboServices;
+        } catch (Exception e) {
+            log.error("获取dubbo xml失败", e);
+            return null;
         }
-        return dubboServices;
     }
+
 
 }
