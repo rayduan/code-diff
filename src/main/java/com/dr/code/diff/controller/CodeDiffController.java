@@ -213,4 +213,24 @@ public class CodeDiffController {
         return new ApiResponse<Map<String, List<MethodInfoVO>>>().success(map);
     }
 
+
+    @ApiOperation("获取svn调用链")
+    @RequestMapping(value = "git/method/link", method = RequestMethod.GET)
+    public ApiResponse<Map<String, List<MethodInfoVO>>> getSVNMethodLink(
+            @ApiParam(required = true, name = "repoUrl", value = "svn远程仓库地址")
+            @NotEmpty
+            @RequestParam(value = "repoUrl") String repoUrl,
+            @ApiParam(required = true, name = "branchName", value = "svn版本")
+            @NotEmpty
+            @RequestParam(value = "branchName") String branchName) {
+        MethodInvokeParam methodInvokeParam = MethodInvokeParam.builder().repoUrl(repoUrl).branchName(branchName).codeManageTypeEnum(CodeManageTypeEnum.SVN).build();
+        Map<String, List<MethodInfo>> staticMethodInvoke = codeDiffService.getStaticMethodInvoke(methodInvokeParam);
+        Map<String, List<MethodInfoVO>> map = new HashMap<>();
+        staticMethodInvoke.forEach((k, v) -> {
+            map.put(k, OrikaMapperUtils.mapList(v, MethodInfo.class, MethodInfoVO.class));
+        });
+        return new ApiResponse<Map<String, List<MethodInfoVO>>>().success(map);
+    }
+
+
 }

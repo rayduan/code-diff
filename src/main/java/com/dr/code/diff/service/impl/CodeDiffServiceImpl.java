@@ -69,14 +69,14 @@ public class CodeDiffServiceImpl implements CodeDiffService {
         MethodInvokeDto dto = OrikaMapperUtils.map(methodInvokeParam, MethodInvokeDto.class);
         //下载代码
         String path = VersionControlHandlerFactory.downloadCode(dto);
-        if(StringUtils.isBlank(path)){
+        if (StringUtils.isBlank(path)) {
             throw new BizException(BizCode.GIT_OPERATED_FAIlED);
         }
         //这里存在风险，如果代码是分支，且有更新，这里必须要重新编译，先不考虑这个
         boolean compileFlag = FileUtils.searchFile(new File(path), ".class");
-        if(compileFlag){
+        if (compileFlag) {
             log.info("代码已经编译，直接使用");
-        }else {
+        } else {
             //编译代码
             mavenCmdInvokeService.compileCode(path);
         }
