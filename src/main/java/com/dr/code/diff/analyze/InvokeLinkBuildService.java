@@ -110,7 +110,7 @@ public class InvokeLinkBuildService {
                         List<String> dubboService = XmlDubboUtil.scanDubboService(customizeConfig.getDubboXmlPath());
                         builder.dubboClasses(dubboService);
                         //获取一个目录下的所有class文件
-                        List<File> files = FileUtil.loopFiles(new File(e), pathname -> pathname.getName().endsWith(".class"));
+                        List<File> files = FileUtil.loopFiles(new File(e), pathname -> pathname.getName().endsWith(".class") && pathname.getAbsolutePath().contains("classes"));
                         if (CollectionUtils.isEmpty(files)) {
                             return;
                         }
@@ -216,10 +216,15 @@ public class InvokeLinkBuildService {
         //1.http接口方法
         List<MethodInfo> httpMethodInfoList = methodTypeMap.get(MethodNodeTypeEnum.HTTP);
         if (!CollectionUtils.isEmpty(httpMethodInfoList)) {
+            Map<String, List<MethodInfo>> feignMap = allMethods.stream().filter(e -> e.getClassInfo().getFeignFlag()).collect(Collectors.groupingBy(e -> e.getClassInfo().getClassName()));
             //初始化子节点
             httpMethodInfoList.forEach(e -> {
                 //重置调用节点，避免循环引用
                 e.setCallerMethods(null);
+                //这里只考虑Controller有一个实现类
+                if (!CollectionUtils.isEmpty(feignMap) && !CollectionUtils.isEmpty(e.getClassInfo().getInterfacesClassNames()) && feignMap.containsKey(e.getClassInfo().getInterfacesClassNames().get(0))) {
+                    List<MethodInfo> methodInfos = feignMap.get(e.getClassInfo().getInterfacesClassNames().get(0));
+                }
                 String controllerMappingUrl = e.getClassInfo().getRequestUrl();
                 String methodMappingUrl = e.getMappingUrl();
                 if (StringUtils.isBlank(controllerMappingUrl)) {
@@ -228,12 +233,7 @@ public class InvokeLinkBuildService {
                 if (StringUtils.isBlank(methodMappingUrl)) {
                     methodMappingUrl = "";
                 }
-                String methodUrl = "";
-                if (controllerMappingUrl.endsWith(URL_PREFIX) && methodMappingUrl.startsWith(URL_PREFIX)) {
-                    methodUrl = controllerMappingUrl + methodMappingUrl;
-                } else {
-                    methodUrl = StringUtil.connectPath(controllerMappingUrl, methodMappingUrl);
-                }
+                String methodUrl = StringUtil.connectPath(controllerMappingUrl, methodMappingUrl);
                 e.setMappingUrl(methodUrl);
                 e.setVisitedMethods(Lists.newArrayList(e.getMethodSign()));
             });

@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class StringUtil {
 
-
+    public static final String PREFIX = "/";
     /**
      * 获取分割后的最后元素
      *
@@ -43,13 +43,19 @@ public class StringUtil {
      * @return {@link String}
      */
     public static String connectPath(String path, String filename) {
-        if(StringUtils.isBlank(path)){
+        if (StringUtils.isBlank(path)) {
             return filename;
         }
-        if (path.endsWith("/")) {
+        if (path.endsWith(PREFIX)) {
+            if (filename.startsWith(PREFIX)) {
+                return path + filename.substring(1);
+            }
             return path + filename;
         } else {
-            return path + "/" + filename;
+            if (filename.startsWith(PREFIX)) {
+                return path + filename;
+            }
+            return path + PREFIX + filename;
         }
     }
 
