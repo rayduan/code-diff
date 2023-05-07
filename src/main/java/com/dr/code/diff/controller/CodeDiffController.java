@@ -215,7 +215,7 @@ public class CodeDiffController {
 
 
     @ApiOperation("获取svn调用链")
-    @RequestMapping(value = "git/method/link", method = RequestMethod.GET)
+    @RequestMapping(value = "svn/method/link", method = RequestMethod.GET)
     public ApiResponse<Map<String, List<MethodInfoVO>>> getSVNMethodLink(
             @ApiParam(required = true, name = "repoUrl", value = "svn远程仓库地址")
             @NotEmpty

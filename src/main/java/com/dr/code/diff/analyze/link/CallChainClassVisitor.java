@@ -172,7 +172,7 @@ public class CallChainClassVisitor extends ClassVisitor {
             this.classInfo.setDubboFlag(Boolean.TRUE);
         }
         //只有controller的注解才能生效
-        if (this.classInfo.getControllerFlag()) {
+        if (this.classInfo.getControllerFlag() || this.classInfo.getFeignFlag()) {
             if (Arrays.asList(AnnotationConstant.requestAnnotation).contains(descriptor)) {
                 this.requestInfo = new RequestInfo();
                 // 这里去获取类的 requestMappingValue
