@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileUtil;
 import com.dr.code.diff.analyze.bean.AdapterContext;
 import com.dr.code.diff.analyze.bean.MethodInfo;
+import com.dr.code.diff.analyze.constant.SysConstant;
 import com.dr.code.diff.analyze.link.CallChainClassVisitor;
 import com.dr.code.diff.config.CustomizeConfig;
 import com.dr.code.diff.config.CustomizeLinkStartConfig;
@@ -35,6 +36,7 @@ import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -216,17 +218,25 @@ public class InvokeLinkBuildService {
         //1.http接口方法
         List<MethodInfo> httpMethodInfoList = methodTypeMap.get(MethodNodeTypeEnum.HTTP);
         if (!CollectionUtils.isEmpty(httpMethodInfoList)) {
-            Map<String, List<MethodInfo>> feignMap = allMethods.stream().filter(e -> e.getClassInfo().getFeignFlag()).collect(Collectors.groupingBy(e -> e.getClassInfo().getClassName()));
+            Map<String, MethodInfo> feignMap = allMethods.stream().filter(e -> e.getClassInfo().getFeignFlag()).collect(Collectors.toMap(e -> e.getClassInfo().getClassName() + SysConstant.SPILT_CHAR + e.getMethodName() + SysConstant.SPILT_CHAR + String.join(",", e.getMethodParams()), Function.identity()));
             //初始化子节点
             httpMethodInfoList.forEach(e -> {
                 //重置调用节点，避免循环引用
                 e.setCallerMethods(null);
                 //这里只考虑Controller有一个实现类
+                MethodInfo feignMethodInfo = null;
                 if (!CollectionUtils.isEmpty(feignMap) && !CollectionUtils.isEmpty(e.getClassInfo().getInterfacesClassNames()) && feignMap.containsKey(e.getClassInfo().getInterfacesClassNames().get(0))) {
-                    List<MethodInfo> methodInfos = feignMap.get(e.getClassInfo().getInterfacesClassNames().get(0));
+                    feignMethodInfo = feignMap.get(e.getClassInfo().getInterfacesClassNames().get(0));
                 }
                 String controllerMappingUrl = e.getClassInfo().getRequestUrl();
                 String methodMappingUrl = e.getMappingUrl();
+                //这里处理了一下feign,如果controller没有url，则使用feign的url
+                if (null != feignMethodInfo && StringUtils.isBlank(controllerMappingUrl)) {
+                    controllerMappingUrl = feignMethodInfo.getClassInfo().getRequestUrl();
+                }
+                if (null != feignMethodInfo && StringUtils.isBlank(methodMappingUrl)) {
+                    methodMappingUrl = feignMethodInfo.getMappingUrl();
+                }
                 if (StringUtils.isBlank(controllerMappingUrl)) {
                     controllerMappingUrl = "";
                 }
