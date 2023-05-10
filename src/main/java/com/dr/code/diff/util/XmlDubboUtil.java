@@ -2,6 +2,7 @@ package com.dr.code.diff.util;
 
 import com.dr.code.diff.common.log.LoggerUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -61,6 +62,9 @@ public class XmlDubboUtil {
 
 
     public static List<String> scanDubboService(String dubboXmlPath) {
+        if(StringUtils.isBlank(dubboXmlPath)){
+            return null;
+        }
         try {
             List<String> dubboServices = new ArrayList<String>();
             ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();

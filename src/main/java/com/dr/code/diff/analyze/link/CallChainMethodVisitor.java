@@ -8,8 +8,10 @@ import com.dr.code.diff.analyze.constant.AnnotationConstant;
 import com.dr.code.diff.enums.MethodNodeTypeEnum;
 import com.dr.code.diff.util.StringUtil;
 import jdk.internal.org.objectweb.asm.*;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,6 +57,12 @@ public class CallChainMethodVisitor extends MethodVisitor {
     }
 
     public void visitParameter(String name, int access) {
+        List<String> methodParamNameList = currentMethod.getMethodParamNameList();
+        if (CollectionUtils.isEmpty(methodParamNameList)) {
+            methodParamNameList = new ArrayList<>();
+            currentMethod.setMethodParamNameList(methodParamNameList);
+        }
+        methodParamNameList.add(name);
         super.visitParameter(name, access);
     }
 
