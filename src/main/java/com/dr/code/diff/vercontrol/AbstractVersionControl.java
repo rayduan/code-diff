@@ -139,6 +139,9 @@ public abstract class AbstractVersionControl {
         //多线程获取差异方法，此处只要考虑增量代码太多的情况下，每个类都需要遍历所有方法，采用多线程方式加快速度
         return CompletableFuture.supplyAsync(() -> {
             String moduleName = diffEntry.getNewPath().split("/")[0];
+            if ("src".equals(moduleName)) {
+                moduleName = "";
+            }
             //mybatis的xml变更
             if (mewClassFile.endsWith(".xml")) {
                 String xmlDiffClassName = XmlDiffUtils.getXmlDiffClassName(mewClassFile);
@@ -171,14 +174,14 @@ public abstract class AbstractVersionControl {
                 className = "";
             }
             //新增类直接标记，不用计算方法
-            if (DiffEntry.ChangeType.ADD.equals(diffEntry.getChangeType())) {
-                return DiffClassInfoResult.builder()
-                        .classFile(className)
-                        .type(DiffEntry.ChangeType.ADD.name())
-                        .moduleName(moduleName)
-                        .lines(diffEntry.getLines())
-                        .build();
-            }
+//            if (DiffEntry.ChangeType.ADD.equals(diffEntry.getChangeType())) {
+//                return DiffClassInfoResult.builder()
+//                        .classFile(className)
+//                        .type(DiffEntry.ChangeType.ADD.name())
+//                        .moduleName(moduleName)
+//                        .lines(diffEntry.getLines())
+//                        .build();
+//            }
             List<MethodInfoResult> diffMethods;
             //获取新类的所有方法
             List<MethodInfoResult> newMethodInfoResults = MethodParserUtils.parseMethods(mewClassFile, customizeConfig.getRootCodePath());
@@ -187,7 +190,10 @@ public abstract class AbstractVersionControl {
                 return null;
             }
             //获取旧类的所有方法
-            List<MethodInfoResult> oldMethodInfoResults = MethodParserUtils.parseMethods(oldClassFile, customizeConfig.getRootCodePath());
+            List<MethodInfoResult> oldMethodInfoResults = null;
+            if (DiffEntry.ChangeType.MODIFY.equals(diffEntry.getChangeType())) {
+                oldMethodInfoResults = MethodParserUtils.parseMethods(oldClassFile, customizeConfig.getRootCodePath());
+            }
             //如果旧类为空，新类的方法所有为增量
             if (CollectionUtils.isEmpty(oldMethodInfoResults)) {
                 diffMethods = newMethodInfoResults;
@@ -205,7 +211,7 @@ public abstract class AbstractVersionControl {
             return DiffClassInfoResult.builder()
                     .classFile(className)
                     .methodInfos(diffMethods)
-                    .type(DiffEntry.ChangeType.MODIFY.name())
+                    .type(diffEntry.getChangeType().name())
                     .moduleName(moduleName)
                     .lines(diffEntry.getLines())
                     .build();

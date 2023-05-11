@@ -25,13 +25,24 @@ public class MethodInfoResultVO {
     /**
      * 方法名
      */
-    @ApiModelProperty(name = "methodName", value = "方法名", dataType = "string", example = "getAll")
+    @ApiModelProperty(name = "methodName", value = "方法名", dataType = "string", example = "getAll", position = 1)
     public String methodName;
     /**
      * 方法参数
      */
-    @ApiModelProperty(name = "parameters", value = "parameters", dataType = "string")
+    @ApiModelProperty(name = "parameters", value = "parameters", dataType = "string", position = 2)
     public List<String> parameters;
 
+    /**
+     * 开始行
+     */
+    @ApiModelProperty(value = "开始行", position = 3)
+    private Integer startLine;
+
+    /**
+     *
+     */
+    @ApiModelProperty(value = "结束行", position = 4)
+    private Integer endLine;
 
 }

@@ -39,10 +39,10 @@
             <artifactId>spring-boot-starter-web</artifactId>
             <exclusions>
                 <!-- 去除springboot中的tomcat,这样会采用默认的jetty，更轻量一点 -->
-<!--                <exclusion>-->
-<!--                    <groupId>org.springframework.boot</groupId>-->
-<!--                    <artifactId>spring-boot-starter-tomcat</artifactId>-->
-<!--                </exclusion>-->
+                <!--                <exclusion>-->
+                <!--                    <groupId>org.springframework.boot</groupId>-->
+                <!--                    <artifactId>spring-boot-starter-tomcat</artifactId>-->
+                <!--                </exclusion>-->
                 <!-- 切换log4j2日志读取 -->
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
@@ -88,11 +88,11 @@
             <artifactId>swagger-spring-boot-starter</artifactId>
             <version>${swagger.version}</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.github.xiaoymin</groupId>-->
-<!--            <artifactId>swagger-bootstrap-ui</artifactId>-->
-<!--            <version>${swagger.ui.version}</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.github.xiaoymin</groupId>-->
+        <!--            <artifactId>swagger-bootstrap-ui</artifactId>-->
+        <!--            <version>${swagger.ui.version}</version>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-spring-ui</artifactId>
@@ -135,11 +135,11 @@
             <version>5.13.1.202206130422-r</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>org.eclipse.jgit</groupId>-->
-<!--            <artifactId>org.eclipse.jgit.ssh.jsch</artifactId>-->
-<!--            <version>5.13.1.202206130422-r</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.eclipse.jgit</groupId>-->
+        <!--            <artifactId>org.eclipse.jgit.ssh.jsch</artifactId>-->
+        <!--            <version>5.13.1.202206130422-r</version>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit.ssh.jsch</artifactId>

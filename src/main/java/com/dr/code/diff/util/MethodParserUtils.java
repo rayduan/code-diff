@@ -6,6 +6,8 @@ import com.dr.code.diff.common.errorcode.BizCode;
 import com.dr.code.diff.common.exception.BizException;
 import com.dr.code.diff.common.log.LoggerUtil;
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.Position;
+import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.*;
@@ -43,7 +45,7 @@ public class MethodParserUtils {
      * @param classFile
      * @return
      */
-    public static List<MethodInfoResult> parseMethods(String classFile,String rootCodePath) {
+    public static List<MethodInfoResult> parseMethods(String classFile, String rootCodePath) {
         List<MethodInfoResult> list = new ArrayList<>();
         try (FileInputStream in = new FileInputStream(classFile)) {
             JavaParser javaParser = new JavaParser();
@@ -111,11 +113,19 @@ public class MethodParserUtils {
                 return e.getType().toString().trim();
 
             }).collect(Collectors.toList());
-
+            int startLine = 0;
+            int endLine = 0;
+            Range range = m.getRange().orElse(null);
+            if (null != range) {
+                startLine = range.begin.line;
+                endLine = range.end.line;
+            }
             MethodInfoResult result = MethodInfoResult.builder()
                     .md5(md5)
                     .methodName(m.getNameAsString())
                     .parameters(params)
+                    .startLine(startLine)
+                    .endLine(endLine)
                     .build();
             list.add(result);
         }

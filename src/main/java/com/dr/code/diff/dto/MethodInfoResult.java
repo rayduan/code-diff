@@ -26,4 +26,13 @@ public class MethodInfoResult {
 
     public String methodSign;
 
+    /**
+     * 开始行
+     */
+    private Integer startLine;
+
+    /**
+     * 结束行
+     */
+    private Integer endLine;
 }
