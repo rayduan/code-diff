@@ -1,23 +1,22 @@
 package com.dr.code.diff.util;
 
+import cn.hutool.core.io.FileUtil;
 import com.dr.code.diff.common.log.LoggerUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
-import org.springframework.util.CollectionUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xmlunit.xpath.JAXPXPathEngine;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,12 +35,12 @@ import java.util.List;
 public class XmlDubboUtil {
     private static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
-    public static List<String> getDubboService(InputStream inputStream) {
+    public static List<String> getDubboService(File inputStream) {
         List<String> classNames = new ArrayList<>();
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
             builder.setEntityResolver((publicId, systemId) -> {
-                System.out.println("Ignoring " + publicId + ", " + systemId);
+//                System.out.println("Ignoring " + publicId + ", " + systemId);
                 return new InputSource(new StringReader(""));
             });
             Document document = builder.parse(inputStream);
@@ -61,28 +60,20 @@ public class XmlDubboUtil {
     }
 
 
-    public static List<String> scanDubboService(String dubboXmlPath) {
-        if(StringUtils.isBlank(dubboXmlPath)){
-            return null;
-        }
-        try {
-            List<String> dubboServices = new ArrayList<String>();
-            ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-            Resource[] resources = resolver.getResources(dubboXmlPath);
-            for (Resource resource : resources) {
-                // 处理 resource
-                // 例如，可以使用 resource.getInputStream() 来读取 XML 内容
-                List<String> dubboService = getDubboService(resource.getInputStream());
-                if (CollectionUtils.isEmpty(dubboService)) {
-                    continue;
-                }
-                dubboServices.addAll(dubboService);
-            }
-            return dubboServices;
-        } catch (Exception e) {
-            log.error("获取dubbo xml失败", e);
-            return null;
-        }
+    /**
+     * 扫描dubbo xml
+     *
+     * @param resourcePath 资源路径
+     * @return {@link List}<{@link String}>
+     */
+    public static List<String> scanDubboService(String resourcePath) {
+        List<File> xmlFiles = FileUtil.loopFiles(new File(resourcePath), pathname -> pathname.getName().endsWith(".xml"));
+        List<String> dubboServices = new ArrayList<String>();
+        xmlFiles.forEach(file -> {
+            List<String> dubboService = getDubboService(file);
+            dubboServices.addAll(dubboService);
+        });
+        return dubboServices;
     }
 
 

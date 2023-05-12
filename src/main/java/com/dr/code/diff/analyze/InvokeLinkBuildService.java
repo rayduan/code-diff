@@ -109,7 +109,7 @@ public class InvokeLinkBuildService {
                             builder.basePackagePath("");
                         }
                         //获取dubbo xml的配置
-                        List<String> dubboService = XmlDubboUtil.scanDubboService(customizeConfig.getDubboXmlPath());
+                        List<String> dubboService = XmlDubboUtil.scanDubboService(e);
                         builder.dubboClasses(dubboService);
                         //获取一个目录下的所有class文件
                         List<File> files = FileUtil.loopFiles(new File(e), pathname -> pathname.getName().endsWith(".class") && pathname.getAbsolutePath().contains("classes"));
