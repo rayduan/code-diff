@@ -78,7 +78,7 @@ public class ReportController {
             @ApiParam(required = true, name = "nowVersion", value = "git现分支或tag")
             @NotEmpty
             @RequestParam(value = "nowVersion") String nowVersion,
-            @ApiParam(required = true, name = "diffPath", value = "生成差异代码名称a.json")
+            @ApiParam(required = true, name = "diffName", value = "生成差异代码名称a.json")
             @NotEmpty
             @RequestParam(value = "diffName") String diffName) {
         DiffMethodParams diffMethodParams = DiffMethodParams.builder()

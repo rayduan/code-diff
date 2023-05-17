@@ -159,13 +159,12 @@ public abstract class AbstractVersionControl {
                 }
                 methodSet.forEach(e ->
                         e.setMethodSign(xmlDiffClassName + "#" + e.getMethodName() + "#" + String.join(",", e.getParameters())));
-                DiffClassInfoResult classInfoResult = DiffClassInfoResult.builder()
+                return DiffClassInfoResult.builder()
                         .classFile(xmlDiffClassName)
                         .methodInfos(new ArrayList<>(methodSet))
                         .type(DiffEntry.ChangeType.MODIFY.name())
                         .moduleName(moduleName)
                         .build();
-                return classInfoResult;
             }
             String className;
             if (diffEntry.getNewPath().contains(customizeConfig.getRootCodePath())) {
