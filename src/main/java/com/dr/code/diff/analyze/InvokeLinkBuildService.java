@@ -4,16 +4,19 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileUtil;
 import com.dr.code.diff.analyze.bean.AdapterContext;
 import com.dr.code.diff.analyze.bean.MethodInfo;
+import com.dr.code.diff.analyze.constant.SysConstant;
 import com.dr.code.diff.analyze.link.CallChainClassVisitor;
+import com.dr.code.diff.analyze.strategy.MethodFilterContext;
 import com.dr.code.diff.config.CustomizeConfig;
 import com.dr.code.diff.config.CustomizeLinkStartConfig;
-import com.dr.code.diff.enums.LinKScopeTypeEnum;
+import com.dr.code.diff.enums.LinkScopeTypeEnum;
 import com.dr.code.diff.enums.MethodNodeTypeEnum;
 import com.dr.code.diff.util.StringUtil;
 import com.dr.code.diff.common.errorcode.BizCode;
 import com.dr.code.diff.common.exception.BizException;
 import com.dr.code.diff.common.log.LoggerUtil;
 import com.dr.code.diff.common.utils.mapper.OrikaMapperUtils;
+import com.dr.code.diff.util.XmlDubboUtil;
 import com.google.common.collect.Lists;
 import jdk.internal.org.objectweb.asm.ClassReader;
 import jdk.internal.org.objectweb.asm.ClassWriter;
@@ -34,6 +37,7 @@ import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -98,15 +102,23 @@ public class InvokeLinkBuildService {
                             LoggerUtil.error(log, "非maven项目或者获取pom路径有误!");
                         }
                         AdapterContext.AdapterContextBuilder builder = AdapterContext.builder();
-                        if (LinKScopeTypeEnum.EXCLUDE_JDK_TYPE.getCode().equals(customizeConfig.getLinkType())) {
-                            builder.basePackagePath("java");
-                        } else if (LinKScopeTypeEnum.GROUP_ONLY_TYPE.getCode().equals(customizeConfig.getLinkType())) {
-                            builder.basePackagePath(groupId);
-                        } else if (LinKScopeTypeEnum.ALL_TYPE.getCode().equals(customizeConfig.getLinkType())) {
-                            builder.basePackagePath("");
+                        MethodFilterContext.MethodFilterContextBuilder methodFilterContextBuilder = MethodFilterContext.builder();
+                        if (LinkScopeTypeEnum.EXCLUDE_JDK_TYPE.getCode().equals(customizeConfig.getLinkType())) {
+                            methodFilterContextBuilder.baseClassName("java");
+                            methodFilterContextBuilder.linKScopeTypeEnum(LinkScopeTypeEnum.EXCLUDE_JDK_TYPE);
+                        } else if (LinkScopeTypeEnum.GROUP_ONLY_TYPE.getCode().equals(customizeConfig.getLinkType())) {
+                            methodFilterContextBuilder.baseClassName(groupId);
+                            methodFilterContextBuilder.linKScopeTypeEnum(LinkScopeTypeEnum.GROUP_ONLY_TYPE);
+                        } else if (LinkScopeTypeEnum.ALL_TYPE.getCode().equals(customizeConfig.getLinkType())) {
+                            methodFilterContextBuilder.baseClassName("");
+                            methodFilterContextBuilder.linKScopeTypeEnum(LinkScopeTypeEnum.ALL_TYPE);
                         }
+                        builder.methodFilterContext(methodFilterContextBuilder.build());
+                        //获取dubbo xml的配置
+                        List<String> dubboService = XmlDubboUtil.scanDubboService(e);
+                        builder.dubboClasses(dubboService);
                         //获取一个目录下的所有class文件
-                        List<File> files = FileUtil.loopFiles(new File(e), pathname -> pathname.getName().endsWith(".class"));
+                        List<File> files = FileUtil.loopFiles(new File(e), pathname -> pathname.getName().endsWith(".class") && pathname.getAbsolutePath().contains("classes"));
                         if (CollectionUtils.isEmpty(files)) {
                             return;
                         }
@@ -212,24 +224,32 @@ public class InvokeLinkBuildService {
         //1.http接口方法
         List<MethodInfo> httpMethodInfoList = methodTypeMap.get(MethodNodeTypeEnum.HTTP);
         if (!CollectionUtils.isEmpty(httpMethodInfoList)) {
+            Map<String, MethodInfo> feignMap = allMethods.stream().filter(e -> e.getClassInfo().getFeignFlag()).collect(Collectors.toMap(e -> e.getClassInfo().getClassName() + SysConstant.SPILT_CHAR + e.getMethodName() + SysConstant.SPILT_CHAR + String.join(",", e.getMethodParams()), Function.identity()));
             //初始化子节点
             httpMethodInfoList.forEach(e -> {
                 //重置调用节点，避免循环引用
                 e.setCallerMethods(null);
+                //这里只考虑Controller有一个实现类
+                MethodInfo feignMethodInfo = null;
+                if (!CollectionUtils.isEmpty(feignMap) && !CollectionUtils.isEmpty(e.getClassInfo().getInterfacesClassNames()) && feignMap.containsKey(e.getClassInfo().getInterfacesClassNames().get(0))) {
+                    feignMethodInfo = feignMap.get(e.getClassInfo().getInterfacesClassNames().get(0));
+                }
                 String controllerMappingUrl = e.getClassInfo().getRequestUrl();
                 String methodMappingUrl = e.getMappingUrl();
+                //这里处理了一下feign,如果controller没有url，则使用feign的url
+                if (null != feignMethodInfo && StringUtils.isBlank(controllerMappingUrl)) {
+                    controllerMappingUrl = feignMethodInfo.getClassInfo().getRequestUrl();
+                }
+                if (null != feignMethodInfo && StringUtils.isBlank(methodMappingUrl)) {
+                    methodMappingUrl = feignMethodInfo.getMappingUrl();
+                }
                 if (StringUtils.isBlank(controllerMappingUrl)) {
                     controllerMappingUrl = "";
                 }
                 if (StringUtils.isBlank(methodMappingUrl)) {
                     methodMappingUrl = "";
                 }
-                String methodUrl = "";
-                if (controllerMappingUrl.endsWith(URL_PREFIX) && methodMappingUrl.startsWith(URL_PREFIX)) {
-                    methodUrl = controllerMappingUrl + methodMappingUrl;
-                } else {
-                    methodUrl = StringUtil.connectPath(controllerMappingUrl, methodMappingUrl);
-                }
+                String methodUrl = StringUtil.connectPath(controllerMappingUrl, methodMappingUrl);
                 e.setMappingUrl(methodUrl);
                 e.setVisitedMethods(Lists.newArrayList(e.getMethodSign()));
             });

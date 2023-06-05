@@ -5,9 +5,11 @@ import com.dr.code.diff.analyze.bean.ClassInfo;
 import com.dr.code.diff.analyze.bean.MethodInfo;
 import com.dr.code.diff.analyze.bean.RequestInfo;
 import com.dr.code.diff.analyze.constant.AnnotationConstant;
+import com.dr.code.diff.analyze.constant.SysConstant;
 import com.dr.code.diff.enums.MethodNodeTypeEnum;
 import com.dr.code.diff.util.StringUtil;
 import jdk.internal.org.objectweb.asm.*;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +28,7 @@ public class CallChainClassVisitor extends ClassVisitor {
 
 
     public static final String JAVA_LANG_OBJECT = "java/lang/Object";
-    public static final String SPILT_CHAR = "#";
+
     /**
      * 类信息
      */
@@ -88,12 +90,17 @@ public class CallChainClassVisitor extends ClassVisitor {
         if ((access & Opcodes.ACC_ABSTRACT) == Opcodes.ACC_ABSTRACT) {
             classInfoBuilder.abstractFlag(Boolean.TRUE);
         }
-        //说明是抽象类的实现类
-        if (!JAVA_LANG_OBJECT.equals(superName)) {
+        if(!JAVA_LANG_OBJECT.equals(superName)){
+            //说明是抽象类的实现类
             classInfoBuilder.superClassName(superName);
         }
         if (null != interfaces && interfaces.length > 0) {
             classInfoBuilder.interfacesClassNames(new ArrayList<>(Arrays.asList(interfaces)));
+        }
+        if (null != adapterContext && !CollectionUtils.isEmpty(adapterContext.getDubboClasses())) {
+            if (adapterContext.getDubboClasses().contains(name)) {
+                classInfoBuilder.dubboFlag(Boolean.TRUE);
+            }
         }
         this.classInfo = classInfoBuilder.build();
         super.visit(version, access, name, signature, superName, interfaces);
@@ -119,14 +126,10 @@ public class CallChainClassVisitor extends ClassVisitor {
             // Ignore constructor and class initializer
             return null;
         }
-        //fegin层忽略
-        if (this.classInfo.getFeignFlag()) {
-            return null;
-        }
         Type[] argumentTypes = Type.getArgumentTypes(descriptor);
         List<String> params = Arrays.stream(argumentTypes).map(Type::getClassName)
                 .map(e -> StringUtil.getSplitLast(e, ".")).collect(Collectors.toList());
-        String methodSign = classInfo.getClassName() + SPILT_CHAR + name + SPILT_CHAR + String.join(",", params);
+        String methodSign = classInfo.getClassName() + SysConstant.SPILT_CHAR + name + SysConstant.SPILT_CHAR + String.join(",", params);
         MethodInfo.MethodInfoBuilder builder = MethodInfo
                 .builder()
                 .methodName(name)
@@ -166,7 +169,7 @@ public class CallChainClassVisitor extends ClassVisitor {
             this.classInfo.setDubboFlag(Boolean.TRUE);
         }
         //只有controller的注解才能生效
-        if (this.classInfo.getControllerFlag()) {
+        if (this.classInfo.getControllerFlag() || this.classInfo.getFeignFlag()) {
             if (Arrays.asList(AnnotationConstant.requestAnnotation).contains(descriptor)) {
                 this.requestInfo = new RequestInfo();
                 // 这里去获取类的 requestMappingValue

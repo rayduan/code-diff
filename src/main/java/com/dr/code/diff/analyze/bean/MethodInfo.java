@@ -46,7 +46,10 @@ public class MethodInfo {
      */
     private List<String> methodParams;
 
-
+    /**
+     * 参数名称列表
+     */
+    private List<String> methodParamNameList;
     /**
      * 方法签名,com/dr/code/diff/controller/CodeDiffController#getSvnList#String, String, String
      */
@@ -73,7 +76,6 @@ public class MethodInfo {
      * 调用的方法
      */
     private List<MethodInfo> callerMethods;
-
 
 
     private List<String> visitedMethods;

@@ -5,11 +5,15 @@ import com.dr.code.diff.analyze.bean.ClassInfo;
 import com.dr.code.diff.analyze.bean.MethodInfo;
 import com.dr.code.diff.analyze.bean.RequestInfo;
 import com.dr.code.diff.analyze.constant.AnnotationConstant;
+import com.dr.code.diff.analyze.strategy.MethodFilterContext;
+import com.dr.code.diff.analyze.strategy.MethodInvokeFactory;
 import com.dr.code.diff.enums.MethodNodeTypeEnum;
 import com.dr.code.diff.util.StringUtil;
 import jdk.internal.org.objectweb.asm.*;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,6 +59,12 @@ public class CallChainMethodVisitor extends MethodVisitor {
     }
 
     public void visitParameter(String name, int access) {
+        List<String> methodParamNameList = currentMethod.getMethodParamNameList();
+        if (CollectionUtils.isEmpty(methodParamNameList)) {
+            methodParamNameList = new ArrayList<>();
+            currentMethod.setMethodParamNameList(methodParamNameList);
+        }
+        methodParamNameList.add(name);
         super.visitParameter(name, access);
     }
 
@@ -67,16 +77,11 @@ public class CallChainMethodVisitor extends MethodVisitor {
             return;
         }
         //非本包调用过滤
-        if (null != adapterContext && StringUtils.isNotBlank(adapterContext.getBasePackagePath())) {
-            if (JAVA.equals(adapterContext.getBasePackagePath())) {
-                if (owner.startsWith(adapterContext.getBasePackagePath())) {
-                    return;
-                }
-            } else {
-                if (!owner.contains(adapterContext.getBasePackagePath())) {
-                    return;
-                }
-            }
+        MethodFilterContext methodFilterContext = adapterContext.getMethodFilterContext();
+        methodFilterContext.setClassName(owner);
+        Boolean filterMatch = MethodInvokeFactory.processHandler(adapterContext.getMethodFilterContext());
+        if (filterMatch) {
+            return;
         }
         // 记录被调用方法的信息
         buildInvokeMethod(owner, name, desc);

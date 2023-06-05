@@ -112,6 +112,9 @@ public class SvnAbstractVersionControl extends AbstractVersionControl {
      */
     @Override
     public String downloadCode(MethodInvokeDto methodInvokeDto) {
-        return null;
+        SVNRevision oldVersion = SVNRevision.create(Long.parseLong(methodInvokeDto.getBranchName()));
+        String localBaseRepoDir = SvnRepoUtil.getSvnLocalDir(methodInvokeDto.getRepoUrl(), customizeConfig.getSvnLocalBaseRepoDir(), oldVersion.toString());
+        SvnRepoUtil.cloneRepository(methodInvokeDto.getRepoUrl(), localBaseRepoDir, oldVersion, customizeConfig.getSvnUserName(), customizeConfig.getSvnPassWord());
+        return localBaseRepoDir;
     }
 }

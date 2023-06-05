@@ -79,4 +79,7 @@ public class CustomizeConfig {
     @Value(value = "${custom.link.type:1}")
     private Integer linkType;
 
+
+    @Value(value = "${custom.dubbo.xml.path}")
+    private String dubboXmlPath;
 }

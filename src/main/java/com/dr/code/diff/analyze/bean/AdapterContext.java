@@ -1,9 +1,12 @@
 package com.dr.code.diff.analyze.bean;
 
+import com.dr.code.diff.analyze.strategy.MethodFilterContext;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 /**
  * 适配器上下文
@@ -24,7 +27,12 @@ import lombok.NoArgsConstructor;
 public class AdapterContext {
 
     /**
-     * 基本包路径
+     * 调用链过滤上下文
      */
-    private String basePackagePath;
+    private MethodFilterContext methodFilterContext;
+
+    /**
+     * dubbo xml指定的类
+     */
+    private List<String> dubboClasses;
 }

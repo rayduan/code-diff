@@ -16,18 +16,29 @@ logging:
 springfox:
   documentation:
     enabled: true
-swagger:
-  base-package: com.dr.code.diff.controller
-  authorization:
-    type: None
+#swagger:
+#  base-package: com.dr.code.diff.controller
+#  authorization:
+#    type: None
+knife4j:
+  enable: true
+  openapi:
+    title: Knife4j官方文档
+    version: v4.0
+    license: Apache 2.0
+    group:
+      test1:
+        group-name: 分组名称
+        api-rule: package
+        api-rule-resources:
+          - com.dr.code.diff.controller
 #  globalOperationParameters:
 #    - name: Authorization
 #      description: 验证
 #      type: string
 #      required: false
 #      parameterType: header
-log:
-  path: D://my-logs
+
 ##日志配置
 #logging:
 #  config: classpath:log4j2.yml
@@ -68,7 +79,10 @@ custom:
       methodSignList:
         - com/dr/code/diff/service/CodeDiffService#getDiffCode#DiffMethodParams
         - com/dr/code/diff/analyze/bean/ClassInfo#getSuperClassName#
-    type: 1 #此处表示调用链排除jdk本身方法
+    type: 2 #此处表示调用链排除jdk本身方法
+  dubbo:
+    xml:
+      path: ""
 server:
   port: 8085
   servlet:

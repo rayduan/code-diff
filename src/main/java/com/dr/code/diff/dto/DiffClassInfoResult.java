@@ -46,15 +46,6 @@ public class DiffClassInfoResult {
      */
     private List<MethodInfoResult> methodInfos;
 
-    /**
-     * 新增的行数
-     */
-    private List<int[]> addLines;
-
-    /**
-     * 删除的行数
-     */
-    private List<int[]> delLines;
 
     /**
      * 修改类型

@@ -12,7 +12,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum LinKScopeTypeEnum {
+public enum LinkScopeTypeEnum {
     //排除jdk方法
     EXCLUDE_JDK_TYPE(1, "exclude_jdk"),
     //只包本工程groupId的方法
@@ -32,8 +32,8 @@ public enum LinKScopeTypeEnum {
      * @return
      */
     public static String getValueByCode(Integer code) {
-        LinKScopeTypeEnum[] values = LinKScopeTypeEnum.values();
-        for (LinKScopeTypeEnum type : values) {
+        LinkScopeTypeEnum[] values = LinkScopeTypeEnum.values();
+        for (LinkScopeTypeEnum type : values) {
             if (type.code.equals(code)) {
                 return type.value;
             }
@@ -48,8 +48,8 @@ public enum LinKScopeTypeEnum {
      * @return
      */
     public static Integer getCodeByValue(String value) {
-        LinKScopeTypeEnum[] values = LinKScopeTypeEnum.values();
-        for (LinKScopeTypeEnum type : values) {
+        LinkScopeTypeEnum[] values = LinkScopeTypeEnum.values();
+        for (LinkScopeTypeEnum type : values) {
             if (type.value.equalsIgnoreCase(value)) {
                 return type.code;
             }
