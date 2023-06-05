@@ -62,7 +62,7 @@ public class CodeDiffServiceImpl implements CodeDiffService {
      * 得到静态方法调用
      *
      * @param methodInvokeParam 方法调用参数
-     * @return {@link   Map<String,List<MethodInfo>> }
+     * @return methodInvokeParam
      */
     @Override
     public Map<String, List<MethodInfo>> getStaticMethodInvoke(MethodInvokeParam methodInvokeParam) {

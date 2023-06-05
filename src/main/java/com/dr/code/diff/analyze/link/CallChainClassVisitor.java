@@ -87,8 +87,10 @@ public class CallChainClassVisitor extends ClassVisitor {
             classInfoBuilder.interfaceFlag(Boolean.TRUE);
         }
         // 如果是abstract类
-        if ((access & Opcodes.ACC_ABSTRACT) == Opcodes.ACC_ABSTRACT && !JAVA_LANG_OBJECT.equals(superName)) {
+        if ((access & Opcodes.ACC_ABSTRACT) == Opcodes.ACC_ABSTRACT) {
             classInfoBuilder.abstractFlag(Boolean.TRUE);
+        }
+        if(!JAVA_LANG_OBJECT.equals(superName)){
             //说明是抽象类的实现类
             classInfoBuilder.superClassName(superName);
         }

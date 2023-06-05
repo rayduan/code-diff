@@ -83,22 +83,27 @@
             <version>${orika-core.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.spring4all</groupId>
-            <artifactId>swagger-spring-boot-starter</artifactId>
-            <version>${swagger.version}</version>
-        </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>com.github.xiaoymin</groupId>-->
-        <!--            <artifactId>swagger-bootstrap-ui</artifactId>-->
-        <!--            <version>${swagger.ui.version}</version>-->
-        <!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.spring4all</groupId>-->
+<!--            <artifactId>swagger-spring-boot-starter</artifactId>-->
+<!--            <version>${swagger.version}</version>-->
+<!--        </dependency>-->
+<!--        &lt;!&ndash;        <dependency>&ndash;&gt;-->
+<!--        &lt;!&ndash;            <groupId>com.github.xiaoymin</groupId>&ndash;&gt;-->
+<!--        &lt;!&ndash;            <artifactId>swagger-bootstrap-ui</artifactId>&ndash;&gt;-->
+<!--        &lt;!&ndash;            <version>${swagger.ui.version}</version>&ndash;&gt;-->
+<!--        &lt;!&ndash;        </dependency>&ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>com.github.xiaoymin</groupId>-->
+<!--            <artifactId>knife4j-spring-ui</artifactId>-->
+<!--            <version>${knife4j.ui.version}</version>-->
+<!--        </dependency>-->
+
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-spring-ui</artifactId>
-            <version>${knife4j.ui.version}</version>
+            <artifactId>knife4j-openapi2-spring-boot-starter</artifactId>
+            <version>4.1.0</version>
         </dependency>
-
 
         <!-- https://mvnrepository.com/artifact/com.github.whvcse/easy-captcha -->
         <dependency>
@@ -257,7 +262,7 @@
                     <encoding>UTF-8</encoding>
                     <compilerArguments>
                         <verbose/>
-                        <bootclasspath>${java.home}/lib/rt.jar;${java.home}/lib/jce.jar
+                        <bootclasspath>${java.home}/lib/rt.jar:${java.home}/lib/jce.jar
                         </bootclasspath>
                         <extdirs>lib</extdirs>
                     </compilerArguments>

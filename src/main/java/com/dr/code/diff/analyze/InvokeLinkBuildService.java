@@ -6,9 +6,10 @@ import com.dr.code.diff.analyze.bean.AdapterContext;
 import com.dr.code.diff.analyze.bean.MethodInfo;
 import com.dr.code.diff.analyze.constant.SysConstant;
 import com.dr.code.diff.analyze.link.CallChainClassVisitor;
+import com.dr.code.diff.analyze.strategy.MethodFilterContext;
 import com.dr.code.diff.config.CustomizeConfig;
 import com.dr.code.diff.config.CustomizeLinkStartConfig;
-import com.dr.code.diff.enums.LinKScopeTypeEnum;
+import com.dr.code.diff.enums.LinkScopeTypeEnum;
 import com.dr.code.diff.enums.MethodNodeTypeEnum;
 import com.dr.code.diff.util.StringUtil;
 import com.dr.code.diff.common.errorcode.BizCode;
@@ -101,13 +102,18 @@ public class InvokeLinkBuildService {
                             LoggerUtil.error(log, "非maven项目或者获取pom路径有误!");
                         }
                         AdapterContext.AdapterContextBuilder builder = AdapterContext.builder();
-                        if (LinKScopeTypeEnum.EXCLUDE_JDK_TYPE.getCode().equals(customizeConfig.getLinkType())) {
-                            builder.basePackagePath("java");
-                        } else if (LinKScopeTypeEnum.GROUP_ONLY_TYPE.getCode().equals(customizeConfig.getLinkType())) {
-                            builder.basePackagePath(groupId);
-                        } else if (LinKScopeTypeEnum.ALL_TYPE.getCode().equals(customizeConfig.getLinkType())) {
-                            builder.basePackagePath("");
+                        MethodFilterContext.MethodFilterContextBuilder methodFilterContextBuilder = MethodFilterContext.builder();
+                        if (LinkScopeTypeEnum.EXCLUDE_JDK_TYPE.getCode().equals(customizeConfig.getLinkType())) {
+                            methodFilterContextBuilder.baseClassName("java");
+                            methodFilterContextBuilder.linKScopeTypeEnum(LinkScopeTypeEnum.EXCLUDE_JDK_TYPE);
+                        } else if (LinkScopeTypeEnum.GROUP_ONLY_TYPE.getCode().equals(customizeConfig.getLinkType())) {
+                            methodFilterContextBuilder.baseClassName(groupId);
+                            methodFilterContextBuilder.linKScopeTypeEnum(LinkScopeTypeEnum.GROUP_ONLY_TYPE);
+                        } else if (LinkScopeTypeEnum.ALL_TYPE.getCode().equals(customizeConfig.getLinkType())) {
+                            methodFilterContextBuilder.baseClassName("");
+                            methodFilterContextBuilder.linKScopeTypeEnum(LinkScopeTypeEnum.ALL_TYPE);
                         }
+                        builder.methodFilterContext(methodFilterContextBuilder.build());
                         //获取dubbo xml的配置
                         List<String> dubboService = XmlDubboUtil.scanDubboService(e);
                         builder.dubboClasses(dubboService);
