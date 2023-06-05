@@ -54,7 +54,7 @@ public class XmlDiffUtils {
      * @param newXmlPath 新xml路径
      * @param list       列表
      */
-    public static void getXmlDiffMethod(String oldXmlPath, String newXmlPath, Set<MethodInfoResult> list) {
+    public static void getXmlDiffMethod(String oldXmlPath, String newXmlPath, Set<String> list) {
         try {
             Source source = Input.fromFile(oldXmlPath).build();
             Source target = Input.fromFile(newXmlPath).build();
@@ -104,17 +104,7 @@ public class XmlDiffUtils {
                             NamedNodeMap attributes = targetNode.getAttributes();
                             //获取方法名
                             String methodName = attributes.getNamedItem("id").getNodeValue();
-                            //获取方法参数
-                            String paramType = "";
-                            Node parameterTypeNode = attributes.getNamedItem("parameterType");
-                            if (null != parameterTypeNode) {
-                                String parameterType = parameterTypeNode.getNodeValue();
-                                if (!StringUtils.isBlank(parameterType)) {
-                                    paramType = StringUtil.getSplitLast(parameterType, ".");
-                                }
-                            }
-                            MethodInfoResult methodInfoResult = MethodInfoResult.builder().methodName(methodName).parameters(Lists.newArrayList(paramType)).build();
-                            list.add(methodInfoResult);
+                            list.add(methodName);
                         } catch (SAXException | IOException | ParserConfigurationException ex) {
                             LoggerUtil.error(log, "获取xml信息失败", ex.getMessage());
                         }
