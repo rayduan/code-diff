@@ -17,7 +17,7 @@
         <java.version>1.8</java.version>
         <swagger.version>2.0.2.RELEASE</swagger.version>
         <swagger.ui.version>1.9.6</swagger.ui.version>
-        <knife4j.ui.version>2.0.8</knife4j.ui.version>
+        <knife4j.ui.version>3.0.3</knife4j.ui.version>
         <knife4j.ui.version>3.0.3</knife4j.ui.version>
         <fastjson.version>1.2.62</fastjson.version>
         <orika-core.version>1.5.4</orika-core.version>
@@ -83,27 +83,27 @@
             <version>${orika-core.version}</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>com.spring4all</groupId>-->
-<!--            <artifactId>swagger-spring-boot-starter</artifactId>-->
-<!--            <version>${swagger.version}</version>-->
-<!--        </dependency>-->
-<!--        &lt;!&ndash;        <dependency>&ndash;&gt;-->
-<!--        &lt;!&ndash;            <groupId>com.github.xiaoymin</groupId>&ndash;&gt;-->
-<!--        &lt;!&ndash;            <artifactId>swagger-bootstrap-ui</artifactId>&ndash;&gt;-->
-<!--        &lt;!&ndash;            <version>${swagger.ui.version}</version>&ndash;&gt;-->
-<!--        &lt;!&ndash;        </dependency>&ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>com.github.xiaoymin</groupId>-->
-<!--            <artifactId>knife4j-spring-ui</artifactId>-->
-<!--            <version>${knife4j.ui.version}</version>-->
-<!--        </dependency>-->
-
+        <dependency>
+            <groupId>com.spring4all</groupId>
+            <artifactId>swagger-spring-boot-starter</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>com.github.xiaoymin</groupId>-->
+        <!--            <artifactId>swagger-bootstrap-ui</artifactId>-->
+        <!--            <version>${swagger.ui.version}</version>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-openapi2-spring-boot-starter</artifactId>
-            <version>4.1.0</version>
+            <artifactId>knife4j-spring-ui</artifactId>
+            <version>${knife4j.ui.version}</version>
         </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>com.github.xiaoymin</groupId>-->
+<!--            <artifactId>knife4j-openapi2-spring-boot-starter</artifactId>-->
+<!--            <version>4.1.0</version>-->
+<!--        </dependency>-->
 
         <!-- https://mvnrepository.com/artifact/com.github.whvcse/easy-captcha -->
         <dependency>
