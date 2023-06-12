@@ -12,12 +12,14 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.comments.Comment;
+import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -95,6 +97,10 @@ public class MethodParserUtils {
             super.visit(m, list);
         }
 
+        @Override
+        public void visit(final LambdaExpr n, List<MethodInfoResult> list) {
+            super.visit(n, list);
+        }
         private void buildMethod(CallableDeclaration m, List<MethodInfoResult> list) {
             //删除外部注释
             m.removeComment();
