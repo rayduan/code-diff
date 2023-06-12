@@ -5,8 +5,6 @@ import com.dr.code.diff.config.CustomizeConfig;
 import com.dr.code.diff.dto.*;
 import com.dr.code.diff.enums.CodeManageTypeEnum;
 import com.dr.code.diff.util.MethodParserUtils;
-import com.dr.code.diff.util.PathUtils;
-import com.dr.code.diff.util.StringUtil;
 import com.dr.code.diff.util.XmlDiffUtils;
 import com.dr.code.diff.common.log.LoggerUtil;
 import lombok.Data;
@@ -150,10 +148,7 @@ public abstract class AbstractVersionControl {
                 if (StringUtils.isBlank(xmlDiffClassName)) {
                     return null;
                 }
-                String mapperClassName = xmlDiffClassName.replace(".", "/") + ".java";
-                String modulePath = StringUtil.connectPath(versionControlDto.getNewLocalBasePath(), moduleName);
-                String classFilePath = StringUtil.connectPath(StringUtil.connectPath(modulePath, customizeConfig.getRootCodePath()), mapperClassName);
-                HashSet<String> methodSet = new HashSet<>();
+                HashSet<MethodInfoResult> methodSet = new HashSet<>();
                 //如果旧的mapper不存在，说明是新增的，java mapper会识别到，这里不用对比
                 if (StringUtils.isBlank(oldClassFile) || !FileUtil.exist(oldClassFile)) {
                     return null;
@@ -162,14 +157,11 @@ public abstract class AbstractVersionControl {
                 if (CollectionUtils.isEmpty(methodSet)) {
                     return null;
                 }
-                List<MethodInfoResult> newMethodInfoResults = MethodParserUtils.parseMethods(classFilePath, customizeConfig.getRootCodePath());
-                List<MethodInfoResult> methodInfoResults = newMethodInfoResults.stream().filter(m -> methodSet.contains(m.getMethodName())).collect(Collectors.toList());
-                methodInfoResults.forEach(e ->
-                        e.setMethodSign(xmlDiffClassName.replace(".", "/") + "#" + e.getMethodName() + "#" + String.join(",", e.getParameters()))
-                );
+                methodSet.forEach(e ->
+                        e.setMethodSign(xmlDiffClassName + "#" + e.getMethodName() + "#" + String.join(",", e.getParameters())));
                 return DiffClassInfoResult.builder()
                         .classFile(xmlDiffClassName)
-                        .methodInfos(methodInfoResults)
+                        .methodInfos(new ArrayList<>(methodSet))
                         .type(DiffEntry.ChangeType.MODIFY.name())
                         .moduleName(moduleName)
                         .build();
@@ -181,6 +173,14 @@ public abstract class AbstractVersionControl {
                 className = "";
             }
             //新增类直接标记，不用计算方法
+//            if (DiffEntry.ChangeType.ADD.equals(diffEntry.getChangeType())) {
+//                return DiffClassInfoResult.builder()
+//                        .classFile(className)
+//                        .type(DiffEntry.ChangeType.ADD.name())
+//                        .moduleName(moduleName)
+//                        .lines(diffEntry.getLines())
+//                        .build();
+//            }
             List<MethodInfoResult> diffMethods;
             //获取新类的所有方法
             List<MethodInfoResult> newMethodInfoResults = MethodParserUtils.parseMethods(mewClassFile, customizeConfig.getRootCodePath());
