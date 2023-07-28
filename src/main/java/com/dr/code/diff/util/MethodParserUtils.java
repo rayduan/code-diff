@@ -1,27 +1,23 @@
 package com.dr.code.diff.util;
 
 import cn.hutool.crypto.SecureUtil;
-import com.dr.code.diff.dto.MethodInfoResult;
 import com.dr.code.diff.common.errorcode.BizCode;
 import com.dr.code.diff.common.exception.BizException;
 import com.dr.code.diff.common.log.LoggerUtil;
+import com.dr.code.diff.dto.MethodInfoResult;
 import com.github.javaparser.JavaParser;
-import com.github.javaparser.Position;
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.*;
+import com.github.javaparser.ast.body.CallableDeclaration;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import com.github.javaparser.symbolsolver.JavaSymbolSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,12 +47,6 @@ public class MethodParserUtils {
         List<MethodInfoResult> list = new ArrayList<>();
         try (FileInputStream in = new FileInputStream(classFile)) {
             JavaParser javaParser = new JavaParser();
-            CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
-            String sourcePath = classFile.split(rootCodePath)[0];
-            combinedTypeSolver.add(new JavaParserTypeSolver(new File(sourcePath)));
-            combinedTypeSolver.add(new ReflectionTypeSolver());
-            JavaSymbolSolver symbolSolver = new JavaSymbolSolver(combinedTypeSolver);
-            javaParser.getParserConfiguration().setSymbolResolver(symbolSolver);
             CompilationUnit cu = javaParser.parse(in).getResult().orElseThrow(() -> new BizException(BizCode.PARSE_JAVA_FILE));
             //由于jacoco不会统计接口覆盖率，没比较计算接口的方法，此处排除接口类 TODO 这样会排除mapper层
 //            final List<?> types = cu.getTypes();

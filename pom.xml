@@ -120,17 +120,17 @@
         </dependency>
 
 
-        <dependency>
-            <groupId>com.github.javaparser</groupId>
-            <artifactId>javaparser-symbol-solver-core</artifactId>
-            <version>3.25.0</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.github.javaparser</groupId>-->
+<!--            <artifactId>javaparser-symbol-solver-core</artifactId>-->
+<!--            <version>3.25.0</version>-->
+<!--        </dependency>-->
 
 
         <dependency>
             <groupId>com.github.javaparser</groupId>
-            <artifactId>javaparser-core-serialization</artifactId>
-            <version>3.25.0</version>
+            <artifactId>javaparser-core</artifactId>
+            <version>3.25.4</version>
         </dependency>
         <!--git操作-->
         <!-- https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit -->

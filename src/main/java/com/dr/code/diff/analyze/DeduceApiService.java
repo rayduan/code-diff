@@ -5,6 +5,7 @@ import com.dr.code.diff.analyze.bean.MethodInfo;
 import com.dr.code.diff.dto.*;
 import com.dr.code.diff.enums.MethodNodeTypeEnum;
 import com.dr.code.diff.service.CodeDiffService;
+import com.dr.code.diff.util.FileUtils;
 import com.dr.code.diff.util.StringUtil;
 import com.dr.code.diff.common.log.LoggerUtil;
 import com.dr.code.diff.common.utils.mapper.OrikaMapperUtils;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -57,7 +59,14 @@ public class DeduceApiService {
         //然后编译源码
         String pomPath = StringUtil.connectPath(diffCode.getNewProjectPath(), "pom.xml");
         LoggerUtil.info(log, "开始编译项目", pomPath);
-        mavenCmdInvokeService.compileCode(pomPath);
+        //这里存在风险，如果代码是分支，且有更新，这里必须要重新编译，先不考虑这个
+        boolean compileFlag = FileUtils.searchFile(new File(diffCode.getNewProjectPath()), ".class");
+        if (compileFlag) {
+            log.info("代码已经编译，直接使用");
+        } else {
+            //编译代码
+            mavenCmdInvokeService.compileCode(pomPath);
+        }
         LoggerUtil.info(log, "项目编译完成");
         //获取静态调用链
         LoggerUtil.info(log, "开始获取静态调用链");
