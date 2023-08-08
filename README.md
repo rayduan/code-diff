@@ -77,10 +77,9 @@ docker pull rayduan/code-diff:v1.1-amd64
 docker run -d -p 8085:8085  --name code-diff rayduan/code-diff:v1.1-amd64
 ```
 就是这么简单什么也不用配置，当然如果maven有私服，只用修改~/.m2/settings.xml即可
-
+```angular2html
 
 ![git差异代码获取](https://images.gitee.com/uploads/images/2021/0408/122939_6cf6505d_1007820.png "屏幕截图.png")
-
 ![svn差异代码获取](https://images.gitee.com/uploads/images/2021/0408/123039_5cb136f9_1007820.png "屏幕截图.png")
 	 2.1 输入git地址，填写差异分支的旧版本，新版本，执行，就可以获取差异信息
 
