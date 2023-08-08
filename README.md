@@ -3,43 +3,81 @@
 
 
 ### 简介
-+ 本项目主要是用于基于jacoco的增量代码统计，增量代码的统计核心问题是如何获得增量代码，网络上关于增量代码的获取相关资料比较少，而且代码注释也没有，阅读起来相对困难，本工程包含了jacoco二开，实现了增量覆盖率功能，当然也包含其他功能。
++ 本项目主要是用于基于jacoco的增量代码统计，增量代码的统计核心问题是如何获得增量代码，网络上关于增量代码的获取相关资料比较少，而且代码注释也没有，阅读起来相对困难，我这边参考了几个项目后根据实际需求，进行了整理，请配合[jacoco二开](https://gitee.com/Dray/jacoco.git)一起使用
+
 具体实现方案请参考[博客](https://blog.csdn.net/tushuping/article/details/112613528)
 
 ### 功能介绍
+![img.png](img.png)
+如上图所示，code-diff最开始只是用于差异代码的获取，后来随着网友们的需求和扩展，目前已经支持以下功能：
 * 支持基于git的差异方法获取
  > 1. 验证支持账号密码和秘钥
  > 2. git支持基于分支对比，基于commitId对比，以及基于tag对比
 * 支持基于svn的差异方法获取
  > 1. svn支持基于同分支不同reversion，不同分支同一reversion，不同分支不同reversion
+* 支持jacoco全量代码覆盖率报告生成
+* 支持jacoco增量代码覆盖率报告生成
 * 支持基于git的方法的静态调用链
-* 支持基于git的变更代码影响接口
+* 支持基于git的变更代码影响接口（支持基于mybatis的sql变更影响的接口）
+* 支持基于svn的静态调用链
 * 支持基于svn的变更代码影响接口
-* 影响接口支持http，dubbo以及自定义起始类，自定义起始方法
-* 支持全量和增量代码覆盖率的生成
+* 影响接口支持http，dubbo以及自定义起始类，自定义起始方法的代码调用链
 
+jacoco二开有部分代码开源，部分未开源，但是提供了jar包，在本工程的lib目录下（lib/org.jacoco.cli-0.8.7-SNAPSHOT-nodeps.jar）
+![img_3.png](img_3.png)
+如上图所示：
+* jacoco-cli.jar：差异代码覆盖率（已开源）
+* jacoco-cli.jar：按包名或class文件排除类（未开源）
+* jacoco-cli.jar：代码变更行展示（未开源）
+* jacoco-cli.jar：变更class文件覆盖率合并（未开源，未提供使用，可参考[博客](https://blog.csdn.net/tushuping/article/details/131640959?spm=1001.2014.3001.5501)）
 ### 使用方法
-#### 1、修改application.yml
-    ##基于git
-	git:
-      userName: admin
-      password: 123456
-      local:
-        base:
-          dir: D:\git-test
-    git支持ssh（目前支持分支）配置
-    git:
-      ssh:
-        priKey: C:\Users\mylocl/.ssh/id_rsa.
-    ##基于svn
-    svn:
-      userName: admin
-      password: 123456
-      local:
-        base:
-          dir: D:\svn-test
-#### 2、运行项目，访问http://127.0.0.1:8085/doc.html
+* 源码方式使用
+    #### 1、修改application.yml
 
+```agsl
+        #基于git
+        git:
+          userName: admin
+          password: 123456
+          local:
+            base:
+              dir: D:\git-test
+        git支持ssh（目前支持分支）配置
+        git:
+          ssh:
+            priKey: C:\Users\mylocl/.ssh/id_rsa.
+        ##基于svn
+        svn:
+          userName: admin
+          password: 123456
+          local:
+            base:
+              dir: D:\svn-test  
+        maven:
+          home: E:/Program Files/apache-maven-3.6.3 #maven的安装目录，此配置主要用于代码编译，用于静态代码分析功能，如果只差异分析，可以不配置
+        root:
+          code:
+            path: src/main/java/ #代码的根目录，非标准maven项目需要自定义
+        jacoco:
+          root:
+            path: H:/jacoco/root/ #jacoco报告的根目录      
+```
+     如果启动报日志错误，可以修改日志路径,当然也可以启动时修改jvm参数-Dlog.path=xxx
+![img_1.png](img_1.png)
+
+    #### 2、运行项目，访问http://127.0.0.1:8085/doc.html
+* docker方式使用
+
+1、拉取镜像(以amd64为例，如果是arm64请拉取arm64的镜像,地址为https://hub.docker.com/repository/docker/rayduan/code-diff/general)
+```angular2html
+docker pull rayduan/code-diff:v1.1-amd64
+```
+2、运行镜像
+```angular2html
+docker run -d -p 8085:8085  --name code-diff rayduan/code-diff:v1.1-amd64
+```
+就是这么简单什么也不用配置，当然如果maven有私服，只用修改~/.m2/settings.xml即可
+```angular2html
 ![git差异代码获取](https://images.gitee.com/uploads/images/2021/0408/122939_6cf6505d_1007820.png "屏幕截图.png")
 ![svn差异代码获取](https://images.gitee.com/uploads/images/2021/0408/123039_5cb136f9_1007820.png "屏幕截图.png")
 	 2.1 输入git地址，填写差异分支的旧版本，新版本，执行，就可以获取差异信息
@@ -48,8 +86,6 @@
 ```angular2html
 java -jar  -Dlog.path=/app/data2/devops/code-diff/logs  -Dgit.local.base.dir=/app/data2/devops/code-diff/   application-1.0.0-SNAPSHOT.jar
 ```
-
-#近期github不稳定，请访问https://gitee.com/Dray/code-diff.git
 
 
 如有疑问，请加群主入群

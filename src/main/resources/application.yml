@@ -20,39 +20,15 @@ swagger:
   base-package: com.dr.code.diff.controller
   authorization:
     type: None
-#knife4j:
-#  enable: true
-#  openapi:
-#    title: Knife4j官方文档
-#    version: v4.0
-#    license: Apache 2.0
-#    group:
-#      test1:
-#        group-name: 分组名称
-#        api-rule: package
-#        api-rule-resources:
-#          - com.dr.code.diff.controller
-#  globalOperationParameters:
-#    - name: Authorization
-#      description: 验证
-#      type: string
-#      required: false
-#      parameterType: header
 
-#shiro:
-#  loginUrl: /view/sys/user/login
-#  successUrl: /view/sys/index
-#  unauthorizedUrl: /view/sys/unauthorized
-#  sessionManager:
-#    sessionIdUrlRewritingEnabled: false
 git:
-  userName: ray1
-  password: 12345456
+  userName: ray1 #git用户名
+  password: 12345456 #git密码,这里可以配置token
   local:
     base:
-      dir: /Users/rayduan/app/git-test
+      dir: D:\git-test
   ssh:
-    priKey: C:\Users\mylocl/.ssh/id_rsa.
+    priKey: C:\Users\mylocl/.ssh/id_rsa. #私钥路径，如果公司内部使用私钥管理，可以使用这种方式，拉取代码时自动判定是http开头还是ssh开头采用不同的方式拉取
 svn:
   userName: admin
   password: 123456
@@ -60,14 +36,13 @@ svn:
     base:
       dir: D:\svn-test
 maven:
-  home: E:/Program Files/apache-maven-3.6.3
-#代码的根目录，非标准maven项目需要自定义
+  home: E:/Program Files/apache-maven-3.6.3 #maven的安装目录，此配置主要用于代码编译，用于静态代码分析功能，如果只差异分析，可以不配置
 root:
   code:
-    path: src/main/java/
+    path: src/main/java/ #代码的根目录，非标准maven项目需要自定义
 jacoco:
   root:
-    path: H:/jacoco/root/
+    path: H:/jacoco/root/ #jacoco报告的根目录
 custom:
   link:
     start:
@@ -76,10 +51,6 @@ custom:
       methodSignList:
         - com/dr/code/diff/service/CodeDiffService#getDiffCode#DiffMethodParams
         - com/dr/code/diff/analyze/bean/ClassInfo#getSuperClassName#
-    type: 2 #此处表示调用链排除jdk本身方法
-  dubbo:
-    xml:
-      path: ""
 server:
   port: 8085
   servlet:
