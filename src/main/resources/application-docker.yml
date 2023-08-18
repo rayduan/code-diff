@@ -63,3 +63,7 @@ server:
 #  url: http://192.168.80.128:8081
 #  userName: admin
 #  password: 1
+  dubbo:
+    xml:
+      path: ""
+

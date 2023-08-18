@@ -1,0 +1,36 @@
+git:
+  userName: ray1
+  password: 12345456
+  local:
+    base:
+      dir: /Users/test/app/git-test
+  ssh:
+    priKey: C:\Users\mylocl/.ssh/id_rsa.
+svn:
+  userName: admin
+  password: 123456
+  local:
+    base:
+      dir: D:\svn-test
+maven:
+  home: /Users/rayduan/app/apache-maven-3.8.3
+#代码的根目录，非标准maven项目需要自定义
+root:
+  code:
+    path: src/main/java/
+jacoco:
+  root:
+    path: /Users/rayduan/jacoco/root/
+custom:
+  link:
+    start:
+      classNameList:
+#        - com/dr/common/utils/mapper/OrikaMapperUtils
+      methodSignList:
+#        - com/dr/code/diff/service/CodeDiffService#getDiffCode#DiffMethodParams
+#        - com/dr/code/diff/analyze/bean/ClassInfo#getSuperClassName#
+    type: 2 #此处表示调用链排除jdk本身方法
+  dubbo:
+    xml:
+      path: ""
+
