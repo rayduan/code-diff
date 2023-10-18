@@ -224,6 +224,8 @@ public class InvokeLinkBuildService {
         //1.http接口方法
         List<MethodInfo> httpMethodInfoList = methodTypeMap.get(MethodNodeTypeEnum.HTTP);
         if (!CollectionUtils.isEmpty(httpMethodInfoList)) {
+            //这里为了避免多个起始节点相互影响
+            httpMethodInfoList = OrikaMapperUtils.mapList(httpMethodInfoList, MethodInfo.class, MethodInfo.class);
             Map<String, MethodInfo> feignMap = allMethods.stream().filter(e -> e.getClassInfo().getFeignFlag()).collect(Collectors.toMap(e -> e.getClassInfo().getClassName() + SysConstant.SPILT_CHAR + e.getMethodName() + SysConstant.SPILT_CHAR + String.join(",", e.getMethodParams()), Function.identity()));
             //初始化子节点
             httpMethodInfoList.forEach(e -> {
@@ -258,6 +260,8 @@ public class InvokeLinkBuildService {
         //2.dubbo方法
         List<MethodInfo> dubboMethodInfoList = methodTypeMap.get(MethodNodeTypeEnum.DUBBO);
         if (!CollectionUtils.isEmpty(dubboMethodInfoList)) {
+            //这里为了避免多个起始节点相互影响
+            dubboMethodInfoList = OrikaMapperUtils.mapList(dubboMethodInfoList, MethodInfo.class, MethodInfo.class);
             //初始化子节点
             dubboMethodInfoList.forEach(e -> {
                 e.setCallerMethods(null);
@@ -269,6 +273,8 @@ public class InvokeLinkBuildService {
         List<String> customLinkStartClassName = customizeLinkStartConfig.getClassNameList();
         if (!CollectionUtils.isEmpty(customLinkStartClassName)) {
             List<MethodInfo> customClassList = allMethods.stream().filter(e -> customLinkStartClassName.contains(e.getClassInfo().getClassName())).collect(Collectors.toList());
+            //这里为了避免多个起始节点相互影响
+            customClassList = OrikaMapperUtils.mapList(customClassList, MethodInfo.class, MethodInfo.class);
             customClassList.forEach(e -> {
                 e.setCallerMethods(null);
                 e.setVisitedMethods(Lists.newArrayList(e.getMethodSign()));
@@ -291,6 +297,7 @@ public class InvokeLinkBuildService {
         List<String> customLinkStartMethodSign = customizeLinkStartConfig.getMethodSignList();
         if (!CollectionUtils.isEmpty(customLinkStartMethodSign)) {
             List<MethodInfo> customMethodSignList = allMethods.stream().filter(e -> customLinkStartMethodSign.contains(e.getMethodSign())).collect(Collectors.toList());
+            customMethodSignList = OrikaMapperUtils.mapList(customMethodSignList, MethodInfo.class, MethodInfo.class);
             customMethodSignList.forEach(e -> {
                 e.setCallerMethods(null);
                 e.setVisitedMethods(Lists.newArrayList(e.getMethodSign()));
@@ -324,6 +331,7 @@ public class InvokeLinkBuildService {
                             //校验父节点中是否已经存在的子节点
                             List<MethodInfo> vaildSubList = subList.stream().filter(s -> !e.getVisitedMethods().contains(s.getMethodSign())).collect(Collectors.toList());
                             if (!CollectionUtils.isEmpty(vaildSubList)) {
+                                vaildSubList = OrikaMapperUtils.mapList(vaildSubList, MethodInfo.class, MethodInfo.class);
                                 e.setCallerMethods(vaildSubList);
                             }
                         }
@@ -363,7 +371,7 @@ public class InvokeLinkBuildService {
             methodInfoList = methodInfoList.stream().filter(e ->
                     e.getMethodName().equals(methodInfo.getMethodName()) && String.join(",", e.getMethodParams()).equals(String.join(",", methodInfo.getMethodParams()))
             ).collect(Collectors.toList());
-            methodInfo.setCallerMethods(methodInfoList);
+            methodInfo.setCallerMethods((OrikaMapperUtils.mapList(methodInfoList, MethodInfo.class, MethodInfo.class)));
         }
     }
 }
