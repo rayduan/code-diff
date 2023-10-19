@@ -2,6 +2,7 @@ package com.dr.code.diff.analyze;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileUtil;
+import com.alibaba.fastjson.JSON;
 import com.dr.code.diff.analyze.bean.AdapterContext;
 import com.dr.code.diff.analyze.bean.MethodInfo;
 import com.dr.code.diff.analyze.constant.SysConstant;
@@ -122,12 +123,14 @@ public class InvokeLinkBuildService {
                         if (CollectionUtils.isEmpty(files)) {
                             return;
                         }
+                        AdapterContext adapterContext = builder.build();
                         //并发获取每个方法的调用方法
                         List<CompletableFuture<List<MethodInfo>>> priceFuture = files.stream()
-                                .map(item -> CompletableFuture.supplyAsync(() -> getSingleClassMethodsInvoke(item, excludeClasses, builder.build()), executor))
+                                .map(item -> CompletableFuture.supplyAsync(() -> getSingleClassMethodsInvoke(item, excludeClasses, adapterContext), executor))
                                 .collect(Collectors.toList());
                         CompletableFuture.allOf(priceFuture.toArray(new CompletableFuture[0])).join();
                         List<MethodInfo> list = priceFuture.stream().map(CompletableFuture::join).flatMap(Collection::stream).filter(Objects::nonNull).collect(Collectors.toList());
+//                        List<MethodInfo> list =  files.stream().map(item -> getSingleClassMethodsInvoke(item, excludeClasses, adapterContext)).flatMap(Collection::stream).filter(Objects::nonNull).collect(Collectors.toList());
                         allMethods.addAll(list);
                     } catch (Exception ex) {
                         throw new BizException(BizCode.GET_METHOD_INVOKE_LINK_FAIL);
@@ -155,14 +158,14 @@ public class InvokeLinkBuildService {
         List<MethodInfo> list = new ArrayList<>();
         try {
             ClassReader cr = new ClassReader(Files.newInputStream(file.toPath()));
-            ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
-            CallChainClassVisitor cv = new CallChainClassVisitor(cw, list, adapterContext);
+            CallChainClassVisitor cv = new CallChainClassVisitor(null, list, adapterContext);
             cr.accept(cv, ClassReader.SKIP_FRAMES);
         } catch (Exception e) {
             LoggerUtil.error(log, "获取调用链失败", e.getMessage());
             return Collections.emptyList();
         }
         return list;
+
     }
 
 

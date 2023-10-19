@@ -7,6 +7,7 @@ import com.dr.code.diff.analyze.bean.RequestInfo;
 import com.dr.code.diff.analyze.constant.AnnotationConstant;
 import com.dr.code.diff.analyze.strategy.MethodFilterContext;
 import com.dr.code.diff.analyze.strategy.MethodInvokeFactory;
+import com.dr.code.diff.enums.LinkScopeTypeEnum;
 import com.dr.code.diff.enums.MethodNodeTypeEnum;
 import com.dr.code.diff.util.StringUtil;
 import jdk.internal.org.objectweb.asm.*;
@@ -16,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -78,11 +80,19 @@ public class CallChainMethodVisitor extends MethodVisitor {
         }
         //非本包调用过滤
         MethodFilterContext methodFilterContext = adapterContext.getMethodFilterContext();
-        methodFilterContext.setClassName(owner);
-        Boolean filterMatch = MethodInvokeFactory.processHandler(adapterContext.getMethodFilterContext());
-        if (filterMatch) {
-            return;
+        if (null != methodFilterContext) {
+            if (LinkScopeTypeEnum.GROUP_ONLY_TYPE.equals(methodFilterContext.getLinKScopeTypeEnum())) {
+                if (!owner.startsWith(methodFilterContext.getBaseClassName())) {
+                    return;
+                }
+            } else if (LinkScopeTypeEnum.EXCLUDE_JDK_TYPE.equals(methodFilterContext.getLinKScopeTypeEnum())) {
+                if (owner.contains(methodFilterContext.getBaseClassName())) {
+                    return;
+                }
+            }
+
         }
+
         // 记录被调用方法的信息
         buildInvokeMethod(owner, name, desc);
         super.visitMethodInsn(opcode, owner, name, desc, itf);
@@ -98,7 +108,6 @@ public class CallChainMethodVisitor extends MethodVisitor {
             String owner = methodHandle.getOwner();
             String methodName = methodHandle.getName();
             String methodDescriptor = methodHandle.getDesc();
-
             // 记录被调用方法的信息
             buildInvokeMethod(owner, methodName, methodDescriptor);
         }

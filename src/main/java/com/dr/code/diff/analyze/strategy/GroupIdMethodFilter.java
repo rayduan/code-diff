@@ -21,9 +21,6 @@ public class GroupIdMethodFilter implements MethodInvokeFilter {
 
     @Override
     public Boolean isMatch(MethodFilterContext methodFilterContext) {
-        if (!methodFilterContext.getClassName().contains(methodFilterContext.getBaseClassName())) {
-            return Boolean.TRUE;
-        }
-        return Boolean.FALSE;
+        return methodFilterContext.getClassName().startsWith(methodFilterContext.getBaseClassName());
     }
 }

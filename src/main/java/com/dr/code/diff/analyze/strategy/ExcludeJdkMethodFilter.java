@@ -21,6 +21,9 @@ public class ExcludeJdkMethodFilter implements MethodInvokeFilter {
 
     @Override
     public Boolean isMatch(MethodFilterContext methodFilterContext) {
-        return methodFilterContext.getClassName().startsWith(methodFilterContext.getBaseClassName());
+        if (!methodFilterContext.getClassName().contains(methodFilterContext.getBaseClassName())) {
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
     }
 }
